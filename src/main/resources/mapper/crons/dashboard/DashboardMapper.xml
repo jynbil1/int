@@ -4,7 +4,7 @@
 
     <select id="getYesterdayRevenue" resultType="java.lang.String">
         select
-            format(round(sum(details.order_total),2) - round(sum(details.order_discount),2),2)
+            format(round(sum(details.order_total),2) - round(sum(details.order_discount),2),0)
         from(
             select
                 id as order_no,
@@ -70,7 +70,7 @@
 
     <select id="getCurrentYearRevenue" resultType="java.lang.String">
         select
-            format(round(sum(details.order_total),2) - round(sum(details.order_discount),2),2)
+            format(round(sum(details.order_total),2) - round(sum(details.order_discount),2),0)
         from(
             select
                 id as order_no,
@@ -141,7 +141,7 @@
 
     <select id="getNewCustomers" resultType="java.lang.String">
         select
-            format(count(*),2)
+            format(count(*),0)
         from
             ((select 
                 id
@@ -195,7 +195,7 @@
 
     <select id="getTotalCustomers" resultType="java.lang.String">
         select
-            format(count(users.id),2)
+            format(count(users.id),0)
         from
             (select
                 id,
