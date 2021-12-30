@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+
+body, input, select, button {
+    font-family: 'Poppins', 'Noto Sans KR', sans-serif;
+    color: $text-darkest;
+    font-size: $regular-text;
+}
+
+h1 {
+    font-size: $xlarge-text;
+}
+
+h2 {
+    font-size: $medium-text;
+    margin-bottom: 15px;
+}
+
+h3 {
+    font-size: $medium-text;
+}
+
+a {
+    color: $link-color;
+}

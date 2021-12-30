@@ -1,0 +1,367 @@
+body {
+    background: $bg-light;
+}
+
+.container {
+    margin: 30px 0px;
+}
+
+.max-width {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+// Main container that divides the layout into left main content and right sidebar
+.content {
+    display: table;
+    margin: 0 auto;
+    max-width: 1280px;
+    width: 100%;
+
+    &.full-width {
+        background: white;
+        border-radius: 10px;;
+    }
+
+    .main {
+        display: table-cell;
+        vertical-align: top;
+        width: 100%;
+        padding: 20px 20px 20px 0;
+    }
+
+    .side {
+        display: table-cell;
+        vertical-align: top;
+        min-width: 320px;
+        padding: 20px 0px 20px 0px;
+
+        .input-col {
+            width: 47%;
+        }
+    }
+}
+
+.title-row {
+    width: 100%;
+    margin-bottom: 20px;
+    .sub {
+        color: $text-medium;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+    @extend %clearfix;
+}
+
+.notice {
+    margin-top: 15px;
+    .success {
+        color: $success-color;
+        background: $success-bg;
+        border-radius: 5px;
+        padding: 14px;
+    }
+}
+
+// Block - Container with white background
+.block {
+    background: white;
+    border-radius: 5px;
+    margin-bottom: $medium-margin;
+
+    // Block Pad - Use this inside blocks to separate each section within a block 
+    // Adds a line in between each block-pad except for the last one
+    .block-pad {
+        padding: $large-margin;
+        &:not(:last-child) {
+            border-bottom: 1px solid $border-light;
+        }
+        .section-title {
+            margin-bottom: 0px;
+        }
+    }
+
+    &.plain {
+        background: none;
+    }
+}
+
+// Each input row should be inside this div to give proper spacing
+.input-row {
+    &:not(:last-child) {
+        padding-bottom: $medium-margin;
+    }
+
+    // to display wide inputs INSIDE input row, does not need width restriction
+    .input-wide {
+        &:not(:last-child) {
+            margin-bottom: 15px;
+        }
+        @extend %clearfix-before;
+        @extend %clearfix;
+    }
+
+    // to display small inputs width 
+    .input-col {
+        float: left;
+        width: 31.9%;
+        &:not(:last-child) {
+            margin-right: 6%;
+        }
+        &:last-child::after{
+            @extend %clearfix;
+        }
+    }
+
+    &.header-row {
+        .input-col {
+            margin-top: 10px;
+        }
+    }
+
+    // container for two column inputs
+    &.two-col {
+        display: table;
+        width: 100%;
+
+        // container for left and right columns
+        .col {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+            &:only-child {
+                padding-right: 20px;
+            }
+            &:not(:last-child) {
+                padding-right: 20px;
+            }
+        }
+
+        // to display small inputs width
+        .input-col {
+            width: 30.8%;
+            &:not(:last-child) {
+                margin-right: 3.7%;
+            }
+            &.two {
+                width: 48%;
+            }
+        }
+        @extend %clearfix;
+    }
+    @extend %clearfix;
+}
+
+.edit-history {
+    padding-left: 18px;
+    li {
+        list-style: disc;
+        color: $text-medium;
+        font-size: $small-text;
+        margin-bottom: 5px;
+    }
+}
+
+// Container for images that are uploaded
+.uploaded-images {
+    margin-bottom: 15px;
+    img {
+        max-width: 100px;
+        float: left;
+        margin-right: 15px;
+    }
+    @extend %clearfix;
+}
+
+// Row that contains Actions dropdown, search, filter and sort dropdown
+.actions-row {
+    padding: 20px;
+    &.four-col {
+        div { 
+            float: left; 
+            &:not(:first-child) {
+                padding-left: 15px;
+            }
+        }
+        .actions {
+            width: 25%;
+            select {
+                width: calc(100% - 90px);
+            }
+            input[type='submit'] {
+                float: right;
+            }
+        }
+        .search {
+            position: relative;
+            width: 45%;
+            input[type='text'] {
+                width: 100%;
+            }
+            button {
+                position: absolute;
+                background: none;
+                right: 0px;
+                width: 35px;
+                height: 35px;
+                padding: 0px;
+                padding-top: 4px;
+            }
+            i {
+                color: $text-medium;
+                font-size: 20px;
+            }
+        }
+        .filter {
+            width: 15%;
+            a {
+                width: 100%;
+            }
+        }
+        .sort {
+            width: 15%;
+            select {
+                width: 100%;
+            }
+        }
+    }
+    &.three-col {
+        div { 
+            float: left; 
+        }
+        select, input {
+            float: left;
+        }
+        .search {
+            position: relative;
+            width: 47%;
+            margin-right: 9%;
+            select {
+                width: 30%;
+            }
+            input[type="text"] {
+                width: 68%;
+                margin-left: 2%;
+            }
+            input[type="submit"] {
+                width: 16%;
+                margin-left: 2%;
+            }
+            button {
+                position: absolute;
+                background: none;
+                right: 0px;
+                width: 35px;
+                height: 35px;
+                padding: 0px;
+                padding-top: 4px;
+            }
+            i {
+                color: $text-medium;
+                font-size: 20px;
+            }
+        }
+        .item-range {
+            width: 14%;
+            margin-left: 3%;
+            select {
+                width: 56%;
+            }
+            input[type="submit"] {
+                width: 40%;
+                margin-left: 4%;
+            }
+        }
+        .sort-by {
+            width: 27%;
+            select {
+                width: 38%;
+            }
+            select:not(:first-child) {
+                margin-left: 3%;
+            }
+            input[type="submit"] {
+                width: 18%;
+                margin-left: 3%;
+            }
+        }
+    }
+    @extend %clearfix;
+}
+
+// Used at the bottom of listings
+// Contains total number of rows, number of rows in the current page, pagination and total number of pages
+.navigation-row {
+    text-align: right;
+    padding: 15px 20px;
+
+    .count {
+        display: inline-block;
+        span {
+            padding-right: 15px;
+        }
+        select {
+            width: 80px;
+            margin-right: 15px;
+        }
+    }
+    .pagination {
+        display: inline-block;
+        vertical-align: top;
+        
+        a {
+            color: $text-medium;
+            border: 1px solid $border-light;
+            text-align: center;
+            background-color: $bg-light;
+            padding: 7px;
+            &.previous {
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+            &.next {
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+                margin-left: -4px;
+            }
+        }
+        input[type="text"] {
+            border-radius: 0px;
+            border-left: none;
+            border-right: none;
+            width: 40px;
+        }
+        span {
+            margin-left: 15px;
+        }
+    }
+    @extend %clearfix;
+}
+
+// Tabbed links with numbers
+.tabs {
+    li {
+        display: inline-block;
+        margin-right: 10px;
+        line-height: 20px;
+        margin-bottom: 20px;
+    }
+    a {
+        display: inline-block;
+        color: $text-medium;
+    }
+    span {
+        font-size: $xsmall-text;
+        color: $text-light;
+        background-color: $border-light;
+        padding: 2px 4px;
+        border-radius: 5px;
+        margin-left: 5px;
+    }
+    .flushed-left {
+        float: left;
+    }
+    .flushed-right {
+        float: right;
+    }
+}

@@ -1,0 +1,206 @@
+input[type='text'] { 
+    border: $border-light 1px solid;
+    border-radius: 5px;
+    height: 35px;
+    padding: 0px 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;    
+    box-sizing: border-box;
+    width: 100%;
+    &::placeholder {
+        color: $text-light;
+    }
+    &:hover,
+    &:active {
+        border: $border-dark 1px solid;
+    }
+}
+
+input[type='number'] { 
+    border: $border-light 1px solid;
+    border-radius: 5px;
+    height: 35px;
+    padding: 0px 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;    
+    box-sizing: border-box;
+    width: 100%;
+    &::placeholder {
+        color: $text-light;
+    }
+    &:hover,
+    &:active {
+        border: $border-dark 1px solid;
+    }
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+
+
+input[type='submit'] { 
+    border: none;
+    border-radius: 5px;
+    height: 35px;
+    padding: 0px 14px;
+
+    &.secondary {
+        background: $link-bg;
+        border: 1px solid $link-border;
+        color:  $link-color;
+    }
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+input[type='checkbox'] {
+    border: 1px solid $border-light;
+    width: 15px;
+    height: 15px;
+} 
+
+input[type='datetime-local'] {
+    border: $border-light 1px solid;
+    border-radius: 5px;
+    height: 35px;
+    padding: 0px 10px;
+}
+
+select {
+    border: $border-light 1px solid;
+    border-radius: 5px;
+    height: 35px;
+    padding: 0px 10px;
+    width: 100%;
+    color: $text-medium;
+    &:hover,
+    &:active {
+        border: $border-dark 1px solid;
+        cursor: pointer;
+    }
+}
+
+label {
+    margin-bottom: 5px;
+    color: $text-dark;
+    display: block;
+    font-size: $small-text;
+    line-height: 17px;
+}
+
+textarea {
+    border: $border-light 1px solid;
+    border-radius: 5px; 
+    width: 99%;
+    &::placeholder {
+        color: $text-medium;
+    }
+    &:hover,
+    &:active {
+        border: $border-dark 1px solid;
+        cursor: pointer;
+    }
+}
+
+input[disabled] {
+    background: $bg-light;
+    &:hover {
+        border: $border-light 1px solid;
+    }
+}
+
+
+.file-input {
+    &::-webkit-file-upload-button {
+        visibility: hidden;
+    }
+    &::before {
+        content: 'Select file';
+        display: inline-block;
+        color: $link-color;
+        background: $link-bg;
+        border: 1px solid $link-border;
+        border-radius: 3px;
+        padding: 5px 8px;
+        outline: none;
+        white-space: nowrap;
+        -webkit-user-select: none;
+        cursor: pointer;
+    }
+    &:hover::before {
+        border-color: $link-border;
+    }
+    &:active::before {
+        background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+    }
+}
+
+select.select-search-single {
+    border: $border-light 1px solid;
+    border-radius: 5px;
+    height: 35px;
+    padding: 0px 10px;
+    width: 100%;
+    color: $text-medium;
+}
+
+.select2-container--default .select2-selection--single {
+    border: $border-light 1px solid;
+    height: 35px;
+    border-radius: 5px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 35px;
+    padding-left: 12px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 35px;
+}
+
+.select2-results__option {
+    padding: 11px 15px;
+}
+
+.select2-search--dropdown .select2-search__field {
+    padding: 7px 10px;
+}
+
+.select2-container--focus .select2-selection--single {
+    border: 1px solid $border-dark;
+}
+
+.select2-search--dropdown {
+    padding: 6px;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border-radius: 5px;
+    border: 1px solid $border-dark;
+}
+
+.select2-dropdown {
+    border: 1px solid $border-dark;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background: $link-bg;
+    color: $link-color;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background: $link-color;
+    color: white;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    right: 5px;
+}
+
+input.error { border: 1px solid $primary-color; }
+label.error {color: $primary-color;}

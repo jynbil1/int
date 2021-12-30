@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hanpoom.internal_cron.crons.dashboard.mapper.DashboardMapper">
+
+    <select id="getYesterdayRevenue" resultType="java.lang.String">
+        select
+            format(round(sum(details.order_total),2) - round(sum(details.order_discount),2),2)
+        from(
+            select
+                id as order_no,
+                id as parent_order_no
+            from	
+                wphpm_posts
+            where
+                post_type = 'shop_order' 
+                and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable')
+                and post_date
+                    between 
+                        date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 00:00:00'), interval 1 day) and
+                        date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 23:59:59'), interval 1 day)
+        union all
+            select
+                refund_orders.order_no,
+                refund_orders.parent_order_no
+            from
+                (select
+                    id as order_no,
+                    post_date as order_date,
+                    post_status as order_status
+                from	
+                    wphpm_posts
+                where
+                    post_type = 'shop_order' 
+                    and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable')
+                    and post_date
+                        between 
+                            date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 00:00:00'), interval 1 day) and
+                            date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 23:59:59'), interval 1 day)
+                    ) as orders
+                inner join
+                    (select
+                        id as order_no,
+                        post_parent as parent_order_no
+                    from	
+                        wphpm_posts
+                    where
+                        post_type = 'shop_order_refund') as refund_orders
+                on
+                    orders.order_no = refund_orders.parent_order_no ) as united_orders
+        inner join
+            (select
+                a.order_no,
+                group_concat(a.order_total) as order_total,
+                group_concat(a.order_discount) as order_discount
+            from	
+                (select
+                    post_id as order_no,
+                    case when meta_key = '_order_total' then meta_value end as order_total,
+                    case when meta_key = '_cart_discount' then meta_value end as order_discount
+                from	
+                    wphpm_postmeta
+                where
+                    meta_key in ('_order_total', '_cart_discount') ) as a
+            group by
+                a.order_no ) as details
+        on
+            united_orders.order_no = details.order_no;
+
+    </select>
+
+    <select id="getCurrentYearRevenue" resultType="java.lang.String">
+        select
+            format(round(sum(details.order_total),2) - round(sum(details.order_discount),2),2)
+        from(
+            select
+                id as order_no,
+                id as parent_order_no, 
+                post_date as order_date
+            from	
+                wphpm_posts
+            where
+                post_type = 'shop_order' 
+                and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable')
+                and post_date
+                    between 
+                        date_format(date_add(now(), interval 14 hour), '%Y-01-01 00:00:00') and
+                        date_add(now(), interval 14 hour) 
+        union all
+            select
+                refund_orders.order_no,
+                refund_orders.parent_order_no,
+                null as order_date
+            from
+                (select
+                    id as order_no,
+                    post_date as order_date,
+                    post_status as order_status
+                from	
+                    wphpm_posts
+                where
+                    post_type = 'shop_order' 
+                    and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable')
+                    and post_date
+                        between 
+                            date_format(date_add(now(), interval 14 hour), '%Y-01-01 00:00:00') and
+                            date_add(now(), interval 14 hour)
+                    ) as orders
+                inner join
+                    (select
+                        id as order_no,
+                        post_parent as parent_order_no
+                    from	
+                        wphpm_posts
+                    where
+                        post_type = 'shop_order_refund') as refund_orders
+                on
+                    orders.order_no = refund_orders.parent_order_no ) as united_orders
+        inner join
+            (select
+                a.order_no,
+                group_concat(a.subtotal) as subtotal,
+                group_concat(a.shipping) as shipping,
+                group_concat(a.order_total) as order_total,
+                group_concat(a.order_discount) as order_discount
+            from	
+                (select
+                    post_id as order_no,
+                    case when meta_key = 'rs_cart_subtotal' then meta_value end as subtotal,
+                    case when meta_key = '_order_shipping' then meta_value end as shipping,
+                    case when meta_key = '_order_total' then meta_value end as order_total,
+                    case when meta_key = '_cart_discount' then meta_value end as order_discount
+                from	
+                    wphpm_postmeta
+                where
+                    meta_key in ('rs_cart_subtotal', '_order_shipping', '_order_total', '_cart_discount') ) as a
+            group by
+                a.order_no ) as details
+        on
+            united_orders.order_no = details.order_no;
+    </select>
+
+    <select id="getNewCustomers" resultType="java.lang.String">
+        select
+            format(count(*),2)
+        from
+            ((select 
+                id
+            from
+                wphpm_users
+            where
+                user_registered 
+                    between 
+                    date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 00:00:00'), interval 1 day) and
+                    date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 23:59:59'), interval 1 day) )
+            union 
+                (select 
+                    details.customer_id
+                from
+                    (select
+                        id as order_no,
+                        post_date as order_date,
+                        post_status as order_status
+                    from	
+                        wphpm_posts
+                    where
+                        post_type = 'shop_order' 
+                        and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable')
+                        and post_date
+                            between 
+                                date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 00:00:00'), interval 1 day) and
+                                date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 23:59:59'), interval 1 day)
+                        ) as orders
+                inner join
+                    (select
+                        post_id as order_no,
+                        meta_value as customer_id
+                    from
+                        wphpm_postmeta
+                    where
+                        meta_key = '_customer_user') as details
+                on
+                    orders.order_no = details.order_no
+                inner join
+                    (select
+                        user_id as customer_id,
+                        meta_value as order_count
+                    from
+                        wphpm_usermeta
+                    where
+                        meta_key = '_order_count' and 
+                        meta_value = 1) as users
+                on	
+                    details.customer_id = users.customer_id) ) as a;
+    </select>
+
+    <select id="getTotalCustomers" resultType="java.lang.String">
+        select
+            format(count(users.id),2)
+        from
+            (select
+                id,
+                user_email
+            from
+                wphpm_users
+            where
+                user_email not regexp '^[A-Z0-9._%-]+@hanpoom.[^@]{2,}$' and
+                user_email
+        <![CDATA[ <> ]]>
+        '') as users
+        inner join
+            (select
+                user_id
+            from
+                wphpm_usermeta
+            where
+                meta_key = 'wphpm_user_level' and 
+                meta_value not in (9, 10) ) as details
+        on
+            users.id = details.user_id;
+    </select>
+
+</mapper>

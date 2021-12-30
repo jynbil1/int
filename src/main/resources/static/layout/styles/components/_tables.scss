@@ -1,0 +1,97 @@
+.checkbox-table {
+    width: 100%;
+    text-align: left;
+    thead, tbody {
+        tr {
+            border-bottom: 1px solid $border-light;
+        }
+        th {
+            color: $text-medium;
+        }
+        th, td {
+            vertical-align: middle;
+            padding: 10px 10px;
+            &:first-child {
+                padding-left: 20px;
+                width: 50px;
+            }
+            &:last-child {
+                padding-right: 20px;
+            }
+        }
+        .selected {
+            background: $bg-light;
+        }
+    }
+
+    .product-sku {
+        margin-top: 8px;
+    }
+
+    .product-thumb {
+        float: left;
+        max-width: 50px;
+        margin-right: 10px;
+    }
+}
+
+.regular-table {
+    width: 100%;
+    text-align: left;
+    thead, tbody {
+        tr {
+            border-bottom: 1px solid $border-light;
+        }
+        th {
+            color: $text-medium;
+        }
+        th, td {
+            vertical-align: middle;
+            padding: 14px 12px;
+            &:first-child {
+                padding-left: 20px;
+            }
+            &:last-child {
+                padding-right: 20px;
+            }
+
+        }
+        .selected {
+            background: $bg-light;
+        }
+    }
+
+    .hidden-row {
+        table {
+            width: 100%;
+        }
+        thead, tbody {
+            th {
+                background: $bg-light;
+                border-top: 0px;
+            }
+            tr {
+                border-bottom: 0;
+            }
+        }
+        .divider {
+            text-align: center;
+            border-left: 1px solid $border-light;
+        }
+        .title {
+            color: $text-light;
+            span {
+                color: $text-dark;
+                line-height: 18px;
+            }
+        }
+    }
+
+    .no-pad {
+        padding: 0px!important;
+    }
+
+    input[type='datetime-local'] {
+        width: 200px;
+    }
+}

@@ -1,0 +1,14 @@
+%clearfix {
+    &:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+}
+%clearfix-before {
+  &:before {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
