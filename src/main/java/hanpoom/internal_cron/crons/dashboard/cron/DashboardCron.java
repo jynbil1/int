@@ -18,7 +18,7 @@ public class DashboardCron {
         this.dashboardService = dashboardService;
     }
 
-    @Scheduled(cron = "0 31 12 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 45 12 * * *", zone = "Asia/Seoul")
     public void cronJobSch() {
         // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 10");
