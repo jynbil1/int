@@ -1,21 +1,30 @@
 package hanpoom.internal_cron.crons.dashboard.slack.service;
 
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import hanpoom.internal_cron.crons.dashboard.common.mapper.CommonMapper;
+import hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO;
 import hanpoom.internal_cron.crons.dashboard.slack.mapper.DashboardMapper;
+import hanpoom.internal_cron.utility.calendar.service.CalendarService;
 
 @Service
 public class DashboardService {
     private DashboardMapper dashboardMapper;
+    private CommonMapper commonMapper;
+    private CalendarService calendar;
 
-    public DashboardService(DashboardMapper dashboardMapper) {
+    public DashboardService(DashboardMapper dashboardMapper, CommonMapper commonMapper, CalendarService calendar) {
         this.dashboardMapper = dashboardMapper;
+        this.commonMapper = commonMapper;
+        this.calendar = calendar;
     }
 
-    public String getYesterdayRevenue(){
+    public String getYesterdayRevenue() {
         String yesterdayRevenue;
         try {
-            yesterdayRevenue = "$" + dashboardMapper.getYesterdayRevenue();
+            yesterdayRevenue = "$"
+                    + commonMapper.getRevenue(new DateRangeVO(calendar.getStartofYesterday(), calendar.getEndofYesterday()));
         } catch (Exception e) {
             yesterdayRevenue = "집계에 실패했습니다.";
             e.printStackTrace();
@@ -23,10 +32,13 @@ public class DashboardService {
         return yesterdayRevenue;
     }
 
-    public String getCurrentYearRevenue(){
+    public String getCurrentYearRevenue() {
         String currentYearRevenue;
         try {
-            currentYearRevenue = "$" + dashboardMapper.getCurrentYearRevenue();
+            // get the corresponding startdate and enddate
+            int thisYear = DateTime.now().getYear();
+            currentYearRevenue = "$"
+                    + commonMapper.getRevenue(new DateRangeVO(calendar.getStartOfYear(thisYear), calendar.getEndOfYearOpt(thisYear)));
         } catch (Exception e) {
             currentYearRevenue = "집계에 실패했습니다.";
             e.printStackTrace();
@@ -34,7 +46,7 @@ public class DashboardService {
         return currentYearRevenue;
     }
 
-    public String getNewCustomers(){
+    public String getNewCustomers() {
         String newCustomers;
         try {
             newCustomers = dashboardMapper.getNewCustomers() + " 명";
@@ -45,7 +57,7 @@ public class DashboardService {
         return newCustomers;
     }
 
-    public String getTotalCustomers(){
+    public String getTotalCustomers() {
         String totalCustomers;
         try {
             totalCustomers = dashboardMapper.getTotalCustomers() + " 명";

@@ -8,5 +8,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class GlobalSpreadSheetVO {
-    
+    private String new_users;
+    private String total_orders;
+    private String margins;
 }

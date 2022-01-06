@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hanpoom.internal_cron.crons.dashboard.common.mapper.CommonMapper">
+
+    <select id="getRevenue" parameterType="hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO" resultType="java.lang.String">
+        select
+            format(round(sum(details.order_total),2) - round(sum(details.order_discount),2),0)
+        from(
+            select
+                id as order_no,
+                id as parent_order_no, 
+                post_date as order_date
+            from	
+                wphpm_posts
+            where
+                post_type = 'shop_order' 
+                and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable')
+                and post_date
+                    between 
+                        #{start_date} and #{end_date}
+        union all
+            select
+                refund_orders.order_no,
+                refund_orders.parent_order_no,
+                null as order_date
+            from
+                (select
+                    id as order_no,
+                    post_date as order_date,
+                    post_status as order_status
+                from	
+                    wphpm_posts
+                where
+                    post_type = 'shop_order' 
+                    and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable')
+                    and post_date
+                        between 
+                        #{start_date} and #{end_date}
+                    ) as orders
+                inner join
+                    (select
+                        id as order_no,
+                        post_parent as parent_order_no
+                    from	
+                        wphpm_posts
+                    where
+                        post_type = 'shop_order_refund') as refund_orders
+                on
+                    orders.order_no = refund_orders.parent_order_no ) as united_orders
+        inner join
+            (select
+                a.order_no,
+                group_concat(a.subtotal) as subtotal,
+                group_concat(a.shipping) as shipping,
+                group_concat(a.order_total) as order_total,
+                group_concat(a.order_discount) as order_discount
+            from	
+                (select
+                    post_id as order_no,
+                    case when meta_key = 'rs_cart_subtotal' then meta_value end as subtotal,
+                    case when meta_key = '_order_shipping' then meta_value end as shipping,
+                    case when meta_key = '_order_total' then meta_value end as order_total,
+                    case when meta_key = '_cart_discount' then meta_value end as order_discount
+                from	
+                    wphpm_postmeta
+                where
+                    meta_key in ('rs_cart_subtotal', '_order_shipping', '_order_total', '_cart_discount') ) as a
+            group by
+                a.order_no ) as details
+        on
+            united_orders.order_no = details.order_no;
+    </select>
+    
+</mapper>

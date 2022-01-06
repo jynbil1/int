@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hanpoom.internal_cron.crons.dashboard.slack.mapper.DashboardMapper">
+
+    <select id="getNewCustomers" resultType="java.lang.String">
+        select
+            format(count(*),0)
+        from
+            ((select 
+                id
+            from
+                wphpm_users
+            where
+                user_registered 
+                    between 
+                    date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 00:00:00'), interval 1 day) and
+                    date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 23:59:59'), interval 1 day) )
+            union 
+                (select 
+                    details.customer_id
+                from
+                    (select
+                        id as order_no,
+                        post_date as order_date,
+                        post_status as order_status
+                    from	
+                        wphpm_posts
+                    where
+                        post_type = 'shop_order' 
+                        and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable')
+                        and post_date
+                            between 
+                                date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 00:00:00'), interval 1 day) and
+                                date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 23:59:59'), interval 1 day)
+                        ) as orders
+                inner join
+                    (select
+                        post_id as order_no,
+                        meta_value as customer_id
+                    from
+                        wphpm_postmeta
+                    where
+                        meta_key = '_customer_user') as details
+                on
+                    orders.order_no = details.order_no
+                inner join
+                    (select
+                        user_id as customer_id,
+                        meta_value as order_count
+                    from
+                        wphpm_usermeta
+                    where
+                        meta_key = '_order_count' and 
+                        meta_value = 1) as users
+                on	
+                    details.customer_id = users.customer_id) ) as a;
+    </select>
+
+    <select id="getTotalCustomers" resultType="java.lang.String">
+        select
+            format(count(users.id),0)
+        from
+            (select
+                id,
+                user_email
+            from
+                wphpm_users
+            where
+                user_email not regexp '^[A-Z0-9._%-]+@hanpoom.[^@]{2,}$' and
+                user_email
+        <![CDATA[ <> ]]>
+        '') as users
+        inner join
+            (select
+                user_id
+            from
+                wphpm_usermeta
+            where
+                meta_key = 'wphpm_user_level' and 
+                meta_value not in (9, 10) ) as details
+        on
+            users.id = details.user_id;
+    </select>
+
+</mapper>
