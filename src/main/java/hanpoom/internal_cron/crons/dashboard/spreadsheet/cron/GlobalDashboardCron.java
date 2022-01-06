@@ -1,4 +1,4 @@
-package hanpoom.internal_cron.crons.dashboard.slack.cron;
+package hanpoom.internal_cron.crons.dashboard.spreadsheet.cron;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,11 +10,11 @@ import hanpoom.internal_cron.crons.dashboard.slack.service.DashboardService;
 import hanpoom.internal_cron.utility.slack.service.SlackService;
 
 @Component
-public class DashboardCron {
+public class GlobalDashboardCron {
 
     private DashboardService dashboardService;
 
-    public DashboardCron(DashboardService dashboardService) {
+    public GlobalDashboardCron(DashboardService dashboardService) {
         this.dashboardService = dashboardService;
     }
 
