@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.crons.dashboard.common.mapper.CommonMapper;
 import hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO;
-import hanpoom.internal_cron.crons.dashboard.slack.mapper.DashboardMapper;
 import hanpoom.internal_cron.utility.calendar.service.CalendarService;
 
 @Service
@@ -18,6 +17,8 @@ public class GlobalDashboardService {
     }
 
     public String getLastWeekRevenue() {
+        System.out.println(calendar.getPreviousWeekMonday(true));
+        System.out.println(calendar.getPreviousWeekSunday(true));
         String lastWeekRevenue;
         try {
             lastWeekRevenue = commonMapper
@@ -47,7 +48,7 @@ public class GlobalDashboardService {
         String newPurchase;
         try {
             // get the corresponding startdate and enddate
-            newPurchase = commonMapper.getRevenue(new DateRangeVO(calendar.getPreviousWeekMonday(true),
+            newPurchase = commonMapper.getNewPurchasers(new DateRangeVO(calendar.getPreviousWeekMonday(true),
                     calendar.getPreviousWeekSunday(true)));
         } catch (Exception e) {
             newPurchase = "N/A";
@@ -60,7 +61,7 @@ public class GlobalDashboardService {
         String rePurchase;
         try {
             // get the corresponding startdate and enddate
-            rePurchase = commonMapper.getRevenue(new DateRangeVO(calendar.getPreviousWeekMonday(true),
+            rePurchase = commonMapper.getNewRepurchasers(new DateRangeVO(calendar.getPreviousWeekMonday(true),
                     calendar.getPreviousWeekSunday(true)));
         } catch (Exception e) {
             rePurchase = "N/A";

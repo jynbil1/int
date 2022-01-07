@@ -1,29 +1,63 @@
 package hanpoom.internal_cron.crons.dashboard.spreadsheet;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import hanpoom.internal_cron.crons.dashboard.common.vo.APIResponse;
-import hanpoom.internal_cron.crons.dashboard.common.vo.SuccessResponse;
+import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.GlobalDashboardService;
 import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.SpreadSheetCRUDService;
 import hanpoom.internal_cron.utility.calendar.service.CalendarService;
 
 @RestController
 public class TestController {
+    private GlobalDashboardService dashboard;
     private SpreadSheetCRUDService spreadSheet;
     private CalendarService calendar;
 
-    public TestController(SpreadSheetCRUDService spreadSheet, CalendarService calendar) {
+    public TestController(GlobalDashboardService dashboard,
+            SpreadSheetCRUDService spreadSheet,
+            CalendarService calendar) {
+        this.dashboard = dashboard;
         this.spreadSheet = spreadSheet;
         this.calendar = calendar;
     }
 
-    @GetMapping(value = "/test")
-    public APIResponse getTest() {
+    // "0 0 * * * *" = the top of every hour of every day.
+    // "* * * * * *" = 매초 실행 합니다.
+    // "*/10 * * * * *" = 매 10초마다 실행한다.
+    // 0 */1 * * * = 매시간 실행 합니다.
+    // "0 0 8-10 * * *" = 매일 8, 9, 10시에 실행한다
+    // "0 0 6,19 * * *" = 매일 오전 6시, 오후 7시에 실행한다.
+    // "0 0/30 8-10 * * *" = 8:00, 8:30, 9:00, 9:30, 10:00 and 10:30 every day.
+    // "0 0 9-17 * * MON-FRI" = 오전 9시부터 오후 5시까지 주중(월~금)에 실행한다.
+    // "0 0 0 25 12 ?" = every Christmas Day at midnight
+
+    // 매주 월요일 자정이 되면 수행.
+    @GetMapping("/test")
+    public String testPage() {
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarService.DATE_TIME_FORMAT_PATTERN));
+        System.out.println(now + " 에 작업을 수행함");
+
+        // 데이터를 가져온다.
+        // 1. 매출
+        String revenue = dashboard.getLastWeekRevenue();
+        // 2. 유저 수
+        // 2.1. 신규 가입자
+        String newCustomers = dashboard.getLastWeekNewUsers();
+        // 2.2. 신규 가입자 중 기간내 신규 구매자
+        String newPurchasers = dashboard.getLastWeekNewPurchase();
+        // 2.3. 신규 가입자 중 기간 내 재구매
+        String newRepurchasers = dashboard.getLastWeekRePurchase();
+
+        // 3. 주문건 수
+        String totalOrders = dashboard.getLastWeekTotalOrders();
+
+        // 4. 상품 마진
+        String totalMargins = dashboard.getLastWeekMargins();
 
         // C 컬럼은 주 차를 뜻한다. 주 차가 제일 높은 값을 가져온다.
         // 가져온 값 중 숫자가 없으면 1 부터 시작한다.
@@ -53,9 +87,16 @@ public class TestController {
         List<Object> dataSet = Arrays
                 .asList(calendar.getPreviousWeekMonday(false),
                         calendar.getPreviousWeekSunday(false),
-                        String.valueOf(maxInt),
-                        "1", "2", "3", "4", "5", "6");
+                        String.valueOf(maxInt), revenue,
+                        newCustomers, newPurchasers, newRepurchasers,
+                        totalOrders, totalMargins);
         boolean isInserted = spreadSheet.insertRow(dataSet);
-        return new SuccessResponse();
+
+        if (isInserted) {
+            System.out.println("성공적으로 데이터를 입력했습니다.");
+        } else {
+            System.out.println("실패");
+        }
+        return "ok";
     }
 }

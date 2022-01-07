@@ -2,14 +2,9 @@ package hanpoom.internal_cron.crons.dashboard.spreadsheet.cron;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.api.services.sheets.v4.model.Spreadsheet;
-
-import org.apache.poi.ss.util.CellReference;
-import org.joda.time.LocalDate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -43,8 +38,8 @@ public class GlobalDashboardCron {
     // "0 0 0 25 12 ?" = every Christmas Day at midnight
 
     // 매주 월요일 자정이 되면 수행.
-    @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
     // @Scheduled(cron = "1 * * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
     public void cronJobGloabalWeeklyDashboard() {
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarService.DATE_TIME_FORMAT_PATTERN));
         System.out.println(now + " 에 작업을 수행함");
@@ -54,17 +49,17 @@ public class GlobalDashboardCron {
         String revenue = dashboard.getLastWeekRevenue();
         // 2. 유저 수
         // 2.1. 신규 가입자
-        String newCustomers = dashboard.getLastWeekRevenue();
+        String newCustomers = dashboard.getLastWeekNewUsers();
         // 2.2. 신규 가입자 중 기간내 신규 구매자
-        String newPurchasers = dashboard.getLastWeekRevenue();
+        String newPurchasers = dashboard.getLastWeekNewPurchase();
         // 2.3. 신규 가입자 중 기간 내 재구매
-        String newRepurchasers = dashboard.getLastWeekRevenue();
+        String newRepurchasers = dashboard.getLastWeekRePurchase();
 
         // 3. 주문건 수
-        String totalOrders = dashboard.getLastWeekRevenue();
+        String totalOrders = dashboard.getLastWeekTotalOrders();
 
         // 4. 상품 마진
-        String totalMargins = dashboard.getLastWeekRevenue();
+        String totalMargins = dashboard.getLastWeekMargins();
 
         // C 컬럼은 주 차를 뜻한다. 주 차가 제일 높은 값을 가져온다.
         // 가져온 값 중 숫자가 없으면 1 부터 시작한다.
