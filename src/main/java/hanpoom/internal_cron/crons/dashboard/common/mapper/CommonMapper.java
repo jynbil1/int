@@ -9,4 +9,15 @@ import hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO;
 @Mapper
 public interface CommonMapper {
     public String getRevenue(DateRangeVO dateRange);
+
+    public String getNewUsers(DateRangeVO dateRange);
+
+    public String getNewPurchasers(DateRangeVO dateRange);
+
+    public String getNewRepurchasers(DateRangeVO dateRange);
+
+    public String getTotalOrders(DateRangeVO dateRange);
+
+    public String getTotalMargins(DateRangeVO dateRange);
+
 }

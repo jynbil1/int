@@ -24,12 +24,16 @@ public class SpreadSheetCRUDService {
     private final static String SHEET = "22 GLOBAL_DASHBOARD";
     private final static int SHEET_ID = 1110823798;
 
+    public final String STARTING_COLUMN = "D";
+    public final int STARTIIG_ROW = 5;
+
     private SpreadSheetAPIService spreadSheet;
 
     public SpreadSheetCRUDService(SpreadSheetAPIService spreadSheet) {
         this.spreadSheet = spreadSheet;
     }
 
+    
     public List<List<Object>> getContents(String range) {
         Sheets sheet = spreadSheet.getSheetsService();
         range = SHEET + "!" + range;
@@ -53,12 +57,12 @@ public class SpreadSheetCRUDService {
             Sheets sheet = spreadSheet.getSheetsService();
 
             ValueRange body = new ValueRange().setValues(
-                    Arrays.asList(
-                            Arrays.asList(insertObj)));
+                    Arrays.asList(insertObj));
 
-            AppendValuesResponse resposne = sheet.spreadsheets().values()
-                    .append(SPREADSHEET_ID, "22 GLOBAL_DASHBOARD", body)
-                    .setValueInputOption("USER_ENTERED")
+            AppendValuesResponse response = sheet.spreadsheets().values()
+                    .append(SPREADSHEET_ID, SHEET, body)
+                    // .setValueInputOption("USER_ENTERED")
+                    .setValueInputOption("RAW")
                     .setInsertDataOption("INSERT_ROWS")
                     .setIncludeValuesInResponse(true)
                     .execute();
@@ -70,7 +74,7 @@ public class SpreadSheetCRUDService {
 
     }
 
-    public boolean updateRow(List<Object> updateObj) {
+    public boolean updateRow(List<Object> updateObj, String range) {
         try {
             Sheets sheet = spreadSheet.getSheetsService();
 
@@ -79,7 +83,7 @@ public class SpreadSheetCRUDService {
                             Arrays.asList(updateObj)));
 
             UpdateValuesResponse resposne = sheet.spreadsheets().values()
-                    .update(SPREADSHEET_ID, "22 GLOBAL_DASHBOARD!D5:G5", body)
+                    .update(SPREADSHEET_ID, SHEET + ":" + range, body)
                     .setValueInputOption("RAW")
                     .execute();
             return true;

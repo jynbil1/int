@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface DashboardMapper {
-    public String getNewCustomers();
+    public String getDailyNewCustomer();
     public String getTotalCustomers();
 }

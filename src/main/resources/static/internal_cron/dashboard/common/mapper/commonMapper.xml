@@ -70,5 +70,28 @@
         on
             united_orders.order_no = details.order_no;
     </select>
-    
+
+    <select id="getNewUsers" parameterType="hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO" resultType="java.lang.String">
+
+    </select>
+
+
+    <select id="getNewPurchasers" parameterType="hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO" resultType="java.lang.String">
+
+    </select>
+
+
+    <select id="getNewRepurchasers" parameterType="hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO" resultType="java.lang.String">
+
+    </select>
+
+
+    <select id="getTotalOrders" parameterType="hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO" resultType="java.lang.String">
+
+    </select>
+
+
+    <select id="getTotalMargins" parameterType="hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO" resultType="java.lang.String">
+        
+    </select>
 </mapper>

@@ -1,48 +1,110 @@
 package hanpoom.internal_cron.crons.dashboard.spreadsheet.cron;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import com.google.api.services.sheets.v4.model.Spreadsheet;
+
+import org.apache.poi.ss.util.CellReference;
+import org.joda.time.LocalDate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import hanpoom.internal_cron.crons.dashboard.slack.service.DashboardService;
-import hanpoom.internal_cron.utility.slack.service.SlackService;
+import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.GlobalDashboardService;
+import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.SpreadSheetCRUDService;
+import hanpoom.internal_cron.utility.calendar.service.CalendarService;
 
 @Component
 public class GlobalDashboardCron {
 
-    private DashboardService dashboardService;
+    private GlobalDashboardService dashboard;
+    private SpreadSheetCRUDService spreadSheet;
+    private CalendarService calendar;
 
-    public GlobalDashboardCron(DashboardService dashboardService) {
-        this.dashboardService = dashboardService;
+    public GlobalDashboardCron(GlobalDashboardService dashboard,
+            SpreadSheetCRUDService spreadSheet,
+            CalendarService calendar) {
+        this.dashboard = dashboard;
+        this.spreadSheet = spreadSheet;
+        this.calendar = calendar;
     }
 
-    @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
+    // "0 0 * * * *" = the top of every hour of every day.
+    // "* * * * * *" = 매초 실행 합니다.
+    // "*/10 * * * * *" = 매 10초마다 실행한다.
+    // 0 */1 * * * = 매시간 실행 합니다.
+    // "0 0 8-10 * * *" = 매일 8, 9, 10시에 실행한다
+    // "0 0 6,19 * * *" = 매일 오전 6시, 오후 7시에 실행한다.
+    // "0 0/30 8-10 * * *" = 8:00, 8:30, 9:00, 9:30, 10:00 and 10:30 every day.
+    // "0 0 9-17 * * MON-FRI" = 오전 9시부터 오후 5시까지 주중(월~금)에 실행한다.
+    // "0 0 0 25 12 ?" = every Christmas Day at midnight
+
+    // 매주 월요일 자정이 되면 수행.
+    @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
     // @Scheduled(cron = "1 * * * * *", zone = "Asia/Seoul")
-    public void cronJobSlackerDashboard() {
-        // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 10");
+    public void cronJobGloabalWeeklyDashboard() {
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarService.DATE_TIME_FORMAT_PATTERN));
+        System.out.println(now + " 에 작업을 수행함");
 
-        Date now = new Date();
-        String strDate = sdf.format(now);
-        System.out.println("Java cron job expression:: " + strDate);
+        // 데이터를 가져온다.
+        // 1. 매출
+        String revenue = dashboard.getLastWeekRevenue();
+        // 2. 유저 수
+        // 2.1. 신규 가입자
+        String newCustomers = dashboard.getLastWeekRevenue();
+        // 2.2. 신규 가입자 중 기간내 신규 구매자
+        String newPurchasers = dashboard.getLastWeekRevenue();
+        // 2.3. 신규 가입자 중 기간 내 재구매
+        String newRepurchasers = dashboard.getLastWeekRevenue();
 
-        String notificationMessage = "***" + strDate + "시 리포팅 ***" 
-                + "\n전일 매출: " + dashboardService.getYesterdayRevenue()
-                + "\n신규 가입자: " + dashboardService.getNewCustomers()
-                + "\n금년 총 매출: " + dashboardService.getCurrentYearRevenue()
-                + "\n누적 회원: " + dashboardService.getTotalCustomers();
-        System.out.println(notificationMessage);
-        boolean isSent = new SlackService().sendNotification(notificationMessage);
-        if (!isSent) {
-            isSent = new SlackService().sendNotification(notificationMessage);
-            if (!isSent) {
-                System.out.println("결국 실패했습니다.");
+        // 3. 주문건 수
+        String totalOrders = dashboard.getLastWeekRevenue();
+
+        // 4. 상품 마진
+        String totalMargins = dashboard.getLastWeekRevenue();
+
+        // C 컬럼은 주 차를 뜻한다. 주 차가 제일 높은 값을 가져온다.
+        // 가져온 값 중 숫자가 없으면 1 부터 시작한다.
+        int maxInt = 0;
+        List<List<Object>> currentCContent = spreadSheet.getContents("C:C");
+        for (List<Object> data : currentCContent) {
+            for (Object datum : data) {
+                String strValue = String.valueOf(datum);
+                if (strValue.length() > 0) {
+                    try {
+                        int intVal = Integer.parseInt(strValue);
+                        if (maxInt < intVal) {
+                            maxInt = intVal;
+                        } else {
+                            continue;
+                        }
+                    } catch (NumberFormatException nfe) {
+                        continue;
+                    }
+                }
             }
-        } else {
-            System.out.println("슬랙 알림 오케이.");
         }
+        // 가져온 값 더하기 1을 한다.
+        maxInt += 1;
+
+        // 가져온 데이터를 엑셀 시트에 기입한다.
+        List<Object> dataSet = Arrays
+                .asList(calendar.getPreviousWeekMonday(false),
+                        calendar.getPreviousWeekSunday(false),
+                        String.valueOf(maxInt), revenue,
+                        newCustomers, newPurchasers, newRepurchasers,
+                        totalOrders, totalMargins);
+        boolean isInserted = spreadSheet.insertRow(dataSet);
+
+        if (isInserted) {
+            System.out.println("성공적으로 데이터를 입력했습니다.");
+        } else {
+            System.out.println("실패");
+        }
+        ;
     }
 
 }

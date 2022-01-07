@@ -1,6 +1,5 @@
 package hanpoom.internal_cron.crons.dashboard.spreadsheet.service;
 
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.crons.dashboard.common.mapper.CommonMapper;
@@ -10,61 +9,87 @@ import hanpoom.internal_cron.utility.calendar.service.CalendarService;
 
 @Service
 public class GlobalDashboardService {
-    private DashboardMapper dashboardMapper;
     private CommonMapper commonMapper;
     private CalendarService calendar;
 
-    public GlobalDashboardService(DashboardMapper dashboardMapper, CommonMapper commonMapper, CalendarService calendar) {
-        this.dashboardMapper = dashboardMapper;
+    public GlobalDashboardService(CommonMapper commonMapper, CalendarService calendar) {
         this.commonMapper = commonMapper;
         this.calendar = calendar;
     }
 
-    public String getYesterdayRevenue() {
-        String yesterdayRevenue;
+    public String getLastWeekRevenue() {
+        String lastWeekRevenue;
         try {
-            yesterdayRevenue = "$"
-                    + commonMapper.getRevenue(new DateRangeVO(calendar.getStartofYesterday(), calendar.getEndofYesterday()));
+            lastWeekRevenue = commonMapper
+                    .getRevenue(new DateRangeVO(calendar.getPreviousWeekMonday(true),
+                            calendar.getPreviousWeekSunday(true)));
         } catch (Exception e) {
-            yesterdayRevenue = "집계에 실패했습니다.";
+            lastWeekRevenue = "N/A";
             e.printStackTrace();
         }
-        return yesterdayRevenue;
+        return lastWeekRevenue;
     }
 
-    public String getCurrentYearRevenue() {
-        String currentYearRevenue;
+    public String getLastWeekNewUsers() {
+        String newUsers;
         try {
             // get the corresponding startdate and enddate
-            int thisYear = DateTime.now().getYear();
-            currentYearRevenue = "$"
-                    + commonMapper.getRevenue(new DateRangeVO(calendar.getStartOfYear(thisYear), calendar.getEndOfYearOpt(thisYear)));
+            newUsers = commonMapper.getNewUsers(
+                    new DateRangeVO(calendar.getPreviousWeekMonday(true), calendar.getPreviousWeekSunday(true)));
         } catch (Exception e) {
-            currentYearRevenue = "집계에 실패했습니다.";
+            newUsers = "N/A";
             e.printStackTrace();
         }
-        return currentYearRevenue;
+        return newUsers;
     }
 
-    public String getNewCustomers() {
-        String newCustomers;
+    public String getLastWeekNewPurchase() {
+        String newPurchase;
         try {
-            newCustomers = dashboardMapper.getNewCustomers() + " 명";
+            // get the corresponding startdate and enddate
+            newPurchase = commonMapper.getRevenue(new DateRangeVO(calendar.getPreviousWeekMonday(true),
+                    calendar.getPreviousWeekSunday(true)));
         } catch (Exception e) {
-            newCustomers = "집계에 실패했습니다.";
+            newPurchase = "N/A";
             e.printStackTrace();
         }
-        return newCustomers;
+        return newPurchase;
     }
 
-    public String getTotalCustomers() {
-        String totalCustomers;
+    public String getLastWeekRePurchase() {
+        String rePurchase;
         try {
-            totalCustomers = dashboardMapper.getTotalCustomers() + " 명";
+            // get the corresponding startdate and enddate
+            rePurchase = commonMapper.getRevenue(new DateRangeVO(calendar.getPreviousWeekMonday(true),
+                    calendar.getPreviousWeekSunday(true)));
         } catch (Exception e) {
-            totalCustomers = "집계에 실패했습니다.";
+            rePurchase = "N/A";
             e.printStackTrace();
         }
-        return totalCustomers;
+        return rePurchase;
+    }
+
+    public String getLastWeekTotalOrders() {
+        String totalOrders;
+        try {
+            totalOrders = commonMapper.getTotalOrders(new DateRangeVO(calendar.getPreviousWeekMonday(true),
+                    calendar.getPreviousWeekSunday(true)));
+        } catch (Exception e) {
+            totalOrders = "N/A";
+            e.printStackTrace();
+        }
+        return totalOrders;
+    }
+
+    public String getLastWeekMargins() {
+        String totalMargins;
+        try {
+            totalMargins = commonMapper.getTotalMargins(new DateRangeVO(calendar.getPreviousWeekMonday(true),
+                    calendar.getPreviousWeekSunday(true)));
+        } catch (Exception e) {
+            totalMargins = "N/A";
+            e.printStackTrace();
+        }
+        return totalMargins;
     }
 }
