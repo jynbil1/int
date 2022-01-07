@@ -191,7 +191,7 @@
                 a.user_id
             having 
                 user_level not in (9, 10) and 
-                <![CDATA[ order_count  <= 2 ]]>  ) as details
+                <![CDATA[ order_count  >= 2 ]]>  ) as details
         on
             users.id = details.user_id
         inner join
@@ -236,9 +236,9 @@
 
     <select id="getTotalMargins" parameterType="hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO" resultType="java.lang.String">
         select
-            <!-- orders.order_no, -->
-            <!-- orders.post_parent, -->
-            format(round(sum(details.order_total + details.coupon_refund),0),0)
+            <!-- orders.order_no,
+            orders.post_parent, -->
+            format(round(sum(item_meta.total) - sum(item_meta.cost), 0), 0) 
         from
             ((select
                     id as order_no,
@@ -278,23 +278,32 @@
                 ) ) as orders
         inner join
             (select
-                a.order_no,
-                group_concat(a.order_total) as order_total,
-                if(group_concat(a.refund_cost) = '', 0,
-                    ifnull(group_concat(a.refund_cost), 0) ) as coupon_refund
-            from	
+                order_item_id,
+                order_id as order_no
+            from
+                wphpm_woocommerce_order_items
+            where
+                order_item_type = 'line_item') as items
+        on
+            orders.order_no = items.order_no
+        inner join
+            (select
+                a.order_item_id,
+                group_concat(a.cost) as cost,
+                group_concat(a.total) as total
+            from
                 (select
-                    post_id as order_no,
-                    case when meta_key = '_order_total' then meta_value end as order_total,
-                    case when meta_key = '_refund_cost' then meta_value end as refund_cost
-                from
-                    wphpm_postmeta
+                    order_item_id,
+                    case when meta_key = '_wc_cog_item_total_cost' then meta_value end as cost,
+                    case when meta_key = '_line_total' then meta_value end as total
+                from	
+                    wphpm_woocommerce_order_itemmeta
                 where
-                    meta_key in ('_order_total', '_refund_cost')) as a
+                    meta_key in ('_wc_cog_item_total_cost', '_line_total') ) as a
             group by
-                a.order_no) as details
+                a.order_item_id) as item_meta
         on	
-            orders.order_no = details.order_no;
+            items.order_item_id = item_meta.order_item_id;
 
     </select>
 </mapper>
