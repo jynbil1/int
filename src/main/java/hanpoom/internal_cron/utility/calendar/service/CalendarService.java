@@ -4,7 +4,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 
 import org.springframework.stereotype.Service;
 
@@ -57,7 +56,7 @@ public class CalendarService {
         String resultDatetime = null;
         try {
             LocalDate now = LocalDate.now();
-            LocalDate firstModayOfMonth = now.with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY));
+            LocalDate firstModayOfMonth = now.with(DayOfWeek.MONDAY);
 
             if (includeTime) {
                 resultDatetime = firstModayOfMonth.minusDays(7)
@@ -77,7 +76,7 @@ public class CalendarService {
         String resultDatetime = null;
         try {
             LocalDate now = LocalDate.now();
-            LocalDate firstModayOfMonth = now.with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY));
+            LocalDate firstModayOfMonth = now.with(DayOfWeek.MONDAY);
             if (includeTime) {
                 resultDatetime = firstModayOfMonth.minusDays(1)
                         .format(DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN + " 23:59:59"));
@@ -136,4 +135,10 @@ public class CalendarService {
         }
         return resultDatetime;
     }
+
+    // public static void main(String[] args) {
+    //     System.out.println(new CalendarService().getPreviousWeekMonday(true));
+    //     System.out.println(new CalendarService().getPreviousWeekSunday(true));
+        
+    // }
 }
