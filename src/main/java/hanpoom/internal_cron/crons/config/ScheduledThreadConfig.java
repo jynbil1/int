@@ -1,4 +1,4 @@
-package hanpoom.internal_cron.config;
+package hanpoom.internal_cron.crons.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;

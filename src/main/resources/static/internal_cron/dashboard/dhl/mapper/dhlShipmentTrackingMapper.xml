@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hanpoom.internal_cron.crons.dashboard.dhl.mapper.DHLMapper">
+
+    <select id="getTrackableOrders" parameterType="String.java.lang" resultType="hanpoom.internal_cron.utility.shipment.dhl.vo.DHLShipmentTrackingVO">
+        select
+
+        from
+            (select
+                id as order_no
+            from
+                wphpm_posts
+            where
+                post_type = 'shop_order' and 
+                post_status = 'wc-shipped' and 
+                post_date between #{start_dtime} and #{end_dtime}
+                ) as orders
+        inner join
+            (select
+                post_id as order_no,
+                meta_value as tracking_no
+            from
+                wphpm_postmeta
+            where 
+                meta_key = '_aftership_tracking_number'
+            group by 
+                post_id
+            having 
+                max(meta_id)) as details
+        on
+            orders.order_no = details.order_no
+        inner join
+            (select
+               order_no,
+               tracking_no,
+               date
+            from
+                kr_a_wh_out
+            where
+                status = 2
+                date between #{start_dtime} and #{end_dtime} ) as out_orders
+        on
+            orders.order_no = out_orders.order_no
+        left join
+            (select
+                order_no,
+                tracking_no
+            from
+                kr_a_wh_delivered
+            where
+                create_dtime between #{start_dtime} and #{end_dtime} ) as delivered_orders
+        on
+            out_orders.order_no = delivered_orders.order_no and
+            out_orders.tracking_no = delivered_orders.tracking_no
+        left join
+            (select
+                order_no,
+                tracking_no
+            from
+                kr_a_wh_shipment_error
+            where
+                create_dtime between #{start_dtime} and #{end_dtime}) as issue_orders
+        on
+            out_orders.order_no = issue_orders.order_no and
+            out_orders.tracking_no = issue_orders.tracking_no;
+
+    </select>
+
+    <insert id="insertDeliveredShipment" parameterType="java.lang.String">
+        insert into kr_a_wh_delivered 
+            (order_no, tracking_no, event, event_code, ship_dtime, delivered_dtime)
+        values
+            #{param};
+</insert>
+    <insert id="insertErrorShipment">
+    insert into kr_a_wh_shipment_error 
+        (order_no, tracking_no, event, event_code, occurred_dtime)
+    values
+        #{param};
+</insert>
+</mapper>

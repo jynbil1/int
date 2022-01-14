@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 **/application.properties
 **/application-local.properties
+**/application-prod.properties
 
 ### Files ###
 *.jar
