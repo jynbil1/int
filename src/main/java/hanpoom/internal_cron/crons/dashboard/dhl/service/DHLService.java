@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.crons.dashboard.dhl.mapper.DHLMapper;
-import hanpoom.internal_cron.utility.shipment.dhl.vo.DHLShipmentTrackingVO;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.DHLTrackingVO;
 
 @Service
 public class DHLService {
@@ -21,7 +21,7 @@ public class DHLService {
     }
 
     // DB DATA Processing
-    public ArrayList<DHLShipmentTrackingVO> getTrackableOrders() {
+    public ArrayList<DHLTrackingVO> getTrackableOrders() {
         try {
             // 지금 현재부터 60일 전 까지의 데이터를 가져오기.
             String start_dtime = LocalDateTime.now().minusDays(60)
@@ -35,10 +35,10 @@ public class DHLService {
         return null;
     };
 
-    public Integer insertDeliveredShipment(ArrayList<DHLShipmentTrackingVO> deliveredShipments) {
+    public Integer insertDeliveredShipment(ArrayList<DHLTrackingVO> deliveredShipments) {
         String insertManyParams = "";
         try {
-            for (DHLShipmentTrackingVO shipment : deliveredShipments) {
+            for (DHLTrackingVO shipment : deliveredShipments) {
                 insertManyParams += String.format("(%s, '%s', '%s', '%s', '%s', '%s')\n", shipment.getOrder_no(),
                         shipment.getTracking_no(), shipment.getEvent(), shipment.getEvent_code(),
                         shipment.getShipped_dtime(), shipment.getEvent_dtime());
@@ -53,10 +53,10 @@ public class DHLService {
 
     }
 
-    public Integer insertErrorShipment(ArrayList<DHLShipmentTrackingVO> erraneousShipments) {
+    public Integer insertErrorShipment(ArrayList<DHLTrackingVO> erraneousShipments) {
         String insertManyParams = "";
         try {
-            for (DHLShipmentTrackingVO shipment : erraneousShipments) {
+            for (DHLTrackingVO shipment : erraneousShipments) {
                 insertManyParams += String.format("(%s, '%s', '%s', '%s', '%s')\n", shipment.getOrder_no(),
                         shipment.getTracking_no(), shipment.getEvent(), shipment.getEvent_code(),
                         shipment.getEvent_dtime());
@@ -70,7 +70,6 @@ public class DHLService {
         return 0;
     }
 
-
     // DHL DATA Processing
-    // public 
+    // public
 }

@@ -257,7 +257,6 @@
 			<version>1.20.0</version>
 		</dependency>
 
-
 	</dependencies>
 
 	<build>

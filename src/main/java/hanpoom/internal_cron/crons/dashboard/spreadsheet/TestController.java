@@ -40,7 +40,7 @@ public class TestController {
     @GetMapping("/test")
     public String testPage() {
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarService.DATE_TIME_FORMAT_PATTERN));
-        System.out.println(now + " 에 작업을 수행함");
+        System.out.println(now + " 에 작업을 수행함 -- /test 임");
 
         // 데이터를 가져온다.
         // 1. 매출

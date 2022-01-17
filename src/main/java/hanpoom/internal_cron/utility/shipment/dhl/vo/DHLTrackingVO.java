@@ -7,7 +7,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class DHLShipmentTrackingVO {
+public class DHLTrackingVO {
     private String order_no;
     private String tracking_no;
     private String event_code;
