@@ -4,10 +4,16 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class DHLTrackingResponseStorage {
 
-    List<DHLTrackingResponse> trackingResponse;
+    List<DHLTrackingResponse> responses;
+
+    public DHLTrackingResponseStorage(List<DHLTrackingResponse> responses) {
+        this.responses = responses;
+    }
 }

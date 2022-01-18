@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public interface DHLAPI {
-    // public JSONObject callAPI(String requestJson);
+    public JSONObject callAPI(String requestJson);
 
-    public JSONArray callAPI(String requestJson);
+    // public JSONArray callAPI(String requestJson);
 }

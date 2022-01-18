@@ -7,7 +7,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,6 +17,16 @@ import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.utility.shipment.dhl.config.MyDHLClient;
 import hanpoom.internal_cron.utility.shipment.dhl.field.DHLAPIType;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.request.DHLTrackingRequest;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.response.DHLTrackingResponse;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.response.DHLTrackingResponseStorage;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.Consignee;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.PieceDetail;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.ServiceArea;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.ShipmentDetail;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.ShipmentEvent;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.Shipper;
+import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.Status;
 
 @Service
 public class DHLShipmentTrackingService implements DHLAPI {
@@ -57,9 +69,149 @@ public class DHLShipmentTrackingService implements DHLAPI {
     // return null;
     // }
 
+    // Recommended No => 50
+    // Upto 70 has taken around 10 secs
+    public DHLTrackingResponse trackShipment(String trackingNo) {
+        DHLTrackingRequest request = new DHLTrackingRequest(trackingNo);
+        String requestJson = request.getValidatedJSONRequest().toString();
+        DHLTrackingResponse response = deserializeJsonToPojo(
+                callAPI(requestJson).getJSONObject("ArrayOfAWBInfoItem"));
+        return response;
+    }
+
+    public DHLTrackingResponseStorage trackShipments(List<String> trackingNos) {
+        DHLTrackingRequest request = new DHLTrackingRequest(trackingNos);
+        String requestJson = request.getValidatedJSONRequest().toString();
+        JSONArray responseJsonArray = callAPI(requestJson).getJSONArray("ArrayOfAWBInfoItem");
+
+        List<DHLTrackingResponse> responses = new ArrayList<>();
+
+        for (int index = 0; index < responseJsonArray.length(); ++index) {
+            responses.add(deserializeJsonToPojo(responseJsonArray.getJSONObject(index)));
+        }
+        return new DHLTrackingResponseStorage(responses);
+    }
+
+    private DHLTrackingResponse deserializeJsonToPojo(JSONObject jsonObject) {
+        // System.out.println(jsonObject.toString());
+        DHLTrackingResponse response = new DHLTrackingResponse();
+
+        Status status = new Status();
+        JSONObject responseStatus = jsonObject.getJSONObject("Status");
+        if (!responseStatus.optString("Condition").isBlank()) {
+            JSONObject responseCondition = responseStatus.getJSONObject("Condition")
+                    .optJSONObject("ArrayOfConditionItem");
+            status.setStatus(responseStatus.getString("ActionStatus"),
+                    String
+                            .valueOf(responseCondition.optString("ConditionCode")),
+                    String
+                            .valueOf(responseCondition.optString("ConditionData")));
+
+            if (status.getConditionCode().equals("101")) {
+                response.setStatus(status);
+                return response;
+            }
+        }
+        ;
+
+        // AWBNumber
+        response.setTrackingNo(String.valueOf(jsonObject.getInt("AWBNumber")));
+
+        Consignee consignee = new Consignee();
+        Shipper shipper = new Shipper();
+        PieceDetail pieceDetail = new PieceDetail();
+        ServiceArea serviceArea = new ServiceArea();
+        List<ShipmentEvent> shipmentEvents = new ArrayList<>();
+        ShipmentDetail shipmentDetail = new ShipmentDetail();
+
+        // Shipment Info -> Service Area
+        JSONObject shipmentInfo = jsonObject.getJSONObject("ShipmentInfo");
+        JSONObject origin = shipmentInfo.getJSONObject("OriginServiceArea");
+        serviceArea.setOriginArea(origin.getString("ServiceAreaCode"),
+                origin.getString("Description"),
+                origin.optString("FacilityCode"));
+
+        JSONObject destination = shipmentInfo.getJSONObject("DestinationServiceArea");
+        serviceArea.setDestinationArea(destination.getString("ServiceAreaCode"),
+                destination.getString("Description"),
+                destination.optString("FacilityCode"));
+
+        // Shipment Info -> Shipment Detail
+        shipmentDetail.setShipmentDetail(shipmentInfo.getInt("Pieces"),
+                shipmentInfo.optFloat("Weight"),
+                shipmentInfo.getString("WeightUnit"),
+                shipmentInfo.optString("ServiceType"),
+                shipmentInfo.optString("ShipmentDescription"),
+                shipmentInfo.optJSONObject("ShipperReference").optInt("ReferenceID"));
+
+        // Shipment Info -> Shipment Detail -> Shipper
+        JSONObject shipperObj = shipmentInfo.getJSONObject("Shipper");
+        shipper.setShipperDetail(shipmentInfo.getString("ShipperName"),
+                shipperObj.getString("City"), shipperObj.getString("Suburb"),
+                shipperObj.getString("StateOrProvinceCode"),
+                shipperObj.get("PostalCode").toString(), shipperObj.getString("CountryCode"));
+
+        // Shipment Info -> Shipment Detail -> Consignee
+        JSONObject consigneeObj = shipmentInfo.getJSONObject("Consignee");
+        consignee.setConsigneeDetail(shipmentInfo.getString("ConsigneeName"),
+                consigneeObj.getString("City"),
+                consigneeObj.optString("Suburb"),
+                consigneeObj.getString("StateOrProvinceCode"),
+                consigneeObj.get("PostalCode").toString(), consigneeObj.getString("CountryCode"));
+
+        // Shipment Info -> Shipment Events
+        JSONArray shipmentEventsObj = shipmentInfo.getJSONObject("ShipmentEvent")
+                .getJSONArray("ArrayOfShipmentEventItem");
+
+        ShipmentEvent shipmentEvent = new ShipmentEvent();
+        JSONObject indexedJson = new JSONObject();
+        for (int index = 0; index < shipmentEventsObj.length(); ++index) {
+            indexedJson = shipmentEventsObj.getJSONObject(index);
+            if (index == shipmentEventsObj.length() - 1) {
+                shipmentDetail.setSignatory(indexedJson.optString("Signatory"));
+            }
+            shipmentEvent.setShipmentEventDetail(
+                    indexedJson.getString("Date"), indexedJson.getString("Time"),
+                    indexedJson.getJSONObject("ServiceEvent").getString("EventCode"),
+                    indexedJson.getJSONObject("ServiceEvent").getString("Description"),
+                    indexedJson.getJSONObject("ServiceArea").getString("ServiceAreaCode"),
+                    indexedJson.getJSONObject("ServiceArea").getString("Description"));
+
+            shipmentEvents.add(shipmentEvent);
+        }
+
+        JSONObject pieceDetails = jsonObject.getJSONObject("Pieces").getJSONObject("PieceInfo")
+                .getJSONObject("ArrayOfPieceInfoItem").getJSONObject("PieceDetails");
+        // PieceDetails
+
+        pieceDetail.setPieceDetail(
+                pieceDetails.getString("LicensePlate"),
+                pieceDetails.getInt("PieceNumber"),
+
+                pieceDetails.getFloat("ActualDepth"),
+                pieceDetails.getFloat("ActualWidth"),
+                pieceDetails.getFloat("ActualHeight"),
+                pieceDetails.getFloat("ActualWeight"),
+
+                pieceDetails.optFloat("Depth"),
+                pieceDetails.optFloat("Width"),
+                pieceDetails.optFloat("Height"),
+                pieceDetails.optFloat("Weight"),
+
+                pieceDetails.getFloat("DimWeight"),
+                pieceDetails.getString("WeightUnit"));
+
+        response.setConsignee(consignee);
+        response.setShipper(shipper);
+        response.setPieceDetail(pieceDetail);
+        response.setServiceArea(serviceArea);
+        response.setShipmentDetail(shipmentDetail);
+        response.setShipmentEvents(shipmentEvents);
+        return response;
+    }
+
     @Override
-    public JSONArray callAPI(String requestJson) {
-        System.out.println(client.toString());
+    public JSONObject callAPI(String requestJson) {
         HttpURLConnection con = null;
         OutputStream os = null;
         InputStreamReader isr = null;
@@ -106,13 +258,10 @@ public class DHLShipmentTrackingService implements DHLAPI {
                             .getJSONObject("trackingResponse")
                             .getJSONObject("TrackingResponse")
                             .getJSONObject("AWBInfo");
-
-                    if (jsonObject.optJSONArray("ArrayOfAWBInfoItem") != null) {
-                        return jsonObject.getJSONArray("ArrayOfAWBInfoItem");
-                    } else {
-                        JSONArray jsonArray = new JSONArray();
-                        jsonArray.put(jsonObject.getJSONObject("ArrayOfAWBInfoItem"));
-                        return jsonArray;
+                    try {
+                        return jsonObject;
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
 
                 } else {
@@ -125,7 +274,9 @@ public class DHLShipmentTrackingService implements DHLAPI {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-        } catch (MalformedURLException muep) {
+        } catch (
+
+        MalformedURLException muep) {
             System.out.println("주소가 잘못되었거나, API 사용자 정보가 일치하지 않습니다.");
             muep.printStackTrace();
         } catch (IOException ioe) {
@@ -135,5 +286,5 @@ public class DHLShipmentTrackingService implements DHLAPI {
         }
         return null;
     }
-    // private DHLTrackingResponseVO refineShipmentResponse(){}
+
 }

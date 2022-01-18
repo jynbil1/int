@@ -1,8 +1,10 @@
-package hanpoom.internal_cron.utility.shipment.dhl.vo;
+package hanpoom.internal_cron.utility.shipment.dhl.vo.request;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import lombok.Setter;
@@ -13,11 +15,10 @@ public class DHLTrackingRequest {
     private static final String FULL_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private static final String DATETIME_FORMAT = "yyyy-MM-ddn HH:mm";
 
-
     private String messageTime;
     private final String messageReference = "2d7c271a93b346e1aaa7051c107738d0";
 
-    private String arrayOfAWBNumberItem;
+    private JSONArray arrayOfAWBNumberItem;
 
     @Setter
     private String levelOfDetails;
@@ -28,40 +29,82 @@ public class DHLTrackingRequest {
     private String languageScriptCode;
     private String languageCountryCode;
 
-    public DHLTrackingRequest(String trackingNos) {
+    public DHLTrackingRequest(String trackingNo) {
         LocalDateTime now = LocalDateTime.now();
         this.messageTime = now.format(DateTimeFormatter.ofPattern(FULL_DATETIME_FORMAT));
         this.levelOfDetails = "ALL_CHECKPOINTS";
         this.piecesEnabled = "B";
-        this.arrayOfAWBNumberItem = trackingNos;
+        this.arrayOfAWBNumberItem = new JSONArray().put(trackingNo);
         ;
     }
 
-    public DHLTrackingRequest(String trackingNos, String levelOfDetails) {
+    public DHLTrackingRequest(String trackingNo, String levelOfDetails) {
         LocalDateTime now = LocalDateTime.now();
         this.messageTime = now.format(DateTimeFormatter.ofPattern(FULL_DATETIME_FORMAT));
         this.levelOfDetails = levelOfDetails;
         this.piecesEnabled = "B";
-        this.arrayOfAWBNumberItem = trackingNos;
+        this.arrayOfAWBNumberItem = new JSONArray().put(trackingNo);
 
     }
 
-    public DHLTrackingRequest(String trackingNos, boolean isKorean) {
+    public DHLTrackingRequest(String trackingNo, boolean isKorean) {
         LocalDateTime now = LocalDateTime.now();
         this.messageTime = now.format(DateTimeFormatter.ofPattern(FULL_DATETIME_FORMAT));
         this.levelOfDetails = "ALL_CHECK_POINTS";
         this.piecesEnabled = "B";
-        this.arrayOfAWBNumberItem = trackingNos;
+        this.arrayOfAWBNumberItem = new JSONArray().put(trackingNo);
         ;
     }
 
-    public DHLTrackingRequest(String trackingNos, String levelOfDetails, boolean isKorean) {
+    public DHLTrackingRequest(String trackingNo, String levelOfDetails, boolean isKorean) {
         LocalDateTime now = LocalDateTime.now();
         this.messageTime = now.format(DateTimeFormatter.ofPattern(FULL_DATETIME_FORMAT));
         this.messageTime = levelOfDetails;
         this.levelOfDetails = "B";
 
-        this.arrayOfAWBNumberItem = trackingNos;
+        this.arrayOfAWBNumberItem = new JSONArray().put(trackingNo);
+
+        if (isKorean) {
+            this.languageCode = "kor";
+            this.languageScriptCode = "kore";
+            this.languageCountryCode = "kr";
+        }
+    }
+
+    public DHLTrackingRequest(List<String> trackingNos) {
+        LocalDateTime now = LocalDateTime.now();
+        this.messageTime = now.format(DateTimeFormatter.ofPattern(FULL_DATETIME_FORMAT));
+        this.levelOfDetails = "ALL_CHECKPOINTS";
+        this.piecesEnabled = "B";
+        this.arrayOfAWBNumberItem = new JSONArray(trackingNos);
+        ;
+    }
+
+    public DHLTrackingRequest(List<String> trackingNos, String levelOfDetails) {
+        LocalDateTime now = LocalDateTime.now();
+        this.messageTime = now.format(DateTimeFormatter.ofPattern(FULL_DATETIME_FORMAT));
+        this.levelOfDetails = levelOfDetails;
+        this.piecesEnabled = "B";
+        this.arrayOfAWBNumberItem = new JSONArray(trackingNos);
+
+    }
+
+    public DHLTrackingRequest(List<String> trackingNos, boolean isKorean) {
+        LocalDateTime now = LocalDateTime.now();
+        this.messageTime = now.format(DateTimeFormatter.ofPattern(FULL_DATETIME_FORMAT));
+        this.levelOfDetails = "ALL_CHECK_POINTS";
+        this.piecesEnabled = "B";
+        this.arrayOfAWBNumberItem = new JSONArray(trackingNos);
+        ;
+    }
+
+    public DHLTrackingRequest(List<String> trackingNos, String levelOfDetails, boolean isKorean) {
+        LocalDateTime now = LocalDateTime.now();
+        this.messageTime = now.format(DateTimeFormatter.ofPattern(FULL_DATETIME_FORMAT));
+        this.messageTime = levelOfDetails;
+        this.levelOfDetails = "B";
+
+        this.arrayOfAWBNumberItem = new JSONArray(trackingNos);
 
         if (isKorean) {
             this.languageCode = "kor";
@@ -71,7 +114,7 @@ public class DHLTrackingRequest {
     }
 
     public JSONObject getValidatedJSONRequest() {
-    
+
         JSONObject jsonObject = new JSONObject();
         JSONObject serviceHeader = new JSONObject();
         JSONObject request = new JSONObject();
