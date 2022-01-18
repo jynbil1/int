@@ -1,4 +1,4 @@
-package hanpoom.internal_cron.utility.shipment.dhl.vo;
+package hanpoom.internal_cron.crons.dashboard.dhl.vo;
 
 import lombok.Getter;
 import lombok.Setter;

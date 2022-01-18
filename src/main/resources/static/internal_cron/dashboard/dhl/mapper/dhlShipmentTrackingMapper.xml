@@ -2,9 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="hanpoom.internal_cron.crons.dashboard.dhl.mapper.DHLMapper">
 
-    <select id="getTrackableOrders" parameterType="java.lang.String" resultType="hanpoom.internal_cron.utility.shipment.dhl.vo.DHLTrackingVO">
+    <select id="getTrackableOrders" parameterType="java.util.Map" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
         select
-
+            orders.order_no,
+            details.tracking_no
         from
             (select
                 id as order_no
@@ -37,7 +38,7 @@
             from
                 kr_a_wh_out
             where
-                status = 2
+                status = 2 and
                 date between #{start_dtime} and #{end_dtime} ) as out_orders
         on
             orders.order_no = out_orders.order_no
@@ -62,7 +63,8 @@
                 create_dtime between #{start_dtime} and #{end_dtime}) as issue_orders
         on
             out_orders.order_no = issue_orders.order_no and
-            out_orders.tracking_no = issue_orders.tracking_no;
+            out_orders.tracking_no = issue_orders.tracking_no
+        limit 120;
 
     </select>
 

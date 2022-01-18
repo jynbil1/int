@@ -7,23 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import hanpoom.internal_cron.crons.dashboard.dhl.service.DHLService;
 import hanpoom.internal_cron.utility.shipment.dhl.service.DHLShipmentTrackingService;
-import hanpoom.internal_cron.utility.shipment.dhl.vo.response.DHLTrackingResponse;
-import hanpoom.internal_cron.utility.shipment.dhl.vo.response.DHLTrackingResponseStorage;
 
 @RestController
 public class DHLTestController {
 
     @Autowired
-    private DHLShipmentTrackingService trackingService;
+    private DHLService dHLService;
 
-    @GetMapping("/test-dhl")
-    public String testDHL() {
-        // DHLTrackingRequest()
-        // String trackingNo = "3440195883";
-        List<String> trackingNos = Arrays.asList("3440195883", "1231231231");
-        DHLTrackingResponseStorage storage = trackingService.trackShipments(trackingNos);
-        System.out.println(storage.toString());
-        return "test";
+    @GetMapping("/investigate-shipped-orders")
+    public String investigateShippedOrders() {
+        dHLService.investigateNProcessShippedOrders();
+        return null;
     }
+
+    @GetMapping("/investigate-issue-occurred-orders")
+    public String investigateIssueOccurredOrders() {
+        return null;
+    }
+
 }

@@ -30,7 +30,7 @@ import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.Status;
 
 @Service
 public class DHLShipmentTrackingService implements DHLAPI {
-    // private static final String
+    
     // • ALL_CHECKPOINTS, populates all the customer visible checkpoints available
     // in the response
     // message.
@@ -60,14 +60,6 @@ public class DHLShipmentTrackingService implements DHLAPI {
     public DHLShipmentTrackingService(MyDHLClient client) {
         this.client = client;
     }
-
-    // public DHLTrackingResponseStorage trackShipment(String trackingNo) {
-    // return null;
-    // }
-
-    // public DHLTrackingResponseStorage trackShipments(String[] trackingNos) {
-    // return null;
-    // }
 
     // Recommended No => 50
     // Upto 70 has taken around 10 secs
