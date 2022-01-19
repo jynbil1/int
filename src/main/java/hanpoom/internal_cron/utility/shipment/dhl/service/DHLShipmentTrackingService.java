@@ -30,7 +30,7 @@ import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.Status;
 
 @Service
 public class DHLShipmentTrackingService implements DHLAPI {
-    
+
     // • ALL_CHECKPOINTS, populates all the customer visible checkpoints available
     // in the response
     // message.
@@ -157,17 +157,24 @@ public class DHLShipmentTrackingService implements DHLAPI {
 
         ShipmentEvent shipmentEvent = new ShipmentEvent();
         JSONObject indexedJson = new JSONObject();
+        boolean isSignatoryAdded = false;
         for (int index = 0; index < shipmentEventsObj.length(); ++index) {
             indexedJson = shipmentEventsObj.getJSONObject(index);
-            if (index == shipmentEventsObj.length() - 1) {
+            if (!isSignatoryAdded && indexedJson.optString("Signatory").strip().length() > 2) {
                 shipmentDetail.setSignatory(indexedJson.optString("Signatory"));
+                isSignatoryAdded = true;
             }
+            JSONObject eventRemarks = indexedJson.optJSONObject("EventRemarks");
+
             shipmentEvent.setShipmentEventDetail(
                     indexedJson.getString("Date"), indexedJson.getString("Time"),
                     indexedJson.getJSONObject("ServiceEvent").getString("EventCode"),
                     indexedJson.getJSONObject("ServiceEvent").getString("Description"),
                     indexedJson.getJSONObject("ServiceArea").getString("ServiceAreaCode"),
-                    indexedJson.getJSONObject("ServiceArea").getString("Description"));
+                    indexedJson.getJSONObject("ServiceArea").getString("Description"),
+                    eventRemarks !=null ? eventRemarks.optString("FurtherDetails") : "",
+                    eventRemarks !=null ? eventRemarks.optString("NextSteps") : "");
+
 
             shipmentEvents.add(shipmentEvent);
         }

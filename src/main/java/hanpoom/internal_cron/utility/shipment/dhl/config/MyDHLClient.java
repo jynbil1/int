@@ -13,7 +13,7 @@ import lombok.ToString;
 @Configuration
 // @EnableConfigurationProperties
 // @PropertySource("classpath:api/dhl-keys.properties")
-@PropertySource("classpath:api/dhl-keys.properties")
+@PropertySource("classpath:properties/dhl/api/keys.properties")
 
 @ConfigurationProperties(prefix = "mydhl")
 // @ConstructorBinding
