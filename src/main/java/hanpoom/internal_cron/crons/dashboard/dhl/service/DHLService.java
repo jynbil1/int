@@ -99,7 +99,7 @@ public class DHLService {
                 // 데이터 중에서 배송 완료가 된 이벤트 코드가 있는지 확인이 필요.
                 // DHL 전산의 이유로 인해 이상한 데이터 처리(순서가 이상함 등 )가 있을 수 있음.
 
-                JSONObject priortyLevel = shipmentCode.getJSONObject("priortyLevel");
+                JSONObject priortyLevel = shipmentCode.getJSONObject("priorityLevel");
                 JSONObject shipmentEventCode = shipmentCode.getJSONObject("status");
 
                 int currentPriorityNo = 99;
@@ -113,9 +113,6 @@ public class DHLService {
                         currentPriorityNo = priortyLevel.getInt(currentEventCode);
                     }
                 }
-
-                //
-
                 // Highest Priority Processable Data
                 // prioritizedEvent
 
@@ -284,10 +281,6 @@ public class DHLService {
     }
 
     // DHL DATA Processing
-
-    // Filter the only deliverd Orders
-    public void getDeliveredOrders() {
-    }
 
     // Filter the delayed days for the undelivered orders
     // 10 days of working days (2 weeks)

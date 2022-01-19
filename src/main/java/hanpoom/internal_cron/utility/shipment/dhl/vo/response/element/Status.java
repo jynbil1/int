@@ -10,6 +10,10 @@ public class Status {
     private String conditionCode;
     private String conditionData;
 
+    public void setStatus(String actionStatus) {
+        this.actionStatus = actionStatus;
+    }
+
     public void setStatus(String actionStatus,
             String conditionCode, String conditionData) {
         this.actionStatus = actionStatus;

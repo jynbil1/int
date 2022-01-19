@@ -64,7 +64,7 @@
         on
             out_orders.order_no = issue_orders.order_no and
             out_orders.tracking_no = issue_orders.tracking_no
-        limit 120;
+        limit 10;
 
     </select>
 

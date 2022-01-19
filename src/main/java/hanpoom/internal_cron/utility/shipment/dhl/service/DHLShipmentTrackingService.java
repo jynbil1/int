@@ -12,6 +12,7 @@ import java.util.Base64;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -76,11 +77,20 @@ public class DHLShipmentTrackingService implements DHLAPI {
         String requestJson = request.getValidatedJSONRequest().toString();
         JSONArray responseJsonArray = callAPI(requestJson).getJSONArray("ArrayOfAWBInfoItem");
 
+        System.out.println("데이터를 불러왔습니다.");
         List<DHLTrackingResponse> responses = new ArrayList<>();
 
         for (int index = 0; index < responseJsonArray.length(); ++index) {
-            responses.add(deserializeJsonToPojo(responseJsonArray.getJSONObject(index)));
+            try {
+                responses.add(deserializeJsonToPojo(responseJsonArray.getJSONObject(index)));
+            } catch (JSONException jsone) {
+                System.out.println("-------------------------");
+                System.out.println(responseJsonArray.getJSONObject(index).toString());
+                jsone.printStackTrace();
+
+            }
         }
+        System.out.println("데이터 1차 가공을 완료했습니다.");
         return new DHLTrackingResponseStorage(responses);
     }
 
@@ -90,12 +100,14 @@ public class DHLShipmentTrackingService implements DHLAPI {
 
         Status status = new Status();
         JSONObject responseStatus = jsonObject.getJSONObject("Status");
+
         if (!responseStatus.optString("Condition").isBlank()) {
             JSONObject responseCondition = responseStatus.getJSONObject("Condition")
                     .optJSONObject("ArrayOfConditionItem");
+
             status.setStatus(responseStatus.getString("ActionStatus"),
                     String
-                            .valueOf(responseCondition.optString("ConditionCode")),
+                            .valueOf(responseCondition.optInt("ConditionCode")),
                     String
                             .valueOf(responseCondition.optString("ConditionData")));
 
@@ -103,11 +115,13 @@ public class DHLShipmentTrackingService implements DHLAPI {
                 response.setStatus(status);
                 return response;
             }
+        } else {
+            status.setStatus(responseStatus.getString("ActionStatus"));
         }
         ;
 
         // AWBNumber
-        response.setTrackingNo(String.valueOf(jsonObject.getInt("AWBNumber")));
+        response.setTrackingNo(String.valueOf(jsonObject.getLong("AWBNumber")));
 
         Consignee consignee = new Consignee();
         Shipper shipper = new Shipper();
@@ -139,17 +153,17 @@ public class DHLShipmentTrackingService implements DHLAPI {
         // Shipment Info -> Shipment Detail -> Shipper
         JSONObject shipperObj = shipmentInfo.getJSONObject("Shipper");
         shipper.setShipperDetail(shipmentInfo.getString("ShipperName"),
-                shipperObj.getString("City"), shipperObj.getString("Suburb"),
-                shipperObj.getString("StateOrProvinceCode"),
-                shipperObj.get("PostalCode").toString(), shipperObj.getString("CountryCode"));
+                shipperObj.optString("City"), shipperObj.optString("Suburb"),
+                shipperObj.optString("StateOrProvinceCode"),
+                shipperObj.get("PostalCode").toString(), shipperObj.optString("CountryCode"));
 
         // Shipment Info -> Shipment Detail -> Consignee
         JSONObject consigneeObj = shipmentInfo.getJSONObject("Consignee");
-        consignee.setConsigneeDetail(shipmentInfo.getString("ConsigneeName"),
-                consigneeObj.getString("City"),
+        consignee.setConsigneeDetail(shipmentInfo.optString("ConsigneeName"),
+                consigneeObj.optString("City"),
                 consigneeObj.optString("Suburb"),
-                consigneeObj.getString("StateOrProvinceCode"),
-                consigneeObj.get("PostalCode").toString(), consigneeObj.getString("CountryCode"));
+                consigneeObj.optString("StateOrProvinceCode"),
+                consigneeObj.get("PostalCode").toString(), consigneeObj.optString("CountryCode"));
 
         // Shipment Info -> Shipment Events
         JSONArray shipmentEventsObj = shipmentInfo.getJSONObject("ShipmentEvent")
@@ -172,9 +186,8 @@ public class DHLShipmentTrackingService implements DHLAPI {
                     indexedJson.getJSONObject("ServiceEvent").getString("Description"),
                     indexedJson.getJSONObject("ServiceArea").getString("ServiceAreaCode"),
                     indexedJson.getJSONObject("ServiceArea").getString("Description"),
-                    eventRemarks !=null ? eventRemarks.optString("FurtherDetails") : "",
-                    eventRemarks !=null ? eventRemarks.optString("NextSteps") : "");
-
+                    eventRemarks != null ? eventRemarks.optString("FurtherDetails") : "",
+                    eventRemarks != null ? eventRemarks.optString("NextSteps") : "");
 
             shipmentEvents.add(shipmentEvent);
         }
@@ -206,6 +219,8 @@ public class DHLShipmentTrackingService implements DHLAPI {
         response.setServiceArea(serviceArea);
         response.setShipmentDetail(shipmentDetail);
         response.setShipmentEvents(shipmentEvents);
+        response.setStatus(status);
+
         return response;
     }
 

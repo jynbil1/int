@@ -4,327 +4,208 @@
     },
     "ShipmentInfo": {
         "OriginServiceArea": {
-            "Description": "Incheon Outskirt Of Seoul-KR",
-            "ServiceAreaCode": "ICN"
+            "Description": "Lisbon-PT",
+            "ServiceAreaCode": "LIS"
         },
         "DestinationServiceArea": {
-            "Description": "Birmingham-United States Of America",
-            "ServiceAreaCode": "BHM",
-            "FacilityCode": "MGM"
+            "Description": "San Antonio-United States Of America",
+            "ServiceAreaCode": "SAT",
+            "FacilityCode": "SAT"
         },
-        "ShipperName": "HANPOOM (KRACCESS INC.)",
+        "ShipperName": "FRTS & VGTBLS KENCKO EUROPE, UNIPESSOAL, LDA",
         "ShipperReference": {
-            "ReferenceID": 600062
+            "ReferenceID": "Order #453189-A"
         },
         "WeightUnit": "K",
-        "Weight": 6.4,
+        "Weight": 1.75,
         "Consignee": {
-            "PostalCode": "36064-2479",
-            "City": "PIKE ROAD",
+            "PostalCode": 78252,
+            "City": "SAN ANTONIO",
             "CountryCode": "US",
-            "StateOrProvinceCode": "AL"
+            "StateOrProvinceCode": "TX"
         },
-        "ShipmentEvent": {
-            "ArrayOfShipmentEventItem": [{
-                    "ServiceArea": {
-                        "Description": "Incheon Outskirt Of Seoul-KR",
-                        "ServiceAreaCode": "ICN"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Shipment picked up",
-                        "EventCode": "PU"
-                    },
-                    "Time": "16:58:00",
-                    "Date": "2021-12-16"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Incheon Outskirt Of Seoul-KR",
-                        "ServiceAreaCode": "ICN"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Customs status updated",
-                        "EventCode": "RR"
-                    },
-                    "Time": "19:00:49",
-                    "Date": "2021-12-16"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Incheon Outskirt Of Seoul-KR",
-                        "ServiceAreaCode": "ICN"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Arrived at Sort Facility  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)",
-                        "EventCode": "AF"
-                    },
-                    "Time": "19:08:00",
-                    "Date": "2021-12-16"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Incheon Outskirt Of Seoul-KR",
-                        "ServiceAreaCode": "ICN"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Processed at  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)",
-                        "EventCode": "PL"
-                    },
-                    "Time": "19:23:00",
-                    "Date": "2021-12-16"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Incheon Outskirt Of Seoul-KR",
-                        "ServiceAreaCode": "ICN"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Departed Facility in  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)",
-                        "EventCode": "DF"
-                    },
-                    "Time": "22:33:00",
-                    "Date": "2021-12-16"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Cincinnati Hub-United States Of America",
-                        "ServiceAreaCode": "CVG"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Customs status updated",
-                        "EventCode": "RR"
-                    },
-                    "Time": "15:16:20",
-                    "Date": "2021-12-16"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Cincinnati Hub-United States Of America",
-                        "ServiceAreaCode": "CVG"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Arrived at Sort Facility  CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                        "EventCode": "AF"
-                    },
-                    "Time": "03:55:00",
-                    "Date": "2021-12-17"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Cincinnati Hub-United States Of America",
-                        "ServiceAreaCode": "CVG"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Shipment on hold",
-                        "EventCode": "OH"
-                    },
-                    "Time": "04:37:00",
-                    "Date": "2021-12-17"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Cincinnati Hub-United States Of America",
-                        "ServiceAreaCode": "CVG"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Processed at  CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                        "EventCode": "PL"
-                    },
-                    "Time": "05:51:00",
-                    "Date": "2021-12-17"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Cincinnati Hub-United States Of America",
-                        "ServiceAreaCode": "CVG"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Clearance processing complete at CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                        "EventCode": "CR"
-                    },
-                    "Time": "05:51:00",
-                    "Date": "2021-12-17"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Cincinnati Hub-United States Of America",
-                        "ServiceAreaCode": "CVG"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Processed at  CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                        "EventCode": "PL"
-                    },
-                    "Time": "17:50:00",
-                    "Date": "2021-12-18"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Cincinnati Hub-United States Of America",
-                        "ServiceAreaCode": "CVG"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Departed Facility in  CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                        "EventCode": "DF"
-                    },
-                    "Time": "19:30:00",
-                    "Date": "2021-12-18"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Atlanta-United States Of America",
-                        "ServiceAreaCode": "ATL"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Departed Facility in  ATLANTA,GA-UNITED STATES OF AMERICA",
-                        "EventCode": "DF"
-                    },
-                    "Time": "04:15:00",
-                    "Date": "2021-12-19"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Atlanta-United States Of America",
-                        "ServiceAreaCode": "ATL"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Processed at  ATLANTA,GA-UNITED STATES OF AMERICA",
-                        "EventCode": "PL"
-                    },
-                    "Time": "04:15:00",
-                    "Date": "2021-12-19"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Birmingham-United States Of America",
-                        "ServiceAreaCode": "BHM"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Arrived at Delivery Facility in  BIRMINGHAM,AL-UNITED STATES OF AMERICA",
-                        "EventCode": "AR"
-                    },
-                    "Time": "08:46:00",
-                    "Date": "2021-12-19"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Birmingham-United States Of America",
-                        "ServiceAreaCode": "BHM"
-                    },
-                    "ServiceEvent": {
-                        "Description": "With delivery courier",
-                        "EventCode": "WC"
-                    },
-                    "Time": "08:26:00",
-                    "Date": "2021-12-20"
-                },
-                {
-                    "ServiceArea": {
-                        "Description": "Birmingham-United States Of America",
-                        "ServiceAreaCode": "BHM"
-                    },
-                    "ServiceEvent": {
-                        "Description": "Delivered - Signed for by ",
-                        "EventCode": "OK"
-                    },
-                    "Signatory": "FRONT DOOR",
-                    "Time": "16:20:00",
-                    "Date": "2021-12-20"
-                }
-            ]
-        },
-        "ConsigneeName": "SOPHIA HWANG",
-        "ShipmentDescription": "Groceries",
-        "ShipmentDate": "2021-12-17T19:01:37",
+        "ConsigneeName": "PRISCILLA VILLANUEVA",
+        "ShipmentDescription": "organic fruits & vegetables instant drinks",
+        "ShipmentDate": "2021-11-24T08:29:27",
         "ServiceType": "P",
         "Shipper": {
-            "Suburb": "1150-1 Gwan-ri",
-            "PostalCode": 17382,
-            "City": "ICHEON-SI",
-            "CountryCode": "KR",
-            "StateOrProvinceCode": "Gyeonggi-do"
+            "Suburb": "Armazem 5",
+            "PostalCode": "1950-161",
+            "City": "Lisboa",
+            "CountryCode": "PT"
         },
         "Pieces": 1
     },
-    "AWBNumber": 3440195883,
+    "AWBNumber": 1298643010,
     "Pieces": {
         "PieceInfo": {
             "ArrayOfPieceInfoItem": {
                 "PieceDetails": {
-                    "ActualWeight": 6.4,
-                    "DimWeight": 5.481,
-                    "LicensePlate": "JD014600009358714836",
+                    "ActualWeight": 1.75,
+                    "DimWeight": 1.806,
+                    "LicensePlate": "JD014600009290622741",
                     "PieceNumber": 1,
                     "WeightUnit": "K",
-                    "AWBNumber": 3440195883,
-                    "ActualDepth": 43.5,
-                    "Depth": 10,
-                    "Weight": 2,
+                    "AWBNumber": 1298643010,
+                    "ActualDepth": 36,
+                    "Depth": 36,
+                    "Weight": 1.8,
                     "PackageType": null,
-                    "Height": 10,
-                    "Width": 10,
-                    "ActualWidth": 35,
-                    "ActualHeight": 18
+                    "Height": 12.5,
+                    "Width": 18.5,
+                    "ActualWidth": 19,
+                    "ActualHeight": 13.2
                 },
                 "PieceEvent": {
                     "ArrayOfPieceEventItem": [{
                             "ServiceArea": {
-                                "Description": "Incheon Outskirt Of Seoul-KR",
-                                "ServiceAreaCode": "ICN"
+                                "Description": "Lisbon-PT",
+                                "ServiceAreaCode": "LIS"
                             },
                             "ServiceEvent": {
-                                "Description": "Shipment picked up",
-                                "EventCode": "PU"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": 600062
-                            },
-                            "Time": "16:58:08",
-                            "Date": "2021-12-16"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Incheon Outskirt Of Seoul-KR",
-                                "ServiceAreaCode": "ICN"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Arrived at Sort Facility  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)",
+                                "Description": "Arrived at Sort Facility  LISBON-PORTUGAL",
                                 "EventCode": "AF"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Time": "19:08:55",
-                            "Date": "2021-12-16"
+                            "Time": "15:58:33",
+                            "Date": "2021-11-24"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Incheon Outskirt Of Seoul-KR",
-                                "ServiceAreaCode": "ICN"
+                                "Description": "Lisbon-PT",
+                                "ServiceAreaCode": "LIS"
                             },
                             "ServiceEvent": {
-                                "Description": "Processed at  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)",
+                                "Description": "Processed at  LISBON-PORTUGAL",
                                 "EventCode": "PL"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Time": "19:23:40",
-                            "Date": "2021-12-16"
+                            "Time": "16:52:41",
+                            "Date": "2021-11-24"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Incheon Outskirt Of Seoul-KR",
-                                "ServiceAreaCode": "ICN"
+                                "Description": "Lisbon-PT",
+                                "ServiceAreaCode": "LIS"
                             },
                             "ServiceEvent": {
-                                "Description": "Departed Facility in  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)",
+                                "Description": "Departed Facility in  LISBON-PORTUGAL",
                                 "EventCode": "DF"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Time": "22:33:58",
-                            "Date": "2021-12-16"
+                            "Time": "19:51:55",
+                            "Date": "2021-11-24"
+                        },
+                        {
+                            "ServiceArea": {
+                                "Description": "Vitoria-ES",
+                                "ServiceAreaCode": "VIT"
+                            },
+                            "ServiceEvent": {
+                                "Description": "Arrived at Sort Facility  VITORIA-SPAIN",
+                                "EventCode": "AF"
+                            },
+                            "ShipperReference": {
+                                "ReferenceID": "Order #453189-A"
+                            },
+                            "Time": "22:17:15",
+                            "Date": "2021-11-24"
+                        },
+                        {
+                            "ServiceArea": {
+                                "Description": "Vitoria-ES",
+                                "ServiceAreaCode": "VIT"
+                            },
+                            "ServiceEvent": {
+                                "Description": "Processed at  VITORIA-SPAIN",
+                                "EventCode": "PL"
+                            },
+                            "ShipperReference": {
+                                "ReferenceID": "Order #453189-A"
+                            },
+                            "Time": "22:42:43",
+                            "Date": "2021-11-24"
+                        },
+                        {
+                            "ServiceArea": {
+                                "Description": "Vitoria-ES",
+                                "ServiceAreaCode": "VIT"
+                            },
+                            "ServiceEvent": {
+                                "Description": "Departed Facility in  VITORIA-SPAIN",
+                                "EventCode": "DF"
+                            },
+                            "ShipperReference": {
+                                "ReferenceID": "Order #453189-A"
+                            },
+                            "Time": "23:45:41",
+                            "Date": "2021-11-24"
+                        },
+                        {
+                            "ServiceArea": {
+                                "Description": "Madrid-ES",
+                                "ServiceAreaCode": "MAD"
+                            },
+                            "ServiceEvent": {
+                                "Description": "Transferred through MADRID-SPAIN",
+                                "EventCode": "TR"
+                            },
+                            "ShipperReference": {
+                                "ReferenceID": "Order #453189-A"
+                            },
+                            "Time": "07:51:20",
+                            "Date": "2021-11-25"
+                        },
+                        {
+                            "ServiceArea": {
+                                "Description": "Madrid-ES",
+                                "ServiceAreaCode": "MAD"
+                            },
+                            "ServiceEvent": {
+                                "Description": "Departed Facility in  MADRID-SPAIN",
+                                "EventCode": "DF"
+                            },
+                            "ShipperReference": {
+                                "ReferenceID": "Order #453189-A"
+                            },
+                            "Time": "07:51:27",
+                            "Date": "2021-11-25"
+                        },
+                        {
+                            "ServiceArea": {
+                                "Description": "Milan - Malpensa-IT",
+                                "ServiceAreaCode": "MXP"
+                            },
+                            "ServiceEvent": {
+                                "Description": "Transferred through MILAN - MALPENSA-ITALY",
+                                "EventCode": "TR"
+                            },
+                            "ShipperReference": {
+                                "ReferenceID": "Order #453189-A"
+                            },
+                            "Time": "11:48:14",
+                            "Date": "2021-11-25"
+                        },
+                        {
+                            "ServiceArea": {
+                                "Description": "Milan - Malpensa-IT",
+                                "ServiceAreaCode": "MXP"
+                            },
+                            "ServiceEvent": {
+                                "Description": "Departed Facility in  MILAN - MALPENSA-ITALY",
+                                "EventCode": "DF"
+                            },
+                            "ShipperReference": {
+                                "ReferenceID": "Order #453189-A"
+                            },
+                            "Time": "11:48:51",
+                            "Date": "2021-11-25"
                         },
                         {
                             "ServiceArea": {
@@ -336,25 +217,10 @@
                                 "EventCode": "AF"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Time": "03:55:24",
-                            "Date": "2021-12-17"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Cincinnati Hub-United States Of America",
-                                "ServiceAreaCode": "CVG"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Shipment on hold",
-                                "EventCode": "OH"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": 600062
-                            },
-                            "Time": "04:37:00",
-                            "Date": "2021-12-17"
+                            "Time": "22:46:59",
+                            "Date": "2021-11-25"
                         },
                         {
                             "ServiceArea": {
@@ -366,10 +232,10 @@
                                 "EventCode": "CR"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Time": "05:51:59",
-                            "Date": "2021-12-17"
+                            "Time": "05:24:13",
+                            "Date": "2021-11-26"
                         },
                         {
                             "ServiceArea": {
@@ -381,25 +247,10 @@
                                 "EventCode": "PL"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Time": "05:51:59",
-                            "Date": "2021-12-17"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Cincinnati Hub-United States Of America",
-                                "ServiceAreaCode": "CVG"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Processed at  CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                                "EventCode": "PL"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": 600062
-                            },
-                            "Time": "17:50:01",
-                            "Date": "2021-12-18"
+                            "Time": "05:57:49",
+                            "Date": "2021-11-26"
                         },
                         {
                             "ServiceArea": {
@@ -411,86 +262,70 @@
                                 "EventCode": "DF"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Time": "19:30:58",
-                            "Date": "2021-12-18"
+                            "Time": "06:13:58",
+                            "Date": "2021-11-26"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Atlanta-United States Of America",
-                                "ServiceAreaCode": "ATL"
+                                "Description": "San Antonio-United States Of America",
+                                "ServiceAreaCode": "SAT"
                             },
                             "ServiceEvent": {
-                                "Description": "Processed at  ATLANTA,GA-UNITED STATES OF AMERICA",
-                                "EventCode": "PL"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": 600062
-                            },
-                            "Time": "04:15:30",
-                            "Date": "2021-12-19"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Atlanta-United States Of America",
-                                "ServiceAreaCode": "ATL"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Departed Facility in  ATLANTA,GA-UNITED STATES OF AMERICA",
-                                "EventCode": "DF"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": 600062
-                            },
-                            "Time": "04:15:58",
-                            "Date": "2021-12-19"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Birmingham-United States Of America",
-                                "ServiceAreaCode": "BHM"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Arrived at Delivery Facility in  BIRMINGHAM,AL-UNITED STATES OF AMERICA",
+                                "Description": "Arrived at Delivery Facility in  SAN ANTONIO,TX-UNITED STATES OF AMERICA",
                                 "EventCode": "AR"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Time": "08:46:00",
-                            "Date": "2021-12-19"
+                            "Time": "10:33:04",
+                            "Date": "2021-11-26"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Birmingham-United States Of America",
-                                "ServiceAreaCode": "BHM"
+                                "Description": "San Antonio-United States Of America",
+                                "ServiceAreaCode": "SAT"
+                            },
+                            "ServiceEvent": {
+                                "Description": "Shipment on hold",
+                                "EventCode": "OH"
+                            },
+                            "ShipperReference": {
+                                "ReferenceID": "Order #453189-A"
+                            },
+                            "Time": "21:20:11",
+                            "Date": "2021-11-26"
+                        },
+                        {
+                            "ServiceArea": {
+                                "Description": "San Antonio-United States Of America",
+                                "ServiceAreaCode": "SAT"
                             },
                             "ServiceEvent": {
                                 "Description": "With delivery courier",
                                 "EventCode": "WC"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Time": "08:26:33",
-                            "Date": "2021-12-20"
+                            "Time": "07:34:01",
+                            "Date": "2021-11-27"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Birmingham-United States Of America",
-                                "ServiceAreaCode": "BHM"
+                                "Description": "San Antonio-United States Of America",
+                                "ServiceAreaCode": "SAT"
                             },
                             "ServiceEvent": {
-                                "Description": "Delivered - Signed for by ",
+                                "Description": "Delivered",
                                 "EventCode": "OK"
                             },
                             "ShipperReference": {
-                                "ReferenceID": 600062
+                                "ReferenceID": "Order #453189-A"
                             },
-                            "Signatory": "FRONT DOOR",
-                            "Time": "16:20:41",
-                            "Date": "2021-12-20"
+                            "Time": "10:05:23",
+                            "Date": "2021-11-27"
                         }
                     ]
                 }
