@@ -5,10 +5,14 @@
     <select id="getTrackableOrders" parameterType="java.util.Map" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
         select
             orders.order_no,
-            details.tracking_no
+            orders.order_date,
+            shipment.shipment_class,
+            details.tracking_no,
+            out_orders.out_dtime
         from
             (select
-                id as order_no
+                id as order_no,
+                post_date as order_date
             from
                 wphpm_posts
             where
@@ -16,6 +20,16 @@
                 post_status = 'wc-shipped' and 
                 post_date between #{start_dtime} and #{end_dtime}
                 ) as orders
+        inner join
+            (select 
+                post_id as order_no,
+                meta_value as class
+            from
+                wphpm_postmeta
+            where
+                meta_key = '_shipment_class') as shipment
+        on
+            orders.order_no = shipment_class = order_no
         inner join
             (select
                 post_id as order_no,
@@ -34,7 +48,7 @@
             (select
                order_no,
                tracking_no,
-               date
+               update_dtime as out_dtime
             from
                 kr_a_wh_out
             where
@@ -64,20 +78,34 @@
         on
             out_orders.order_no = issue_orders.order_no and
             out_orders.tracking_no = issue_orders.tracking_no
-        limit 10;
+        limit 120;
 
     </select>
 
-    <insert id="insertDeliveredShipment" parameterType="java.lang.String">
+    <insert id="insertDeliveredShipments" parameterType="java.lang.String">
         insert into kr_a_wh_delivered 
             (order_no, tracking_no, event, event_code, ship_dtime, delivered_dtime)
         values
             #{param};
 </insert>
-    <insert id="insertErrorShipment">
+
+    <insert id="insertErrorShipments">
     insert into kr_a_wh_shipment_error 
         (order_no, tracking_no, event, event_code, occurred_dtime)
     values
         #{param};
 </insert>
+
+    <select id="getTrackingNos" parameterType="java.lang.String" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
+        select 
+            post_id as order_no,
+            meta_value as tracking_no
+        from
+            wphpm_postmeta
+        where
+            meta_key = '_aftership_tracking_number' and
+            post_id in #{param};
+        group by
+            order_no
+    </select>
 </mapper>

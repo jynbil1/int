@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -142,13 +143,36 @@ public class DHLShipmentTrackingService implements DHLAPI {
                 destination.getString("Description"),
                 destination.optString("FacilityCode"));
 
+        // Get Shipped Date...
+        // Shipment Info -> Shipment Events 
+        // Will be resused for shipment Events below
+        JSONArray shipmentEventsObj = shipmentInfo.getJSONObject("ShipmentEvent")
+                .getJSONArray("ArrayOfShipmentEventItem");
+
+        // Find the first event of the shipment except...
+        // the event code that indicates the preparation of the shipment which hasn't endorsed to DHL.
+        String shippedDate = "";
+        List<String> nonProcessables = Arrays.asList("PDR", "SDR", "SA");
+        for (int index = 0; index < shipmentEventsObj.length(); ++index) {
+            if (nonProcessables.contains(shipmentEventsObj.getJSONObject(index)
+                    .getJSONObject("ServiceEvent").getString("EventCode"))) {
+                continue;
+            } else {
+                shippedDate = String.format("%s %s",
+                        shipmentEventsObj.getJSONObject(index).getString("Date"),
+                        shipmentEventsObj.getJSONObject(index).getString("Time"));
+                break;
+            }
+        }
+
         // Shipment Info -> Shipment Detail
         shipmentDetail.setShipmentDetail(shipmentInfo.getInt("Pieces"),
                 shipmentInfo.optFloat("Weight"),
                 shipmentInfo.getString("WeightUnit"),
                 shipmentInfo.optString("ServiceType"),
                 shipmentInfo.optString("ShipmentDescription"),
-                shipmentInfo.optJSONObject("ShipperReference").optInt("ReferenceID"));
+                shipmentInfo.optJSONObject("ShipperReference").optInt("ReferenceID"),
+                shippedDate);
 
         // Shipment Info -> Shipment Detail -> Shipper
         JSONObject shipperObj = shipmentInfo.getJSONObject("Shipper");
@@ -165,9 +189,7 @@ public class DHLShipmentTrackingService implements DHLAPI {
                 consigneeObj.optString("StateOrProvinceCode"),
                 consigneeObj.get("PostalCode").toString(), consigneeObj.optString("CountryCode"));
 
-        // Shipment Info -> Shipment Events
-        JSONArray shipmentEventsObj = shipmentInfo.getJSONObject("ShipmentEvent")
-                .getJSONArray("ArrayOfShipmentEventItem");
+        // Recycle the variable declared above for the shipmentEvents
 
         ShipmentEvent shipmentEvent = new ShipmentEvent();
         JSONObject indexedJson = new JSONObject();

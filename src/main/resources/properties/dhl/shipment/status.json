@@ -278,10 +278,11 @@
         "refuse": 4,
         "exception": 5,
         "clearance-delay": 6,
-        "clearance-process": 7,
-        "ok": 8,
-        "in-transit": 9,
-        "shipment-start": 10,
-        "shipment-ready": 11
+        "delivery-delay": 7,
+        "clearance-process": 8,
+        "ok": 9,
+        "in-transit": 10,
+        "shipment-start": 11,
+        "shipment-ready": 12
     }
 }

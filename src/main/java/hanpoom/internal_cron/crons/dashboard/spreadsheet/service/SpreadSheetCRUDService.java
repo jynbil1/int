@@ -17,15 +17,21 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPIService;
+import lombok.Setter;
 
 @Service
 public class SpreadSheetCRUDService {
-    private final static String SPREADSHEET_ID = "114n3w9q8ytp0z5zFoiOo1xg_cP2nt3yspYKQJvT1KuU";
-    private final static String SHEET = "22 GLOBAL_DASHBOARD";
-    private final static int SHEET_ID = 1110823798;
+    @Setter
+    private String spreadSheetID;
+    @Setter
+    private String sheet;
+    @Setter
+    private int sheetID;
 
-    public final String STARTING_COLUMN = "D";
-    public final int STARTIIG_ROW = 5;
+    @Setter
+    public String startingColumn;
+    @Setter
+    public int startingRow;
 
     private SpreadSheetAPIService spreadSheet;
 
@@ -33,12 +39,11 @@ public class SpreadSheetCRUDService {
         this.spreadSheet = spreadSheet;
     }
 
-    
     public List<List<Object>> getContents(String range) {
         Sheets sheet = spreadSheet.getSheetsService();
-        range = SHEET + "!" + range;
+        range = sheet + "!" + range;
         try {
-            ValueRange response = sheet.spreadsheets().values().get(SPREADSHEET_ID, range).execute();
+            ValueRange response = sheet.spreadsheets().values().get(this.spreadSheetID, range).execute();
             List<List<Object>> values = response.getValues();
 
             if (values == null || values.isEmpty()) {
@@ -60,7 +65,29 @@ public class SpreadSheetCRUDService {
                     Arrays.asList(insertObj));
 
             AppendValuesResponse response = sheet.spreadsheets().values()
-                    .append(SPREADSHEET_ID, SHEET, body)
+                    .append(this.spreadSheetID, this.sheet, body)
+                    // .setValueInputOption("USER_ENTERED")
+                    .setValueInputOption("RAW")
+                    .setInsertDataOption("INSERT_ROWS")
+                    .setIncludeValuesInResponse(true)
+                    .execute();
+            return true;
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return false;
+
+    }
+
+    public boolean insertRows(List<List<Object>> insertObjs) {
+        try {
+            Sheets sheet = spreadSheet.getSheetsService();
+
+            ValueRange body = new ValueRange().setValues(
+                    insertObjs);
+
+            AppendValuesResponse response = sheet.spreadsheets().values()
+                    .append(this.spreadSheetID, this.sheet, body)
                     // .setValueInputOption("USER_ENTERED")
                     .setValueInputOption("RAW")
                     .setInsertDataOption("INSERT_ROWS")
@@ -82,8 +109,8 @@ public class SpreadSheetCRUDService {
                     Arrays.asList(
                             Arrays.asList(updateObj)));
 
-            UpdateValuesResponse resposne = sheet.spreadsheets().values()
-                    .update(SPREADSHEET_ID, SHEET + ":" + range, body)
+            UpdateValuesResponse response = sheet.spreadsheets().values()
+                    .update(this.spreadSheetID, this.sheet + ":" + range, body)
                     .setValueInputOption("RAW")
                     .execute();
             return true;
@@ -99,14 +126,14 @@ public class SpreadSheetCRUDService {
             DeleteDimensionRequest deleteRequest = new DeleteDimensionRequest()
                     .setRange(
                             new DimensionRange()
-                                    .setSheetId(SHEET_ID)
+                                    .setSheetId(this.sheetID)
                                     .setDimension("ROWS")
                                     .setStartIndex(rowNo));
             List<Request> requests = new ArrayList<>();
             requests.add(new Request().setDeleteDimension(deleteRequest));
 
             BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest().setRequests(requests);
-            sheet.spreadsheets().batchUpdate(SPREADSHEET_ID, body).execute();
+            sheet.spreadsheets().batchUpdate(this.spreadSheetID, body).execute();
             return true;
         } catch (IOException ioe) {
             ioe.printStackTrace();

@@ -27,6 +27,12 @@ public class GlobalDashboardCron {
         this.calendar = calendar;
     }
 
+    private final static String SPREADSHEET_ID = "114n3w9q8ytp0z5zFoiOo1xg_cP2nt3yspYKQJvT1KuU";
+    private final static String SHEET = "22 GLOBAL_DASHBOARD";
+    private final static int SHEET_ID = 1110823798;
+    public final String STARTING_COLUMN = "D";
+    public final int STARTIIG_ROW = 5;
+
     // "0 0 * * * *" = the top of every hour of every day.
     // "* * * * * *" = 매초 실행 합니다.
     // "*/10 * * * * *" = 매 10초마다 실행한다.
@@ -60,6 +66,12 @@ public class GlobalDashboardCron {
 
         // 4. 상품 마진
         String totalMargins = dashboard.getLastWeekMargins();
+
+        spreadSheet.setSheet(SHEET);
+        spreadSheet.setSheetID(SHEET_ID);
+        spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
+        spreadSheet.setStartingColumn(STARTING_COLUMN);
+        spreadSheet.setStartingRow(STARTIIG_ROW);
 
         // C 컬럼은 주 차를 뜻한다. 주 차가 제일 높은 값을 가져온다.
         // 가져온 값 중 숫자가 없으면 1 부터 시작한다.

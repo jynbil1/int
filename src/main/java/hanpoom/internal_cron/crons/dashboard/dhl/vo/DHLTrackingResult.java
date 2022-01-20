@@ -8,8 +8,20 @@ import lombok.ToString;
 @Getter
 @ToString
 public class DHLTrackingResult {
-    private int totalDeliveries;
-    private int totalCustomsIssues;
-    private int totalOtherIssues;
-    private int totalDelays;
+    private String totalDeliveries;
+    private String totalCustomsIssues;
+    private String totalOtherIssues;
+    private String totalDelays;
+
+    public DHLTrackingResult(String totalDeliveries,
+            String totalCustomsIssues,
+            String totalOtherIssues,
+            String totalDelays) {
+
+        this.totalDeliveries = totalDeliveries;
+        this.totalCustomsIssues = totalCustomsIssues;
+        this.totalOtherIssues = totalOtherIssues;
+        this.totalDelays = totalDelays;
+
+    }
 }

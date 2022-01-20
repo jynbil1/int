@@ -13,7 +13,9 @@ import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO;
 @Repository
 public interface DHLMapper {
     public ArrayList<DHLTrackingVO> getTrackableOrders(Map<String, String> dateRange);
-    public Integer insertDeliveredShipment(String param);
-    public Integer insertErrorShipment(String param);
+    public Integer insertDeliveredShipments(String param);
+    public Integer insertErrorShipments(String param);
+
+    public ArrayList<DHLTrackingVO> getTrackingNos(String param);
 
 }
