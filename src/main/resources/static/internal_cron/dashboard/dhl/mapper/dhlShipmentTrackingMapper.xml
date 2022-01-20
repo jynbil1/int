@@ -23,13 +23,13 @@
         inner join
             (select 
                 post_id as order_no,
-                meta_value as class
+                meta_value as shipment_class
             from
                 wphpm_postmeta
             where
                 meta_key = '_shipment_class') as shipment
         on
-            orders.order_no = shipment_class = order_no
+            orders.order_no = shipment.order_no
         inner join
             (select
                 post_id as order_no,
@@ -52,7 +52,7 @@
             from
                 kr_a_wh_out
             where
-                status = 2 and
+                status in (2, 12, 22) and
                 date between #{start_dtime} and #{end_dtime} ) as out_orders
         on
             orders.order_no = out_orders.order_no
@@ -82,19 +82,76 @@
 
     </select>
 
-    <insert id="insertDeliveredShipments" parameterType="java.lang.String">
-        insert into kr_a_wh_delivered 
-            (order_no, tracking_no, event, event_code, ship_dtime, delivered_dtime)
-        values
-            #{param};
-</insert>
-
-    <insert id="insertErrorShipments">
-    insert into kr_a_wh_shipment_error 
-        (order_no, tracking_no, event, event_code, occurred_dtime)
-    values
-        #{param};
-</insert>
+    <select id="getOrderDetailByTrackingNo" parameterType="java.lang.String" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
+        select
+            orders.order_no,
+            orders.order_date,
+            shipment.shipment_class,
+            #{tracking_no} as tracking_no,
+            out_orders.out_dtime
+        from
+            (select
+                id as order_no,
+                post_date as order_date
+            from
+                wphpm_posts
+            where
+                id = (select
+					   order_no
+					from
+						kr_a_wh_out
+					where
+						status in (2,12,22) and
+						tracking_no = #{tracking_no}
+					order by 
+						order_no desc
+					limit 1)
+                ) as orders
+        inner join
+            (select 
+                post_id as order_no,
+                meta_value as shipment_class
+            from
+                wphpm_postmeta
+            where
+                meta_key = '_shipment_class') as shipment
+        on
+            orders.order_no = shipment.order_no
+        inner join
+            (select
+               order_no,
+               tracking_no,
+               update_dtime as out_dtime
+            from
+                kr_a_wh_out
+            where
+                status in (2,12,22) and
+                tracking_no = #{tracking_no}) as out_orders
+        on
+            orders.order_no = out_orders.order_no
+        left join
+            (select
+                order_no,
+                tracking_no
+            from
+                kr_a_wh_delivered
+            where
+                tracking_no = #{tracking_no} ) as delivered_orders
+        on
+            out_orders.order_no = delivered_orders.order_no and
+            out_orders.tracking_no = delivered_orders.tracking_no
+        left join
+            (select
+                order_no,
+                tracking_no
+            from
+                kr_a_wh_shipment_error
+            where
+                tracking_no = #{tracking_no}) as issue_orders
+        on
+            out_orders.order_no = issue_orders.order_no and
+            out_orders.tracking_no = issue_orders.tracking_no;
+    </select>
 
     <select id="getTrackingNos" parameterType="java.lang.String" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
         select 
@@ -108,4 +165,20 @@
         group by
             order_no
     </select>
+
+    <insert id="insertDeliveredShipments" parameterType="java.lang.String">
+        insert into kr_a_wh_delivered 
+            (order_no, tracking_no, event, event_code, ship_dtime, delivered_dtime)
+        values
+            #{param};
+    </insert>
+
+    <insert id="insertErrorShipments">
+    insert into kr_a_wh_shipment_error 
+        (order_no, tracking_no, event, event_code, occurred_dtime)
+    values
+        #{param};
+    </insert>
+
+   
 </mapper>

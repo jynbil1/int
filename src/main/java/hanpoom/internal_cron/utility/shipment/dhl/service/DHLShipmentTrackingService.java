@@ -78,7 +78,6 @@ public class DHLShipmentTrackingService implements DHLAPI {
         String requestJson = request.getValidatedJSONRequest().toString();
         JSONArray responseJsonArray = callAPI(requestJson).getJSONArray("ArrayOfAWBInfoItem");
 
-        System.out.println("데이터를 불러왔습니다.");
         List<DHLTrackingResponse> responses = new ArrayList<>();
 
         for (int index = 0; index < responseJsonArray.length(); ++index) {
@@ -91,7 +90,6 @@ public class DHLShipmentTrackingService implements DHLAPI {
 
             }
         }
-        System.out.println("데이터 1차 가공을 완료했습니다.");
         return new DHLTrackingResponseStorage(responses);
     }
 

@@ -32,10 +32,14 @@ public class DHLShipmentHanldingService {
 
     private DHLMapper dhlMapper;
     private SpreadSheetCRUDService spreadSheet;
+    private DHLService dHLService;
 
-    public DHLShipmentHanldingService(DHLMapper dhlMapper, SpreadSheetCRUDService spreadSheet) {
+    public DHLShipmentHanldingService(DHLMapper dhlMapper,
+            SpreadSheetCRUDService spreadSheet,
+            DHLService dHLService) {
         this.dhlMapper = dhlMapper;
         this.spreadSheet = spreadSheet;
+        this.dHLService = dHLService;
     }
 
     @Getter
@@ -188,7 +192,7 @@ public class DHLShipmentHanldingService {
         if (contents.size() < 1) {
             return 0;
         } else {
-            for (String orderNo: new ArrayList<>(contents.keySet())){
+            for (String orderNo : new ArrayList<>(contents.keySet())) {
                 Map<String, Object> selectedRow = contents.get(orderNo);
                 String range = "D" + (String) selectedRow.get("row");
                 boolean isSuccessful = spreadSheet.updateRow(Arrays.asList(selectedRow.get("D")), range);
@@ -196,6 +200,44 @@ public class DHLShipmentHanldingService {
             return contents.size();
         }
 
+    }
+
+    public boolean checkNUpdateCompleteShipments() {
+        // 스프레드시트 데이터를 불러와서 완료여부가 없는 건들에 대해 운송장 검사를 한다.
+        // order_no{rowNo: val, colAlph:datum... }
+
+        // 업데이트는 한번에 칠 것.
+        List<DHLTrackingVO> trackingVOs = new ArrayList<>();
+        Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
+        String searchableTrackingNo = "";
+        for (String orderNo : new ArrayList<>(contents.keySet())) {
+            try {
+                String newTrackingNo = (String) contents.get(orderNo).get("D");
+                if (newTrackingNo.strip().length() > 9) {
+                    // 새로운 운송장 자리에 값이 있으면
+                    searchableTrackingNo = newTrackingNo;
+                } else {
+                    searchableTrackingNo = (String) contents.get(orderNo).get("C");
+                }
+                // 개별 운송장 조회 함수 & // 구분 작업
+                DHLTrackingVO trackingVo = dHLService.filterShipment(searchableTrackingNo);
+                // 완료 안되었으면, false
+                if (trackingVo.getTypeOfIssue().equals("delivered")) {
+                    // 완료 되었으면, DB update and SpreadSheet Update.
+                    trackingVOs.add(trackingVo);
+                    String range = "M" + String.valueOf(contents.get(orderNo).get("row"));
+                    spreadSheet.updateRow(Arrays.asList("True"), range);
+
+                } else {
+                    continue;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        // 한번에 업데이트 칠 것.
+        return insertDeliveredShipments(trackingVOs) > 0 ? true : false;
     }
 
     // 데이터 삽입하는 부분
@@ -268,4 +310,5 @@ public class DHLShipmentHanldingService {
         }
         return null;
     }
+
 }

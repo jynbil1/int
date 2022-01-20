@@ -25,10 +25,22 @@ public class DHLTrackingVO {
     private String eventRemarkDetails;
     private String eventRemarkNextSteps;
     private String shipment_issue_type;
+    private String typeOfIssue;
 
     private static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public DHLTrackingVO() {
+    }
+
+    // for Untracable Orders
+    public DHLTrackingVO(String orderNo, String trackingNo) {
+        this.order_no = orderNo;
+        this.tracking_no = trackingNo;
+        // DLY - Customized Event Code -> Delayed Shipping
+        this.event_code = "UTR";
+        this.event = "발송물 조회가 되지 않습니다.";
+        this.event_dtime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
+        this.typeOfIssue = "untrackable";
     }
 
     // for Delayed Orders
@@ -40,6 +52,7 @@ public class DHLTrackingVO {
         this.event = "발송물의 배송이 지연되고 있습니다.";
         this.event_dtime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
         this.shipped_dtime = shipped_dtime;
+        this.typeOfIssue = "delay";
     }
 
     // for delivered
@@ -52,6 +65,8 @@ public class DHLTrackingVO {
         this.event = event;
         this.event_dtime = String.format("%s %s", eventDate, eventTime);
         this.shipped_dtime = shipped_dtime;
+        this.typeOfIssue = "delivered";
+
         // this.event_dtime = LocalDateTime.parse(eventDate + " " + eventTime,
         // DateTimeFormatter.ofPattern(DATETIME_FORMAT));
 
@@ -77,6 +92,8 @@ public class DHLTrackingVO {
         this.shipped_dtime = shipped_dtime;
         this.shipment_class = shipment_class;
         this.shipment_issue_type = shipment_issue_type;
+        this.typeOfIssue = "other-issue";
+
     }
 
     // for customs clearanace issue orders
@@ -103,6 +120,8 @@ public class DHLTrackingVO {
         this.shipped_dtime = shipped_dtime;
         this.shipment_class = shipment_class;
         this.shipment_issue_type = shipment_issue_type;
+        this.typeOfIssue = "clearance-issue";
+
 
         // this.event_dtime = LocalDateTime.parse(eventDate + " " + eventTime,
         // DateTimeFormatter.ofPattern(DATETIME_FORMAT));

@@ -1,8 +1,6 @@
 package hanpoom.internal_cron.crons.dashboard.dhl.controller;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
@@ -40,7 +38,7 @@ public class DHLTestController {
         String executeTime = now.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
         System.out.println(executeTime + " 에 작업이 시작되었습니다.");
         String executeMessage = now.format(DateTimeFormatter.ofPattern(DATE_PATTERN + " HH"));
-        DHLTrackingResult result = dHLService.investigateNProcessShippedOrders();
+        DHLTrackingResult result = dHLService.filterShipments();
 
         // 통관 문제
         System.out.println(dHLService.getCustomsIssueOrders().toString());
