@@ -3,329 +3,181 @@
         "ActionStatus": "Success"
     },
     "ShipmentInfo": {
+        "Consignee": {
+            "Suburb": "DF",
+            "PostalCode": "06140",
+            "City": "CUAUHTEMOC",
+            "CountryCode": "MX",
+            "StateOrProvinceCode": "DF"
+        },
         "OriginServiceArea": {
-            "Description": "Lisbon-PT",
-            "ServiceAreaCode": "LIS"
+            "Description": "Merida-MX",
+            "ServiceAreaCode": "MID"
         },
         "DestinationServiceArea": {
-            "Description": "San Antonio-United States Of America",
-            "ServiceAreaCode": "SAT",
-            "FacilityCode": "SAT"
+            "Description": "Mexico City-MX",
+            "ServiceAreaCode": "MEX",
+            "FacilityCode": "REF"
         },
-        "ShipperName": "FRTS & VGTBLS KENCKO EUROPE, UNIPESSOAL, LDA",
-        "ShipperReference": {
-            "ReferenceID": "Order #453189-A"
-        },
-        "WeightUnit": "K",
-        "Weight": 1.75,
-        "Consignee": {
-            "PostalCode": 78252,
-            "City": "SAN ANTONIO",
-            "CountryCode": "US",
-            "StateOrProvinceCode": "TX"
-        },
-        "ConsigneeName": "PRISCILLA VILLANUEVA",
-        "ShipmentDescription": "organic fruits & vegetables instant drinks",
-        "ShipmentDate": "2021-11-24T08:29:27",
-        "ServiceType": "P",
+        "ShipperName": "EFECTIVALE S DE RL DE CV",
+        "ConsigneeName": "EFECTIVALE S DE RL DE CV",
+        "ShipmentDate": "2021-10-26T18:20:33",
+        "ServiceType": "N",
         "Shipper": {
-            "Suburb": "Armazem 5",
-            "PostalCode": "1950-161",
-            "City": "Lisboa",
-            "CountryCode": "PT"
+            "Suburb": "TABLAJE 34469 COL KOMCHEN",
+            "PostalCode": 97302,
+            "City": "MERIDA",
+            "CountryCode": "MX",
+            "StateOrProvinceCode": "YN"
         },
         "Pieces": 1
     },
-    "AWBNumber": 1298643010,
+    "AWBNumber": 7660698172,
     "Pieces": {
         "PieceInfo": {
             "ArrayOfPieceInfoItem": {
                 "PieceDetails": {
-                    "ActualWeight": 1.75,
-                    "DimWeight": 1.806,
-                    "LicensePlate": "JD014600009290622741",
-                    "PieceNumber": 1,
-                    "WeightUnit": "K",
-                    "AWBNumber": 1298643010,
-                    "ActualDepth": 36,
-                    "Depth": 36,
-                    "Weight": 1.8,
+                    "LicensePlate": "JD014600009199210250",
                     "PackageType": null,
-                    "Height": 12.5,
-                    "Width": 18.5,
-                    "ActualWidth": 19,
-                    "ActualHeight": 13.2
+                    "PieceNumber": 1,
+                    "AWBNumber": 7660698172
                 },
                 "PieceEvent": {
                     "ArrayOfPieceEventItem": [{
                             "ServiceArea": {
-                                "Description": "Lisbon-PT",
-                                "ServiceAreaCode": "LIS"
+                                "Description": "Poza Rica-MX",
+                                "ServiceAreaCode": "PAZ"
                             },
                             "ServiceEvent": {
-                                "Description": "Arrived at Sort Facility  LISBON-PORTUGAL",
-                                "EventCode": "AF"
+                                "Description": "Shipment picked up",
+                                "EventCode": "PU"
                             },
                             "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
+                                "ReferenceID": null
                             },
-                            "Time": "15:58:33",
-                            "Date": "2021-11-24"
+                            "Time": "18:20:33",
+                            "Date": "2021-10-26"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Lisbon-PT",
-                                "ServiceAreaCode": "LIS"
+                                "Description": "Poza Rica-MX",
+                                "ServiceAreaCode": "PAZ"
                             },
                             "ServiceEvent": {
-                                "Description": "Processed at  LISBON-PORTUGAL",
+                                "Description": "Processed at  POZA RICA-MEXICO",
                                 "EventCode": "PL"
                             },
                             "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
+                                "ReferenceID": null
                             },
-                            "Time": "16:52:41",
-                            "Date": "2021-11-24"
+                            "Time": "20:00:54",
+                            "Date": "2021-10-26"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Lisbon-PT",
-                                "ServiceAreaCode": "LIS"
+                                "Description": "Poza Rica-MX",
+                                "ServiceAreaCode": "PAZ"
                             },
                             "ServiceEvent": {
-                                "Description": "Departed Facility in  LISBON-PORTUGAL",
+                                "Description": "Departed Facility in  POZA RICA-MEXICO",
                                 "EventCode": "DF"
                             },
                             "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
+                                "ReferenceID": null
                             },
-                            "Time": "19:51:55",
-                            "Date": "2021-11-24"
+                            "Time": "20:01:58",
+                            "Date": "2021-10-26"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Vitoria-ES",
-                                "ServiceAreaCode": "VIT"
+                                "Description": "Mexico City Hub-MX",
+                                "ServiceAreaCode": "JJC"
                             },
                             "ServiceEvent": {
-                                "Description": "Arrived at Sort Facility  VITORIA-SPAIN",
+                                "Description": "Arrived at Sort Facility  MEXICO CITY HUB-MEXICO",
                                 "EventCode": "AF"
                             },
                             "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
+                                "ReferenceID": null
                             },
-                            "Time": "22:17:15",
-                            "Date": "2021-11-24"
+                            "Time": "00:47:10",
+                            "Date": "2021-10-27"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Vitoria-ES",
-                                "ServiceAreaCode": "VIT"
+                                "Description": "Mexico City Hub-MX",
+                                "ServiceAreaCode": "JJC"
                             },
                             "ServiceEvent": {
-                                "Description": "Processed at  VITORIA-SPAIN",
+                                "Description": "Processed at  MEXICO CITY HUB-MEXICO",
                                 "EventCode": "PL"
                             },
                             "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
+                                "ReferenceID": null
                             },
-                            "Time": "22:42:43",
-                            "Date": "2021-11-24"
+                            "Time": "06:00:02",
+                            "Date": "2021-10-27"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Vitoria-ES",
-                                "ServiceAreaCode": "VIT"
+                                "Description": "Mexico City Hub-MX",
+                                "ServiceAreaCode": "JJC"
                             },
                             "ServiceEvent": {
-                                "Description": "Departed Facility in  VITORIA-SPAIN",
+                                "Description": "Departed Facility in  MEXICO CITY HUB-MEXICO",
                                 "EventCode": "DF"
                             },
                             "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
+                                "ReferenceID": null
                             },
-                            "Time": "23:45:41",
-                            "Date": "2021-11-24"
+                            "Time": "06:22:58",
+                            "Date": "2021-10-27"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "Madrid-ES",
-                                "ServiceAreaCode": "MAD"
+                                "Description": "Mexico City-MX",
+                                "ServiceAreaCode": "MEX"
                             },
                             "ServiceEvent": {
-                                "Description": "Transferred through MADRID-SPAIN",
-                                "EventCode": "TR"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
-                            },
-                            "Time": "07:51:20",
-                            "Date": "2021-11-25"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Madrid-ES",
-                                "ServiceAreaCode": "MAD"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Departed Facility in  MADRID-SPAIN",
-                                "EventCode": "DF"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
-                            },
-                            "Time": "07:51:27",
-                            "Date": "2021-11-25"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Milan - Malpensa-IT",
-                                "ServiceAreaCode": "MXP"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Transferred through MILAN - MALPENSA-ITALY",
-                                "EventCode": "TR"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
-                            },
-                            "Time": "11:48:14",
-                            "Date": "2021-11-25"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Milan - Malpensa-IT",
-                                "ServiceAreaCode": "MXP"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Departed Facility in  MILAN - MALPENSA-ITALY",
-                                "EventCode": "DF"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
-                            },
-                            "Time": "11:48:51",
-                            "Date": "2021-11-25"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Cincinnati Hub-United States Of America",
-                                "ServiceAreaCode": "CVG"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Arrived at Sort Facility  CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                                "EventCode": "AF"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
-                            },
-                            "Time": "22:46:59",
-                            "Date": "2021-11-25"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Cincinnati Hub-United States Of America",
-                                "ServiceAreaCode": "CVG"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Clearance processing complete at CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                                "EventCode": "CR"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
-                            },
-                            "Time": "05:24:13",
-                            "Date": "2021-11-26"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Cincinnati Hub-United States Of America",
-                                "ServiceAreaCode": "CVG"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Processed at  CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                                "EventCode": "PL"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
-                            },
-                            "Time": "05:57:49",
-                            "Date": "2021-11-26"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Cincinnati Hub-United States Of America",
-                                "ServiceAreaCode": "CVG"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Departed Facility in  CINCINNATI HUB,OH-UNITED STATES OF AMERICA",
-                                "EventCode": "DF"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
-                            },
-                            "Time": "06:13:58",
-                            "Date": "2021-11-26"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "San Antonio-United States Of America",
-                                "ServiceAreaCode": "SAT"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Arrived at Delivery Facility in  SAN ANTONIO,TX-UNITED STATES OF AMERICA",
+                                "Description": "Arrived at Delivery Facility in  MEXICO CITY-MEXICO",
                                 "EventCode": "AR"
                             },
                             "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
+                                "ReferenceID": null
                             },
-                            "Time": "10:33:04",
-                            "Date": "2021-11-26"
+                            "Time": "07:30:31",
+                            "Date": "2021-10-27"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "San Antonio-United States Of America",
-                                "ServiceAreaCode": "SAT"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Shipment on hold",
-                                "EventCode": "OH"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
-                            },
-                            "Time": "21:20:11",
-                            "Date": "2021-11-26"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "San Antonio-United States Of America",
-                                "ServiceAreaCode": "SAT"
+                                "Description": "Mexico City-MX",
+                                "ServiceAreaCode": "MEX"
                             },
                             "ServiceEvent": {
                                 "Description": "With delivery courier",
                                 "EventCode": "WC"
                             },
                             "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
+                                "ReferenceID": null
                             },
-                            "Time": "07:34:01",
-                            "Date": "2021-11-27"
+                            "Time": "09:22:42",
+                            "Date": "2021-10-27"
                         },
                         {
                             "ServiceArea": {
-                                "Description": "San Antonio-United States Of America",
-                                "ServiceAreaCode": "SAT"
+                                "Description": "Mexico City-MX",
+                                "ServiceAreaCode": "MEX"
                             },
                             "ServiceEvent": {
-                                "Description": "Delivered",
+                                "Description": "Delivered - Signed for by ",
                                 "EventCode": "OK"
                             },
                             "ShipperReference": {
-                                "ReferenceID": "Order #453189-A"
+                                "ReferenceID": null
                             },
-                            "Time": "10:05:23",
-                            "Date": "2021-11-27"
+                            "Signatory": "mISAEL RAMIREZ",
+                            "Time": "10:21:49",
+                            "Date": "2021-10-27"
                         }
                     ]
                 }

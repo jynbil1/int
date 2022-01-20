@@ -37,28 +37,54 @@ public class DHLTestController {
         LocalDateTime now = LocalDateTime.now();
         String executeTime = now.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
         System.out.println(executeTime + " 에 작업이 시작되었습니다.");
-        String executeMessage = now.format(DateTimeFormatter.ofPattern(DATE_PATTERN + " HH"));
+
         DHLTrackingResult result = dHLService.filterShipments();
 
-        // 통관 문제
-        System.out.println(dHLService.getCustomsIssueOrders().toString());
-        // 기타 문제
-        System.out.println(dHLService.getOtherIssueOrders().toString());
-        // 배송 완료
-        System.out.println(dHLService.getDeliveredOrders().toString());
-        System.out.println(dHLService.getUntrackableOrders().toString());
-        System.out.println(dHLService.getDelayedOrders().toString());
+        // // 통관 문제
+        // System.out.println(dHLService.getCustomsIssueOrders().toString());
+        // // 기타 문제
+        // System.out.println(dHLService.getOtherIssueOrders().toString());
+        // // 배송 완료
+        // System.out.println(dHLService.getDeliveredOrders().toString());
+        // System.out.println(dHLService.getUntrackableOrders().toString());
+        // System.out.println(dHLService.getDelayedOrders().toString());
 
+        if (dHLService.getDeliveredOrders().size() > 0) {
+            // dHLShipmentHanldingService.processDeliveredOrders(dHLService.getDeliveredOrders());
+        }
+
+        if (dHLService.getCustomsIssueOrders().size() > 0) {
+            dHLShipmentHanldingService.processCustomsIssueOrders(dHLService.getCustomsIssueOrders());
+        }
+
+        if (dHLService.getOtherIssueOrders().size() > 0) {
+            dHLShipmentHanldingService.processOtherIssueOrders(dHLService.getOtherIssueOrders());
+
+        }
+        if (dHLService.getDelayedOrders().size() > 0) {
+            dHLShipmentHanldingService.processDelayedOrders(dHLService.getDelayedOrders());
+
+        }
+        if (dHLService.getUntrackableOrders().size() > 0) {
+            dHLShipmentHanldingService.processUntrackableOrders(dHLService.getUntrackableOrders());
+
+        }
+
+        String executeMessage = now.format(DateTimeFormatter.ofPattern(DATE_PATTERN + " HH"));
         String messageText = "%s시 발송 모니터링 현황\n"
                 + "배송 완료: %s 건\n" + "배송 지연: %s 건\n"
-                + "통관 문제: %s 건\n" + "이외 문제: %s 건\n";
+                + "통관 문제: %s 건\n" + "조회 불가: %s 건\n"
+                + "이외 문제: %s 건\n" + "총 조회: %s 건";
 
         boolean isSent = dHLShipmentHanldingService.sendSlackMessage(
                 String.format(messageText,
+                        executeMessage,
                         result.getTotalDeliveries(),
                         result.getTotalDelays(),
                         result.getTotalCustomsIssues(),
-                        result.getTotalOtherIssues()));
+                        result.getTotalOtherIssues(),
+                        result.getTotalUntrackables(),
+                        result.getTotal()));
         if (!isSent) {
             System.out.println("현황 결과를 출력하지 못했습니다.");
         } else {
@@ -72,7 +98,7 @@ public class DHLTestController {
         System.out.println(String.format("소요시간: %s 분 %s 초",
                 String.valueOf(timeSpent / 60),
                 String.valueOf(timeSpent % 60)));
-                
+
         return "test";
     }
 }

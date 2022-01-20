@@ -251,11 +251,16 @@ public class DHLService {
             for (DHLTrackingResponse response : storage.getResponses()) {
 
                 // 정상적인 조회가 아닌경우,
-                if (!response.getStatus().getActionStatus().equals("Success")) {
-                    // 해당 값에 대한 오류 표기 하고
-                    untrackableOrders.add(new DHLTrackingVO());
-                    continue;
+                try {
+                    if (!response.getStatus().getActionStatus().equals("Success")) {
+                        // 해당 값에 대한 오류 표기 하고
+                        untrackableOrders.add(new DHLTrackingVO());
+                        continue;
+                    }
+                } catch (NullPointerException np) {
+                    System.out.println(response.toString());
                 }
+
                 // 데이터 중에서 배송 완료가 된 이벤트 코드가 있는지 확인이 필요.
                 // DHL 전산의 이유로 인해 이상한 데이터 처리(순서가 이상함 등 )가 있을 수 있음.
                 // status.json 에서 정의된 이벤트 코드 유형의 가중치가 가장 높은 값을 가지고 나온다.
@@ -407,7 +412,12 @@ public class DHLService {
                 NumberFormat.getNumberInstance(Locale.US).format(deliveredOrders.size()),
                 NumberFormat.getNumberInstance(Locale.US).format(customIssueOrders.size()),
                 NumberFormat.getNumberInstance(Locale.US).format(otherIssueOrders.size()),
-                NumberFormat.getNumberInstance(Locale.US).format(delayedOrders.size()));
+                NumberFormat.getNumberInstance(Locale.US).format(delayedOrders.size()),
+                NumberFormat.getNumberInstance(Locale.US).format(untrackableOrders.size()),
+                NumberFormat.getNumberInstance(Locale.US).format(
+                        deliveredOrders.size() + customIssueOrders.size() +
+                                otherIssueOrders.size() + delayedOrders.size() +
+                                untrackableOrders.size()));
     }
 
     // DB DATA Processing
@@ -478,8 +488,8 @@ public class DHLService {
                     .filter(date -> isWorkingDay(date))
                     .count();
 
-            System.out.println(days);
             if (days >= delayAllowableDays) {
+                System.out.println(String.valueOf(days) + " 일 지남.");
                 return true;
             } else {
                 return false;

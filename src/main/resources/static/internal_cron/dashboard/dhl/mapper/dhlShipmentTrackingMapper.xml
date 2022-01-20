@@ -78,7 +78,9 @@
         on
             out_orders.order_no = issue_orders.order_no and
             out_orders.tracking_no = issue_orders.tracking_no
-        limit 120;
+        where
+            delivered_orders.order_no is null and
+            issue_orders.tracking_no is null;
 
     </select>
 
@@ -153,7 +155,7 @@
             out_orders.tracking_no = issue_orders.tracking_no;
     </select>
 
-    <select id="getTrackingNos" parameterType="java.lang.String" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
+    <select id="getTrackingNos" parameterType="java.util.List" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
         select 
             post_id as order_no,
             meta_value as tracking_no
@@ -161,24 +163,33 @@
             wphpm_postmeta
         where
             meta_key = '_aftership_tracking_number' and
-            post_id in #{param};
+            post_id in
+        <foreach item="order" index="index" collection="orderNos" open="(" separator="," close=")">
+            #{order}
+        </foreach>
         group by
             order_no
     </select>
 
-    <insert id="insertDeliveredShipments" parameterType="java.lang.String">
+    <insert id="insertDeliveredShipments" parameterType="java.util.List">
         insert into kr_a_wh_delivered 
-            (order_no, tracking_no, event, event_code, ship_dtime, delivered_dtime)
+            (order_no, tracking_no, event, event_code, shipped_dtime, delivered_dtime)
         values
-            #{param};
+        <foreach item="shipment" index="index" collection="deliveredShipments" separator="," close=";">
+            (#{shipment.order_no}, #{shipment.tracking_no}, #{shipment.event},
+             #{shipment.event_code}, #{shipment.shipped_dtime}, #{shipment.event_dtime})
+        </foreach>
     </insert>
 
-    <insert id="insertErrorShipments">
-    insert into kr_a_wh_shipment_error 
-        (order_no, tracking_no, event, event_code, occurred_dtime)
+    <insert id="insertErrorShipments" parameterType="java.util.List">
+        insert into kr_a_wh_shipment_error 
+        (order_no, tracking_no, event, event_code, event_dtime)
     values
-        #{param};
+        <foreach item="shipment" index="index" collection="erraneousShipments" separator="," close=";">
+        (#{shipment.order_no}, #{shipment.tracking_no}, #{shipment.event},
+         #{shipment.event_code}, #{shipment.event_dtime})
+    </foreach>
     </insert>
 
-   
+
 </mapper>

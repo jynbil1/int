@@ -66,11 +66,30 @@ public class DHLShipmentTrackingService implements DHLAPI {
     // Recommended No => 50
     // Upto 70 has taken around 10 secs
     public DHLTrackingResponse trackShipment(String trackingNo) {
+        // 운송장 한개를 조회해도 두개이상이 나올 수 있음...
+        // 원인은 DHL 측의 운송장에 대한 데이터 처리 오류,
+        // 우리 운송장이 아닌거랑 같이 나오는데.
+        // 그걸 deserialize 메소드에서 분류해줌.
         DHLTrackingRequest request = new DHLTrackingRequest(trackingNo);
         String requestJson = request.getValidatedJSONRequest().toString();
-        DHLTrackingResponse response = deserializeJsonToPojo(
-                callAPI(requestJson).getJSONObject("ArrayOfAWBInfoItem"));
-        return response;
+
+        JSONObject responseJson = callAPI(requestJson);
+        JSONArray responseJsonArray = responseJson.optJSONArray("ArrayOfAWBInfoItem");
+        if (responseJsonArray == null) {
+            return deserializeJsonToPojo(responseJson.getJSONObject("ArrayOfAWBInfoItem"));
+        } else {
+            DHLTrackingResponse response = new DHLTrackingResponse();
+            for (int i = 0; i < responseJsonArray.length(); ++i) {
+                response = deserializeJsonToPojo(responseJsonArray.getJSONObject(i));
+
+                if (response == null) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            return response;
+        }
     }
 
     public DHLTrackingResponseStorage trackShipments(List<String> trackingNos) {
@@ -79,10 +98,15 @@ public class DHLShipmentTrackingService implements DHLAPI {
         JSONArray responseJsonArray = callAPI(requestJson).getJSONArray("ArrayOfAWBInfoItem");
 
         List<DHLTrackingResponse> responses = new ArrayList<>();
-
+        DHLTrackingResponse response = new DHLTrackingResponse();
         for (int index = 0; index < responseJsonArray.length(); ++index) {
             try {
-                responses.add(deserializeJsonToPojo(responseJsonArray.getJSONObject(index)));
+                response = deserializeJsonToPojo(responseJsonArray.getJSONObject(index));
+                if (response == null) {
+                    continue;
+                } else {
+                    responses.add(response);
+                }
             } catch (JSONException jsone) {
                 System.out.println("-------------------------");
                 System.out.println(responseJsonArray.getJSONObject(index).toString());
@@ -94,7 +118,22 @@ public class DHLShipmentTrackingService implements DHLAPI {
     }
 
     private DHLTrackingResponse deserializeJsonToPojo(JSONObject jsonObject) {
+        // 운송장 한 건당 처리를 함.
         // System.out.println(jsonObject.toString());
+        String shipperName = jsonObject.getJSONObject("ShipmentInfo").getString("ShipperName");
+        boolean existsShipmentEvent = jsonObject.getJSONObject("ShipmentInfo").optString("ShipmentEvent").isBlank()
+                ? false
+                : true;
+        // 맛탱이간 주문건이 있을 수 있으니 이걸로 구분할 것.
+
+        if (!shipperName.toUpperCase().contains("HANPOOM") &
+                !shipperName.toUpperCase().contains("KRACCESS") &
+                !shipperName.toUpperCase().contains("UNITEDBOARDER") &
+                !existsShipmentEvent) {
+
+            return null;
+        }
+
         DHLTrackingResponse response = new DHLTrackingResponse();
 
         Status status = new Status();
@@ -142,13 +181,14 @@ public class DHLShipmentTrackingService implements DHLAPI {
                 destination.optString("FacilityCode"));
 
         // Get Shipped Date...
-        // Shipment Info -> Shipment Events 
+        // Shipment Info -> Shipment Events
         // Will be resused for shipment Events below
         JSONArray shipmentEventsObj = shipmentInfo.getJSONObject("ShipmentEvent")
                 .getJSONArray("ArrayOfShipmentEventItem");
 
         // Find the first event of the shipment except...
-        // the event code that indicates the preparation of the shipment which hasn't endorsed to DHL.
+        // the event code that indicates the preparation of the shipment which hasn't
+        // endorsed to DHL.
         String shippedDate = "";
         List<String> nonProcessables = Arrays.asList("PDR", "SDR", "SA");
         for (int index = 0; index < shipmentEventsObj.length(); ++index) {
@@ -220,17 +260,17 @@ public class DHLShipmentTrackingService implements DHLAPI {
                 pieceDetails.getString("LicensePlate"),
                 pieceDetails.getInt("PieceNumber"),
 
-                pieceDetails.getFloat("ActualDepth"),
-                pieceDetails.getFloat("ActualWidth"),
-                pieceDetails.getFloat("ActualHeight"),
-                pieceDetails.getFloat("ActualWeight"),
+                pieceDetails.optFloat("ActualDepth"),
+                pieceDetails.optFloat("ActualWidth"),
+                pieceDetails.optFloat("ActualHeight"),
+                pieceDetails.optFloat("ActualWeight"),
 
                 pieceDetails.optFloat("Depth"),
                 pieceDetails.optFloat("Width"),
                 pieceDetails.optFloat("Height"),
                 pieceDetails.optFloat("Weight"),
 
-                pieceDetails.getFloat("DimWeight"),
+                pieceDetails.optFloat("DimWeight"),
                 pieceDetails.getString("WeightUnit"));
 
         response.setConsignee(consignee);

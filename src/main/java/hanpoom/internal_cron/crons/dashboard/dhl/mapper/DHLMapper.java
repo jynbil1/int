@@ -1,6 +1,7 @@
 package hanpoom.internal_cron.crons.dashboard.dhl.mapper;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -16,9 +17,9 @@ public interface DHLMapper {
 
     public DHLTrackingVO getOrderDetailByTrackingNo(String trackingNo);
     
-    public Integer insertDeliveredShipments(String param);
-    public Integer insertErrorShipments(String param);
+    public Integer insertDeliveredShipments(List<DHLTrackingVO> deliveredShipments);
+    public Integer insertErrorShipments(List<DHLTrackingVO> erraneousShipments);
 
-    public ArrayList<DHLTrackingVO> getTrackingNos(String param);
+    public ArrayList<DHLTrackingVO> getTrackingNos(List<String> orderNos);
 
 }

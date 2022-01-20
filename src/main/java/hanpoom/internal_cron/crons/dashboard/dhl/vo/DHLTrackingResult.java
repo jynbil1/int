@@ -12,16 +12,21 @@ public class DHLTrackingResult {
     private String totalCustomsIssues;
     private String totalOtherIssues;
     private String totalDelays;
+    private String totalUntrackables;
+    private String total;
 
     public DHLTrackingResult(String totalDeliveries,
             String totalCustomsIssues,
             String totalOtherIssues,
-            String totalDelays) {
+            String totalDelays,
+            String totalUntrackables,
+            String total) {
 
         this.totalDeliveries = totalDeliveries;
         this.totalCustomsIssues = totalCustomsIssues;
         this.totalOtherIssues = totalOtherIssues;
         this.totalDelays = totalDelays;
-
+        this.totalUntrackables = totalUntrackables;
+        this.total = total;
     }
 }

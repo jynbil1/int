@@ -1,5 +1,6 @@
 package hanpoom.internal_cron.crons.dashboard.dhl.service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -8,8 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Range;
-
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.crons.dashboard.dhl.mapper.DHLMapper;
@@ -55,26 +55,55 @@ public class DHLShipmentHanldingService {
     public Integer processDeliveredOrders(List<DHLTrackingVO> trackingVoList) {
         // 값을 넣고, 성공하면 넣은 값을 슬랙 알림을 위해 입력한 수 만큼을 리턴
         return insertDeliveredShipments(trackingVoList);
+
     }
 
-    // 지연되고 있는 건.
-    public Integer processDelayedOrders() {
-        return 0;
-    }
-
-    // 기간이 지나 검색결과가 조회되지 않는 건.
-    public Integer processUntrackableOrders() {
-        // 조회되지 않는 건들은 insert 하고 슬랙으로 집계알림과 다르게 따로 안내 나갈것.
+    // 통관 문제 건.
+    public Integer processCustomsIssueOrders(List<DHLTrackingVO> trackingVoList) {
+        int dbInserted = insertErrorShipments(trackingVoList);
+        boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
+        System.out.println(trackingVoList.size());
+        System.out.println(dbInserted);
+        if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
+            return 1;
+        }
         return 0;
     }
 
     // 기타 문제 건.
-    public Integer processOtherIssueOrders() {
+    public Integer processOtherIssueOrders(List<DHLTrackingVO> trackingVoList) {
+        int dbInserted = insertErrorShipments(trackingVoList);
+        boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
+        System.out.println(trackingVoList.size());
+        System.out.println(dbInserted);
+        if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
+            return 1;
+        }
         return 0;
     }
 
-    // 통관 문제 건.
-    public Integer processCustomsIssueOrders() {
+    // 지연되고 있는 건.
+    public Integer processDelayedOrders(List<DHLTrackingVO> trackingVoList) {
+        int dbInserted = insertErrorShipments(trackingVoList);
+        boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
+        System.out.println(trackingVoList.size());
+        System.out.println(dbInserted);
+        if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
+            return 1;
+        }
+        return 0;
+    }
+
+    // 기간이 지나 검색결과가 조회되지 않는 건.
+    public Integer processUntrackableOrders(List<DHLTrackingVO> trackingVoList) {
+        // 조회되지 않는 건들은 insert 하고 슬랙으로 집계알림과 다르게 따로 안내 나갈것.
+        int dbInserted = insertErrorShipments(trackingVoList);
+        boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
+        System.out.println(trackingVoList.size());
+        System.out.println(dbInserted);
+        if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
+            return 1;
+        }
         return 0;
     }
 
@@ -111,7 +140,7 @@ public class DHLShipmentHanldingService {
     }
 
     // 스프레드 시트에 CRUD하는 부분.
-    public boolean insertSpreadSheet(List<DHLTrackingVO> orderShipments) {
+    public boolean insertIntoSpreadSheet(List<DHLTrackingVO> orderShipments) {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN));
         List<List<Object>> dataSets = new ArrayList<>();
         // 생성일자 주문번호 송장번호 변경된송장
@@ -119,6 +148,10 @@ public class DHLShipmentHanldingService {
         // 배송상태구분 배송특이사항 DHL문의여부 DHL확인내용
         // 완료여부 비고
         try {
+            spreadSheet.setSheet(SHEET);
+            spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
+            spreadSheet.setSheetID(SHEET_ID);
+
             for (DHLTrackingVO orderShipment : orderShipments) {
                 // 반짝이랑 무무는 포함하면 안됨. 여기에서 입력에 성공한 값에 대해서만 집계를 해야함.
                 if (orderShipment.getShipment_class() != "regular") {
@@ -242,25 +275,15 @@ public class DHLShipmentHanldingService {
 
     // 데이터 삽입하는 부분
     private int insertDeliveredShipments(List<DHLTrackingVO> deliveredShipments) {
-        String insertManyParams = "";
         try {
-            for (DHLTrackingVO shipment : deliveredShipments) {
-                insertManyParams += String.format("(%s, '%s', '%s', '%s', '%s', '%s')\n",
-                        shipment.getOrder_no(),
-                        shipment.getTracking_no(),
-                        shipment.getEvent(),
-                        shipment.getEvent_code(),
-                        shipment.getEvent_dtime());
-                if (deliveredShipments.indexOf(shipment) != 0) {
-                    insertManyParams += ",";
-                }
-            }
-            Integer isSuccessful = dhlMapper.insertDeliveredShipments(insertManyParams);
+            Integer isSuccessful = dhlMapper.insertDeliveredShipments(deliveredShipments);
             if (isSuccessful <= 1) {
                 return deliveredShipments.size();
             } else {
                 return 0;
             }
+        } catch (DataIntegrityViolationException sqlCons) {
+            System.out.println("이미 있는 데이터를 삽입하려고 하고 있습니다.");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -268,20 +291,11 @@ public class DHLShipmentHanldingService {
     }
 
     private int insertErrorShipments(List<DHLTrackingVO> erraneousShipments) {
-        String insertManyParams = "";
+        for (DHLTrackingVO vo: erraneousShipments){
+            System.out.println(vo.toString());
+        }
         try {
-            for (DHLTrackingVO shipment : erraneousShipments) {
-                insertManyParams += String.format("(%s, '%s', '%s', '%s', '%s')\n",
-                        shipment.getOrder_no(),
-                        shipment.getTracking_no(),
-                        shipment.getEvent(),
-                        shipment.getEvent_code(),
-                        shipment.getEvent_dtime());
-                if (erraneousShipments.indexOf(shipment) != 0) {
-                    insertManyParams += ",";
-                }
-            }
-            Integer isSuccessful = dhlMapper.insertErrorShipments(insertManyParams);
+            Integer isSuccessful = dhlMapper.insertErrorShipments(erraneousShipments);
             if (isSuccessful <= 1) {
                 return erraneousShipments.size();
             } else {
@@ -295,16 +309,8 @@ public class DHLShipmentHanldingService {
     }
 
     private List<DHLTrackingVO> getTrackingLists(List<String> orderNos) {
-        String selectInParam = "";
         try {
-            for (String orderNo : orderNos) {
-                selectInParam += String.format("'%s", orderNo);
-                if (orderNos.indexOf(orderNo) != orderNos.size() - 1) {
-                    // 마지막 인덱스만 아니라면,
-                    selectInParam += ", ";
-                }
-            }
-            return dhlMapper.getTrackingNos(selectInParam);
+            return dhlMapper.getTrackingNos(orderNos);
         } catch (Exception e) {
             e.printStackTrace();
         }

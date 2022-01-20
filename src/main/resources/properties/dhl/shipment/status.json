@@ -106,19 +106,19 @@
             "eventGroup": "Customs clearance",
             "engDesc": "Processed for clearance",
             "korDesc": "세관 검사를 진행중입니다.",
-            "hpGroup": "clearance"
+            "hpGroup": "clearance-process"
         },
         "BN": {
             "eventGroup": "Customs clearance",
             "engDesc": "Broker notified to arrange for clearance",
             "korDesc": "세관 검사가 진행될 예정입니다.",
-            "hpGroup": "clearance"
+            "hpGroup": "clearance-process"
         },
         "CR": {
             "eventGroup": "Customs clearance",
             "engDesc": "Clearance processing complete",
             "korDesc": "세관 검사를 마쳤습니다.",
-            "hpGroup": "clearance"
+            "hpGroup": "clearance-process"
         },
         "RD": {
             "eventGroup": "Exception",
@@ -281,8 +281,9 @@
         "delivery-delay": 7,
         "clearance-process": 8,
         "ok": 9,
-        "in-transit": 10,
-        "shipment-start": 11,
-        "shipment-ready": 12
+        "delivery-soon": 10,
+        "in-transit": 11,
+        "shipment-start": 12,
+        "shipment-ready": 13
     }
 }
