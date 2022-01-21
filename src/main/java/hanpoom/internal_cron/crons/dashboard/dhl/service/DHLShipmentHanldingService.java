@@ -188,11 +188,10 @@ public class DHLShipmentHanldingService {
         return false;
     }
 
-    public Map<String, Map<String, Object>> readIncompleteSheetOrders() {
+    private Map<String, Map<String, Object>> readIncompleteSheetOrders() {
 
         spreadSheet.setSheet(SHEET);
         spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
-        spreadSheet.setSheetID(SHEET_ID);
         List<List<Object>> contents = spreadSheet.getContents("A:N");
         List<String> columns = Arrays.asList("A", "B", "C", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N");
 
@@ -211,6 +210,7 @@ public class DHLShipmentHanldingService {
             } else {
                 Map<String, Object> row = new HashMap<>();
                 for (int i = 1; i < 13; ++i) {
+                    // Alphabet: 값
                     row.put(columns.get(i), content.get(i));
                 }
                 row.put("row", rowIndex);
@@ -229,36 +229,43 @@ public class DHLShipmentHanldingService {
         // 이미 처리된 건은 제외한 건들임.
         // C - 운송장
         // D - 새로운 운송장
-        // spreadSheet.setSheet(SHEET);
-        // spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
-        // spreadSheet.setSheetID(SHEET_ID);
-        // Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
-        // List<DHLTrackingVO> trackingVos = getTrackingLists(new
-        // ArrayList<String>(contents.keySet()));
 
-        // for (DHLTrackingVO vo : trackingVos) {
-        // String oldTrackingNo = (String)
-        // contents.get(vo.getOrder_no()).get("tracking_no");
-        // String newTrackingNo = vo.getTracking_no();
+        Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
+        // 주문번호로 운송장 번호를 조회함.
+        List<DHLTrackingVO> trackingVos = getTrackingLists(new ArrayList<String>(contents.keySet()));
 
-        // if (oldTrackingNo.equals(newTrackingNo)) {
-        // contents.remove(vo.getOrder_no());
-        // }
-        // }
+        for (DHLTrackingVO vo : trackingVos) {
+            // C 컬럼에 운송장 번호가 있음.
+            String oldTrackingNo = (String) contents.get(vo.getOrder_no()).get("C");
+            String newTrackingNo = vo.getTracking_no();
 
-        // // Map<> Contents is now only conatained with the tracking no changed data.
-        // if (contents.size() < 1) {
-        // return 0;
-        // } else {
-        // for (String orderNo : new ArrayList<>(contents.keySet())) {
-        // Map<String, Object> selectedRow = contents.get(orderNo);
-        // String range = "D" + (String) selectedRow.get("row");
-        // boolean isSuccessful =
-        // spreadSheet.updateRow(Arrays.asList(selectedRow.get("D")), range);
-        // }
-        // return contents.size();
-        // }
-        return 0;
+            if (oldTrackingNo.equals(newTrackingNo)) {
+                contents.remove(vo.getOrder_no());
+            } else {
+                // 같지 않으면
+                Map<String, Object> tmp = contents.get(vo.getOrder_no());
+                tmp.put("E", vo.getTracking_no());
+                contents.put(vo.getOrder_no(), tmp);
+            }
+        }
+
+        // Map<> Contents is now only conatained with the tracking no changed data.
+        // 변경할 값이 없으면 0을 리턴.
+        if (contents.size() < 1) {
+            return 0;
+        } else {
+            for (String orderNo : new ArrayList<>(contents.keySet())) {
+                Map<String, Object> selectedRow = contents.get(orderNo);
+                String range = "E" + String.valueOf((Integer) selectedRow.get("row"));
+
+                // spreadSheet.setSheet(SHEET);
+                spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
+                // spreadSheet.setSheetID(SHEET_ID);
+
+                spreadSheet.updateRow(Arrays.asList((String)selectedRow.get("E")), range);
+            }
+            return contents.size();
+        }
 
     }
 

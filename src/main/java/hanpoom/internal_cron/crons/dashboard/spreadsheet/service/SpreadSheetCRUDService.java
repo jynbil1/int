@@ -42,7 +42,6 @@ public class SpreadSheetCRUDService {
     public List<List<Object>> getContents(String range) {
         Sheets sheets = spreadSheet.getSheetsService();
         range = sheet + "!" + range;
-        System.out.println(range);
         try {
             ValueRange response = sheets.spreadsheets().values().get(this.spreadSheetID, range).execute();
             List<List<Object>> values = response.getValues();
@@ -103,15 +102,16 @@ public class SpreadSheetCRUDService {
     }
 
     public boolean updateRow(List<Object> updateObj, String range) {
+        System.out.println(range);
+        System.out.println((String) updateObj.get(0));
         try {
             Sheets sheet = spreadSheet.getSheetsService();
 
             ValueRange body = new ValueRange().setValues(
-                    Arrays.asList(
-                            Arrays.asList(updateObj)));
+                    Arrays.asList(updateObj));
 
             UpdateValuesResponse response = sheet.spreadsheets().values()
-                    .update(this.spreadSheetID, this.sheet + ":" + range, body)
+                    .update(this.spreadSheetID, this.sheet + "!" + range, body)
                     .setValueInputOption("USER_ENTERED")
                     .execute();
             return true;
