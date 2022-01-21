@@ -107,6 +107,19 @@ public class DHLShipmentHanldingService {
         return 0;
     }
 
+    // 기간이 지나 검색결과가 조회되지 않는 건.
+    public Integer processReturnedOrders(List<DHLTrackingVO> trackingVoList) {
+        // 조회되지 않는 건들은 insert 하고 슬랙으로 집계알림과 다르게 따로 안내 나갈것.
+        int dbInserted = insertErrorShipments(trackingVoList);
+        boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
+        System.out.println(trackingVoList.size());
+        System.out.println(dbInserted);
+        if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
+            return 1;
+        }
+        return 0;
+    }
+
     // 통관 문제건 다시 검사 및 스프레드시트 값 변경
     public Integer recheckCustomsIssueOrders() {
         // 1. 운송장 재 조회
@@ -154,14 +167,14 @@ public class DHLShipmentHanldingService {
 
             for (DHLTrackingVO orderShipment : orderShipments) {
                 // 반짝이랑 무무는 포함하면 안됨. 여기에서 입력에 성공한 값에 대해서만 집계를 해야함.
-                if (orderShipment.getShipment_class() != "regular") {
+                if (!orderShipment.getShipment_class().equals("regular") ) {
                     continue;
                 }
                 dataSets.add(Arrays.asList(
                         today, orderShipment.getOrder_no(), orderShipment.getTracking_no(), "",
                         orderShipment.getOrder_date(), orderShipment.getShipped_dtime(), "", "",
-                        orderShipment.getShipment_issue_type(), orderShipment.getEvent(), "False", "",
-                        "False", ""));
+                        orderShipment.getShipment_issue_type(), orderShipment.getEvent(), "FALSE", "",
+                        "FALSE", ""));
             }
             return spreadSheet.insertRows(dataSets);
         } catch (Exception e) {
@@ -291,7 +304,7 @@ public class DHLShipmentHanldingService {
     }
 
     private int insertErrorShipments(List<DHLTrackingVO> erraneousShipments) {
-        for (DHLTrackingVO vo: erraneousShipments){
+        for (DHLTrackingVO vo : erraneousShipments) {
             System.out.println(vo.toString());
         }
         try {

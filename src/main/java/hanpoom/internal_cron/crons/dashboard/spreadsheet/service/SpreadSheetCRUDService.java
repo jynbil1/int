@@ -89,7 +89,7 @@ public class SpreadSheetCRUDService {
             AppendValuesResponse response = sheet.spreadsheets().values()
                     .append(this.spreadSheetID, this.sheet, body)
                     // .setValueInputOption("USER_ENTERED")
-                    .setValueInputOption("RAW")
+                    .setValueInputOption("USER_ENTERED")
                     .setInsertDataOption("INSERT_ROWS")
                     .setIncludeValuesInResponse(true)
                     .execute();
@@ -111,7 +111,7 @@ public class SpreadSheetCRUDService {
 
             UpdateValuesResponse response = sheet.spreadsheets().values()
                     .update(this.spreadSheetID, this.sheet + ":" + range, body)
-                    .setValueInputOption("RAW")
+                    .setValueInputOption("USER_ENTERED")
                     .execute();
             return true;
         } catch (IOException ioe) {
@@ -127,7 +127,7 @@ public class SpreadSheetCRUDService {
                     .setRange(
                             new DimensionRange()
                                     .setSheetId(this.sheetID)
-                                    .setDimension("ROWS")
+                                    .setDimension("USER_ENTERED")
                                     .setStartIndex(rowNo));
             List<Request> requests = new ArrayList<>();
             requests.add(new Request().setDeleteDimension(deleteRequest));

@@ -50,7 +50,7 @@ public class DHLTestController {
         // System.out.println(dHLService.getDelayedOrders().toString());
 
         if (dHLService.getDeliveredOrders().size() > 0) {
-            // dHLShipmentHanldingService.processDeliveredOrders(dHLService.getDeliveredOrders());
+            dHLShipmentHanldingService.processDeliveredOrders(dHLService.getDeliveredOrders());
         }
 
         if (dHLService.getCustomsIssueOrders().size() > 0) {
@@ -69,12 +69,21 @@ public class DHLTestController {
             dHLShipmentHanldingService.processUntrackableOrders(dHLService.getUntrackableOrders());
 
         }
+        if (dHLService.getReturnedOrders().size() > 0) {
+            dHLShipmentHanldingService.processReturnedOrders(dHLService.getReturnedOrders());
+
+        }
+
 
         String executeMessage = now.format(DateTimeFormatter.ofPattern(DATE_PATTERN + " HH"));
         String messageText = "%s시 발송 모니터링 현황\n"
+                + "---------------------------------------------------\n"
                 + "배송 완료: %s 건\n" + "배송 지연: %s 건\n"
                 + "통관 문제: %s 건\n" + "조회 불가: %s 건\n"
-                + "이외 문제: %s 건\n" + "총 조회: %s 건";
+                + "이외 문제: %s 건\n" + "반송 완료: %s 건\n"
+                + "---------------------------------------------------\n"
+                + "총 조회: %s 건\n" 
+                + "<https://docs.google.com/spreadsheets/d/1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw/edit#gid=448567097|문제 보러가기>";
 
         boolean isSent = dHLShipmentHanldingService.sendSlackMessage(
                 String.format(messageText,
@@ -84,6 +93,7 @@ public class DHLTestController {
                         result.getTotalCustomsIssues(),
                         result.getTotalOtherIssues(),
                         result.getTotalUntrackables(),
+                        result.getTotalReturned(),
                         result.getTotal()));
         if (!isSent) {
             System.out.println("현황 결과를 출력하지 못했습니다.");

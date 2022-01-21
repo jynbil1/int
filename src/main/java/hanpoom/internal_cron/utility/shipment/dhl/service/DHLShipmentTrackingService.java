@@ -229,10 +229,10 @@ public class DHLShipmentTrackingService implements DHLAPI {
 
         // Recycle the variable declared above for the shipmentEvents
 
-        ShipmentEvent shipmentEvent = new ShipmentEvent();
         JSONObject indexedJson = new JSONObject();
         boolean isSignatoryAdded = false;
         for (int index = 0; index < shipmentEventsObj.length(); ++index) {
+            ShipmentEvent shipmentEvent = new ShipmentEvent();
             indexedJson = shipmentEventsObj.getJSONObject(index);
             if (!isSignatoryAdded && indexedJson.optString("Signatory").strip().length() > 2) {
                 shipmentDetail.setSignatory(indexedJson.optString("Signatory"));

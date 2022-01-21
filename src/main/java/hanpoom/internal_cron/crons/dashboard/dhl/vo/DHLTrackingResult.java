@@ -13,6 +13,7 @@ public class DHLTrackingResult {
     private String totalOtherIssues;
     private String totalDelays;
     private String totalUntrackables;
+    private String totalReturned;
     private String total;
 
     public DHLTrackingResult(String totalDeliveries,
@@ -20,6 +21,7 @@ public class DHLTrackingResult {
             String totalOtherIssues,
             String totalDelays,
             String totalUntrackables,
+            String totalReturned,
             String total) {
 
         this.totalDeliveries = totalDeliveries;
@@ -27,6 +29,7 @@ public class DHLTrackingResult {
         this.totalOtherIssues = totalOtherIssues;
         this.totalDelays = totalDelays;
         this.totalUntrackables = totalUntrackables;
+        this.totalReturned = totalReturned;
         this.total = total;
     }
 }

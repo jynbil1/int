@@ -184,7 +184,7 @@
             "eventGroup": "Exception",
             "engDesc": "Returned to shipper",
             "korDesc": "발송자에게 반송되었습니다.",
-            "hpGroup": "ok"
+            "hpGroup": "returned"
         },
         "OH": {
             "eventGroup": "Exception",
@@ -196,7 +196,7 @@
             "eventGroup": "Exception",
             "engDesc": "Closed Shipment",
             "korDesc": "닫힌 배송물입니다.",
-            "hpGroup": "ok"
+            "hpGroup": "closed"
         },
         "SC": {
             "eventGroup": "Exception",
@@ -273,17 +273,18 @@
     },
     "priorityLevel": {
         "delivered": 1,
-        "urgency-customs": 2,
-        "urgency-shipment": 3,
-        "refuse": 4,
-        "exception": 5,
-        "clearance-delay": 6,
-        "delivery-delay": 7,
-        "clearance-process": 8,
-        "ok": 9,
-        "delivery-soon": 10,
-        "in-transit": 11,
-        "shipment-start": 12,
-        "shipment-ready": 13
+        "returned": 2,
+        "closed": 3,
+        "urgency-customs": 4,
+        "urgency-shipment": 5,
+        "refuse": 6,
+        "exception": 7,
+        "clearance-delay": 8,
+        "delivery-delay": 9,
+        "clearance-process": 10,
+        "delivery-soon": 11,
+        "in-transit": 12,
+        "shipment-start": 13,
+        "shipment-ready": 14
     }
 }
