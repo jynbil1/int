@@ -119,24 +119,14 @@ public class DHLShipmentTrackingService implements DHLAPI {
 
     private DHLTrackingResponse deserializeJsonToPojo(JSONObject jsonObject) {
         // 운송장 한 건당 처리를 함.
-        // System.out.println(jsonObject.toString());
-        String shipperName = jsonObject.getJSONObject("ShipmentInfo").getString("ShipperName");
-        boolean existsShipmentEvent = jsonObject.getJSONObject("ShipmentInfo").optString("ShipmentEvent").isBlank()
-                ? false
-                : true;
-        // 맛탱이간 주문건이 있을 수 있으니 이걸로 구분할 것.
-
-        if (!shipperName.toUpperCase().contains("HANPOOM") &
-                !shipperName.toUpperCase().contains("KRACCESS") &
-                !shipperName.toUpperCase().contains("UNITEDBOARDER") &
-                !existsShipmentEvent) {
-
-            return null;
-        }
 
         DHLTrackingResponse response = new DHLTrackingResponse();
-
+        // 운송장은 값이 없어도 잘 나옴.
+        // AWBNumber
+        response.setTrackingNo(String.valueOf(jsonObject.getLong("AWBNumber")));
         Status status = new Status();
+
+        // 조회한 운송장의 결과값이 제대로 반환을 했는지부터 검사해야함.
         JSONObject responseStatus = jsonObject.getJSONObject("Status");
 
         if (!responseStatus.optString("Condition").isBlank()) {
@@ -158,8 +148,20 @@ public class DHLShipmentTrackingService implements DHLAPI {
         }
         ;
 
-        // AWBNumber
-        response.setTrackingNo(String.valueOf(jsonObject.getLong("AWBNumber")));
+        // 맛탱이간 주문건이 있을 수 있으니 이걸로 구분할 것.
+        // 우리가 보낸게 아닌 건들도 집계가 되는 아이러니 한 상황
+        String shipperName = jsonObject.getJSONObject("ShipmentInfo").getString("ShipperName");
+        boolean existsShipmentEvent = jsonObject.getJSONObject("ShipmentInfo").optString("ShipmentEvent").isBlank()
+                ? false
+                : true;
+
+        if (!shipperName.toUpperCase().contains("HANPOOM") &
+                !shipperName.toUpperCase().contains("KRACCESS") &
+                !shipperName.toUpperCase().contains("UNITEDBOARDER") &
+                !existsShipmentEvent) {
+
+            return null;
+        }
 
         Consignee consignee = new Consignee();
         Shipper shipper = new Shipper();
@@ -183,8 +185,36 @@ public class DHLShipmentTrackingService implements DHLAPI {
         // Get Shipped Date...
         // Shipment Info -> Shipment Events
         // Will be resused for shipment Events below
-        JSONArray shipmentEventsObj = shipmentInfo.getJSONObject("ShipmentEvent")
-                .getJSONArray("ArrayOfShipmentEventItem");
+        // Shipment 가 없으면 Piece 이벤트로 하자...
+        JSONArray shipmentEventsObj = new JSONArray();
+        if (shipmentInfo.optJSONObject("ShipmentEvent") != null) {
+            shipmentEventsObj = shipmentInfo.getJSONObject("ShipmentEvent")
+                    .optJSONArray("ArrayOfShipmentEventItem");
+            if (shipmentInfo.getJSONObject("ShipmentEvent")
+                    .optJSONArray("ArrayOfShipmentEventItem") == null) {
+                shipmentEventsObj = new JSONArray().put(shipmentInfo.getJSONObject("ShipmentEvent")
+                        .optJSONObject("ArrayOfShipmentEventItem"));
+            } else {
+                shipmentEventsObj = shipmentInfo.getJSONObject("ShipmentEvent")
+                        .getJSONArray("ArrayOfShipmentEventItem");
+            }
+        } else {
+
+            if (jsonObject.getJSONObject("Pieces").getJSONObject("PieceInfo")
+                    .getJSONObject("ArrayOfPieceInfoItem").optJSONObject("PieceEvent") == null) {
+                // 운송장이 생성만 된 상태. -- 배송된 건들에 대해서만 확인하는건데 운송장 처리 흐름이 없는 것도 문제임.
+                status.setStatus("Untrackable");
+                shipmentDetail.setShipmentReference(shipmentInfo.getJSONObject("ShipperReference")
+                        .optInt("ReferenceID"));
+                response.setShipmentDetail(shipmentDetail);
+                response.setStatus(status);
+                return response;
+            } else {
+                shipmentEventsObj = jsonObject.getJSONObject("Pieces").getJSONObject("PieceInfo")
+                        .getJSONObject("ArrayOfPieceInfoItem").getJSONObject("PieceEvent")
+                        .getJSONArray("ArrayOfPieceEventItem");
+            }
+        }
 
         // Find the first event of the shipment except...
         // the event code that indicates the preparation of the shipment which hasn't

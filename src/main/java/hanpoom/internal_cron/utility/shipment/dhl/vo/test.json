@@ -3,184 +3,70 @@
         "ActionStatus": "Success"
     },
     "ShipmentInfo": {
-        "Consignee": {
-            "Suburb": "DF",
-            "PostalCode": "06140",
-            "City": "CUAUHTEMOC",
-            "CountryCode": "MX",
-            "StateOrProvinceCode": "DF"
-        },
         "OriginServiceArea": {
-            "Description": "Merida-MX",
-            "ServiceAreaCode": "MID"
+            "Description": "Incheon Outskirt Of Seoul-KR",
+            "ServiceAreaCode": "ICN"
         },
         "DestinationServiceArea": {
-            "Description": "Mexico City-MX",
-            "ServiceAreaCode": "MEX",
-            "FacilityCode": "REF"
+            "Description": "South San Diego-United States Of America",
+            "ServiceAreaCode": "SDM",
+            "FacilityCode": "SDM"
         },
-        "ShipperName": "EFECTIVALE S DE RL DE CV",
-        "ConsigneeName": "EFECTIVALE S DE RL DE CV",
-        "ShipmentDate": "2021-10-26T18:20:33",
-        "ServiceType": "N",
+        "ShipperName": "HANPOOM (KRACCESS INC.)",
+        "ShipperReference": {
+            "ReferenceID": 642633
+        },
+        "WeightUnit": "K",
+        "Weight": 1,
+        "Consignee": {
+            "PostalCode": 92126,
+            "City": "SAN DIEGO",
+            "CountryCode": "US",
+            "StateOrProvinceCode": "CA"
+        },
+        "ShipmentEvent": {
+            "ArrayOfShipmentEventItem": {
+                "ServiceArea": {
+                    "Description": "Incheon Outskirt Of Seoul-KR",
+                    "ServiceAreaCode": "ICN"
+                },
+                "ServiceEvent": {
+                    "Description": "Customs status updated",
+                    "EventCode": "RR"
+                },
+                "Time": "18:32:08",
+                "Date": "2022-01-18"
+            }
+        },
+        "ConsigneeName": "TAE H CHUNG",
+        "ShipmentDescription": "Groceries",
+        "ShipmentDate": "2022-01-19T23:41:52",
+        "ServiceType": "P",
         "Shipper": {
-            "Suburb": "TABLAJE 34469 COL KOMCHEN",
-            "PostalCode": 97302,
-            "City": "MERIDA",
-            "CountryCode": "MX",
-            "StateOrProvinceCode": "YN"
+            "Suburb": "1150-1 Gwan-ri",
+            "PostalCode": 17382,
+            "City": "ICHEON-SI",
+            "CountryCode": "KR",
+            "StateOrProvinceCode": "Gyeonggi-do"
         },
         "Pieces": 1
     },
-    "AWBNumber": 7660698172,
+    "AWBNumber": 5838144292,
     "Pieces": {
         "PieceInfo": {
             "ArrayOfPieceInfoItem": {
                 "PieceDetails": {
-                    "LicensePlate": "JD014600009199210250",
+                    "LicensePlate": "JD014600009433446474",
                     "PackageType": null,
                     "PieceNumber": 1,
-                    "AWBNumber": 7660698172
+                    "WeightUnit": "K",
+                    "AWBNumber": 5838144292,
+                    "Height": 10,
+                    "Width": 10,
+                    "Depth": 10,
+                    "Weight": 1
                 },
-                "PieceEvent": {
-                    "ArrayOfPieceEventItem": [{
-                            "ServiceArea": {
-                                "Description": "Poza Rica-MX",
-                                "ServiceAreaCode": "PAZ"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Shipment picked up",
-                                "EventCode": "PU"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": null
-                            },
-                            "Time": "18:20:33",
-                            "Date": "2021-10-26"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Poza Rica-MX",
-                                "ServiceAreaCode": "PAZ"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Processed at  POZA RICA-MEXICO",
-                                "EventCode": "PL"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": null
-                            },
-                            "Time": "20:00:54",
-                            "Date": "2021-10-26"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Poza Rica-MX",
-                                "ServiceAreaCode": "PAZ"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Departed Facility in  POZA RICA-MEXICO",
-                                "EventCode": "DF"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": null
-                            },
-                            "Time": "20:01:58",
-                            "Date": "2021-10-26"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Mexico City Hub-MX",
-                                "ServiceAreaCode": "JJC"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Arrived at Sort Facility  MEXICO CITY HUB-MEXICO",
-                                "EventCode": "AF"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": null
-                            },
-                            "Time": "00:47:10",
-                            "Date": "2021-10-27"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Mexico City Hub-MX",
-                                "ServiceAreaCode": "JJC"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Processed at  MEXICO CITY HUB-MEXICO",
-                                "EventCode": "PL"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": null
-                            },
-                            "Time": "06:00:02",
-                            "Date": "2021-10-27"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Mexico City Hub-MX",
-                                "ServiceAreaCode": "JJC"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Departed Facility in  MEXICO CITY HUB-MEXICO",
-                                "EventCode": "DF"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": null
-                            },
-                            "Time": "06:22:58",
-                            "Date": "2021-10-27"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Mexico City-MX",
-                                "ServiceAreaCode": "MEX"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Arrived at Delivery Facility in  MEXICO CITY-MEXICO",
-                                "EventCode": "AR"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": null
-                            },
-                            "Time": "07:30:31",
-                            "Date": "2021-10-27"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Mexico City-MX",
-                                "ServiceAreaCode": "MEX"
-                            },
-                            "ServiceEvent": {
-                                "Description": "With delivery courier",
-                                "EventCode": "WC"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": null
-                            },
-                            "Time": "09:22:42",
-                            "Date": "2021-10-27"
-                        },
-                        {
-                            "ServiceArea": {
-                                "Description": "Mexico City-MX",
-                                "ServiceAreaCode": "MEX"
-                            },
-                            "ServiceEvent": {
-                                "Description": "Delivered - Signed for by ",
-                                "EventCode": "OK"
-                            },
-                            "ShipperReference": {
-                                "ReferenceID": null
-                            },
-                            "Signatory": "mISAEL RAMIREZ",
-                            "Time": "10:21:49",
-                            "Date": "2021-10-27"
-                        }
-                    ]
-                }
+                "PieceEvent": null
             }
         }
     }

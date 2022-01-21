@@ -79,10 +79,10 @@ public class DHLTestController {
         String messageText = "%s시 발송 모니터링 현황\n"
                 + "---------------------------------------------------\n"
                 + "배송 완료: %s 건\n" + "배송 지연: %s 건\n"
-                + "통관 문제: %s 건\n" + "조회 불가: %s 건\n"
+                + "통관 문제: %s 건\n\n" + "조회 불가: %s 건\n"
                 + "이외 문제: %s 건\n" + "반송 완료: %s 건\n"
                 + "---------------------------------------------------\n"
-                + "총 조회: %s 건\n" 
+                + "배송중: %s 건\n" 
                 + "<https://docs.google.com/spreadsheets/d/1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw/edit#gid=448567097|문제 보러가기>";
 
         boolean isSent = dHLShipmentHanldingService.sendSlackMessage(
@@ -94,7 +94,7 @@ public class DHLTestController {
                         result.getTotalOtherIssues(),
                         result.getTotalUntrackables(),
                         result.getTotalReturned(),
-                        result.getTotal()));
+                        result.getTotalInTransit()));
         if (!isSent) {
             System.out.println("현황 결과를 출력하지 못했습니다.");
         } else {

@@ -62,8 +62,9 @@ public class DHLShipmentHanldingService {
     public Integer processCustomsIssueOrders(List<DHLTrackingVO> trackingVoList) {
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println(trackingVoList.size());
-        System.out.println(dbInserted);
+        System.out.println("통관 문제 건");
+        System.out.println(trackingVoList.toString());
+        System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
@@ -74,8 +75,9 @@ public class DHLShipmentHanldingService {
     public Integer processOtherIssueOrders(List<DHLTrackingVO> trackingVoList) {
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println(trackingVoList.size());
-        System.out.println(dbInserted);
+        System.out.println("기타 문제 건");
+        System.out.println(trackingVoList.toString());
+        System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
@@ -86,8 +88,9 @@ public class DHLShipmentHanldingService {
     public Integer processDelayedOrders(List<DHLTrackingVO> trackingVoList) {
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println(trackingVoList.size());
-        System.out.println(dbInserted);
+        System.out.println("배송 지연되고 있는 건 처리");
+        System.out.println(trackingVoList.toString());
+        System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
@@ -99,21 +102,23 @@ public class DHLShipmentHanldingService {
         // 조회되지 않는 건들은 insert 하고 슬랙으로 집계알림과 다르게 따로 안내 나갈것.
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println(trackingVoList.size());
-        System.out.println(dbInserted);
+        System.out.println("조회가 불가한 건");
+        System.out.println(trackingVoList.toString());
+        System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
         return 0;
     }
 
-    // 기간이 지나 검색결과가 조회되지 않는 건.
+    // 반송된 건
     public Integer processReturnedOrders(List<DHLTrackingVO> trackingVoList) {
         // 조회되지 않는 건들은 insert 하고 슬랙으로 집계알림과 다르게 따로 안내 나갈것.
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println(trackingVoList.size());
-        System.out.println(dbInserted);
+        System.out.println("반송된 건");
+        System.out.println(trackingVoList.toString());
+        System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
@@ -167,13 +172,14 @@ public class DHLShipmentHanldingService {
 
             for (DHLTrackingVO orderShipment : orderShipments) {
                 // 반짝이랑 무무는 포함하면 안됨. 여기에서 입력에 성공한 값에 대해서만 집계를 해야함.
-                if (!orderShipment.getShipment_class().equals("regular") ) {
-                    continue;
-                }
                 dataSets.add(Arrays.asList(
-                        today, orderShipment.getOrder_no(), orderShipment.getTracking_no(), "",
-                        orderShipment.getOrder_date(), orderShipment.getShipped_dtime(), "", "",
-                        orderShipment.getShipment_issue_type(), orderShipment.getEvent(), "FALSE", "",
+                        today, orderShipment.getShipment_class(), orderShipment.getOrder_no(),
+                        orderShipment.getTracking_no(), "",
+                        orderShipment.getOrder_date() == null ? "" : orderShipment.getOrder_date(),
+                        orderShipment.getShipped_dtime() == null ? "" : orderShipment.getShipped_dtime(),
+                        "", "",
+                        orderShipment.getShipment_issue_type() == null ? "" : orderShipment.getShipment_issue_type(),
+                        orderShipment.getEvent(), "FALSE", "",
                         "FALSE", ""));
             }
             return spreadSheet.insertRows(dataSets);

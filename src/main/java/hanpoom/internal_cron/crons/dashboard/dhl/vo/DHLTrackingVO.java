@@ -33,7 +33,7 @@ public class DHLTrackingVO {
     }
 
     // for Untracable Orders
-    public DHLTrackingVO(String orderNo, String trackingNo) {
+    public DHLTrackingVO(String orderNo, String trackingNo, String shipmentClass) {
         this.order_no = orderNo;
         this.tracking_no = trackingNo;
         // DLY - Customized Event Code -> Delayed Shipping
@@ -41,10 +41,11 @@ public class DHLTrackingVO {
         this.event = "발송물 조회가 되지 않습니다.";
         this.event_dtime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
         this.typeOfIssue = "untrackable";
+        this.shipment_class = shipmentClass;
     }
 
     // for Delayed Orders
-    public DHLTrackingVO(String orderNo, String trackingNo, String shipped_dtime) {
+    public DHLTrackingVO(String orderNo, String trackingNo, String shipped_dtime, String shipmentClass) {
         this.order_no = orderNo;
         this.tracking_no = trackingNo;
         // DLY - Customized Event Code -> Delayed Shipping
@@ -53,6 +54,7 @@ public class DHLTrackingVO {
         this.event_dtime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
         this.shipped_dtime = shipped_dtime;
         this.typeOfIssue = "delay";
+        this.shipment_class = shipmentClass;
     }
 
     // for delivered

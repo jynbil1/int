@@ -214,7 +214,7 @@
             "eventGroup": "Out for delivery",
             "engDesc": "Forwarded for delivery - details expected",
             "korDesc": "타 배송사를 통해 배송 예정입니다.",
-            "hpGroup": "delivery-soon"
+            "hpGroup": "delivered"
         },
         "ND": {
             "eventGroup": "Out for delivery",

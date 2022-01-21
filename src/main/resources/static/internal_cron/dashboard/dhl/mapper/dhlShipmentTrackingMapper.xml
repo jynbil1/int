@@ -7,8 +7,8 @@
             orders.order_no,
             orders.order_date,
             details.shipment_class,
-            details.tracking_no,
-            out_orders.out_dtime
+            details.tracking_no
+            <!-- out_orders.out_dtime -->
         from
             (select
                 id as order_no,
@@ -17,8 +17,7 @@
                 wphpm_posts
             where
                 post_type = 'shop_order' and 
-                post_status = 'wc-shipped' and 
-                post_date between #{start_dtime} and #{end_dtime}
+                post_status = 'wc-shipped'
                 ) as orders
         inner join
             (select
@@ -38,18 +37,6 @@
                 a.order_no) as details
         on
             orders.order_no = details.order_no
-        inner join
-            (select
-               order_no,
-               tracking_no,
-               update_dtime as out_dtime
-            from
-                kr_a_wh_out
-            where
-                status in (2, 12, 22) and
-                date between #{start_dtime} and #{end_dtime} ) as out_orders
-        on
-            orders.order_no = out_orders.order_no
         left join
             (select
                 order_no,
@@ -58,8 +45,8 @@
                 kr_a_wh_delivered
             ) as delivered_orders
         on
-            out_orders.order_no = delivered_orders.order_no and
-            out_orders.tracking_no = delivered_orders.tracking_no
+            orders.order_no = delivered_orders.order_no and
+            details.tracking_no = delivered_orders.tracking_no
         left join
             (select
                 order_no,
@@ -68,12 +55,14 @@
                 kr_a_wh_shipment_error
             ) as issue_orders
         on
-            out_orders.order_no = issue_orders.order_no and
-            out_orders.tracking_no = issue_orders.tracking_no
+            orders.order_no = issue_orders.order_no and
+            details.tracking_no = issue_orders.tracking_no
         where
             delivered_orders.order_no is null and
-            issue_orders.tracking_no is null
-        limit 500;
+            delivered_orders.tracking_no is null and
+            issue_orders.order_no is null and 
+            issue_orders.tracking_no is null; 
+        <!-- limit 100; -->
     </select>
 
     <select id="getOrderDetailByTrackingNo" parameterType="java.lang.String" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
