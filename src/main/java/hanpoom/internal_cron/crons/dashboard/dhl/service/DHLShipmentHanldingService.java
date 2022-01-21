@@ -1,6 +1,5 @@
 package hanpoom.internal_cron.crons.dashboard.dhl.service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -62,9 +61,9 @@ public class DHLShipmentHanldingService {
     public Integer processCustomsIssueOrders(List<DHLTrackingVO> trackingVoList) {
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println("통관 문제 건");
-        System.out.println(trackingVoList.toString());
-        System.out.println("====================================");
+        // System.out.println("통관 문제 건");
+        // System.out.println(trackingVoList.toString());
+        // System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
@@ -75,9 +74,9 @@ public class DHLShipmentHanldingService {
     public Integer processOtherIssueOrders(List<DHLTrackingVO> trackingVoList) {
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println("기타 문제 건");
-        System.out.println(trackingVoList.toString());
-        System.out.println("====================================");
+        // System.out.println("기타 문제 건");
+        // System.out.println(trackingVoList.toString());
+        // System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
@@ -88,9 +87,9 @@ public class DHLShipmentHanldingService {
     public Integer processDelayedOrders(List<DHLTrackingVO> trackingVoList) {
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println("배송 지연되고 있는 건 처리");
-        System.out.println(trackingVoList.toString());
-        System.out.println("====================================");
+        // System.out.println("배송 지연되고 있는 건 처리");
+        // System.out.println(trackingVoList.toString());
+        // System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
@@ -102,9 +101,9 @@ public class DHLShipmentHanldingService {
         // 조회되지 않는 건들은 insert 하고 슬랙으로 집계알림과 다르게 따로 안내 나갈것.
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println("조회가 불가한 건");
-        System.out.println(trackingVoList.toString());
-        System.out.println("====================================");
+        // System.out.println("조회가 불가한 건");
+        // System.out.println(trackingVoList.toString());
+        // System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
@@ -116,9 +115,9 @@ public class DHLShipmentHanldingService {
         // 조회되지 않는 건들은 insert 하고 슬랙으로 집계알림과 다르게 따로 안내 나갈것.
         int dbInserted = insertErrorShipments(trackingVoList);
         boolean spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        System.out.println("반송된 건");
-        System.out.println(trackingVoList.toString());
-        System.out.println("====================================");
+        // System.out.println("반송된 건");
+        // System.out.println(trackingVoList.toString());
+        // System.out.println("====================================");
         if (dbInserted == trackingVoList.size() && spreadSheetInserted) {
             return 1;
         }
@@ -189,17 +188,24 @@ public class DHLShipmentHanldingService {
         return false;
     }
 
-    private Map<String, Map<String, Object>> readIncompleteSheetOrders() {
-        List<String> columns = Arrays.asList("A", "B", "C", "E", "F", "G", "H", "I", "J", "K", "L", "M");
+    public Map<String, Map<String, Object>> readIncompleteSheetOrders() {
+
+        spreadSheet.setSheet(SHEET);
+        spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
+        spreadSheet.setSheetID(SHEET_ID);
+        List<List<Object>> contents = spreadSheet.getContents("A:N");
+        List<String> columns = Arrays.asList("A", "B", "C", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N");
 
         Map<String, Map<String, Object>> excelMap = new HashMap<>();
         // rowIndex 2 부터가 실제 값임.
-        int rowIndex = 1;
-        for (List<Object> content : spreadSheet.getContents("A:M")) {
-            if (rowIndex == 1) {
+        int rowIndex = 0;
+        for (List<Object> content : contents) {
+            ++rowIndex;
+            boolean isCompleted = (boolean) content.get(13).equals("TRUE");
+            if (rowIndex <= 1) {
                 // 헤더 부분 점프
                 continue;
-            } else if (content.get(13).equals("True")) {
+            } else if (isCompleted) {
                 // 완료 여부 -> 체크 인 것들은 점프
                 continue;
             } else {
@@ -208,91 +214,104 @@ public class DHLShipmentHanldingService {
                     row.put(columns.get(i), content.get(i));
                 }
                 row.put("row", rowIndex);
-                excelMap.put((String) content.get(1), row);
+                excelMap.put((String) content.get(2), row);
             }
-            try {
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            ++rowIndex;
         }
         return excelMap;
     }
 
     public int updateSheetRowToNewTrackingNo() {
-        // 아직 완료되지 않은 건들의 운송장 리스트를 가져와서
-        // DB 에서 Tracking No 최신거랑 대조해봄.
-        // 기존거랑 다르면 새로 값 넣어주기.
+        // 1. 엑셀 데이터 가져오기
+        // 2. order no 로 wphpm_postmeta 데이터 찾기
+        // 3. DB 데이터랑 엑셀 데이터 비교
+        // 4. 다른거 갱신
 
         // 이미 처리된 건은 제외한 건들임.
         // C - 운송장
         // D - 새로운 운송장
-        Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
-        List<DHLTrackingVO> trackingVos = getTrackingLists(new ArrayList<String>(contents.keySet()));
+        // spreadSheet.setSheet(SHEET);
+        // spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
+        // spreadSheet.setSheetID(SHEET_ID);
+        // Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
+        // List<DHLTrackingVO> trackingVos = getTrackingLists(new
+        // ArrayList<String>(contents.keySet()));
 
-        for (DHLTrackingVO vo : trackingVos) {
-            String oldTrackingNo = (String) contents.get(vo.getOrder_no()).get("tracking_no");
-            String newTrackingNo = vo.getTracking_no();
+        // for (DHLTrackingVO vo : trackingVos) {
+        // String oldTrackingNo = (String)
+        // contents.get(vo.getOrder_no()).get("tracking_no");
+        // String newTrackingNo = vo.getTracking_no();
 
-            if (oldTrackingNo.equals(newTrackingNo)) {
-                contents.remove(vo.getOrder_no());
-            }
-        }
+        // if (oldTrackingNo.equals(newTrackingNo)) {
+        // contents.remove(vo.getOrder_no());
+        // }
+        // }
 
-        // Map<> Contents is now only conatained with the tracking no changed data.
-        if (contents.size() < 1) {
-            return 0;
-        } else {
-            for (String orderNo : new ArrayList<>(contents.keySet())) {
-                Map<String, Object> selectedRow = contents.get(orderNo);
-                String range = "D" + (String) selectedRow.get("row");
-                boolean isSuccessful = spreadSheet.updateRow(Arrays.asList(selectedRow.get("D")), range);
-            }
-            return contents.size();
-        }
+        // // Map<> Contents is now only conatained with the tracking no changed data.
+        // if (contents.size() < 1) {
+        // return 0;
+        // } else {
+        // for (String orderNo : new ArrayList<>(contents.keySet())) {
+        // Map<String, Object> selectedRow = contents.get(orderNo);
+        // String range = "D" + (String) selectedRow.get("row");
+        // boolean isSuccessful =
+        // spreadSheet.updateRow(Arrays.asList(selectedRow.get("D")), range);
+        // }
+        // return contents.size();
+        // }
+        return 0;
 
     }
 
     public boolean checkNUpdateCompleteShipments() {
+        // 1. 엑셀 데이터 가져오기
+        // 2. 운송장 번호로 현황 조회하기
+        // 3. 완료 되었으면, 완료 일자, 완료일자 - 발송일자 => 소요기간
+        // 4. 3번 값 갱신하고 완료여부에 체크하기.
+        // * 발송일자가 없는 것이 있을 수도 있으니 예외처리가 필요함.
+
         // 스프레드시트 데이터를 불러와서 완료여부가 없는 건들에 대해 운송장 검사를 한다.
         // order_no{rowNo: val, colAlph:datum... }
 
         // 업데이트는 한번에 칠 것.
-        List<DHLTrackingVO> trackingVOs = new ArrayList<>();
-        Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
-        String searchableTrackingNo = "";
-        for (String orderNo : new ArrayList<>(contents.keySet())) {
-            try {
-                String newTrackingNo = (String) contents.get(orderNo).get("D");
-                if (newTrackingNo.strip().length() > 9) {
-                    // 새로운 운송장 자리에 값이 있으면
-                    searchableTrackingNo = newTrackingNo;
-                } else {
-                    searchableTrackingNo = (String) contents.get(orderNo).get("C");
-                }
-                // 개별 운송장 조회 함수 & // 구분 작업
-                DHLTrackingVO trackingVo = dHLService.filterShipment(searchableTrackingNo);
-                // 완료 안되었으면, false
-                if (trackingVo.getTypeOfIssue().equals("delivered")) {
-                    // 완료 되었으면, DB update and SpreadSheet Update.
-                    trackingVOs.add(trackingVo);
-                    String range = "M" + String.valueOf(contents.get(orderNo).get("row"));
-                    spreadSheet.updateRow(Arrays.asList("True"), range);
+        // spreadSheet.setSheet(SHEET);
+        // spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
+        // spreadSheet.setSheetID(SHEET_ID);
+        // List<DHLTrackingVO> trackingVOs = new ArrayList<>();
+        // Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
+        // String searchableTrackingNo = "";
+        // for (String orderNo : new ArrayList<>(contents.keySet())) {
+        // try {
+        // String newTrackingNo = (String) contents.get(orderNo).get("D");
+        // if (newTrackingNo.strip().length() > 9) {
+        // // 새로운 운송장 자리에 값이 있으면
+        // searchableTrackingNo = newTrackingNo;
+        // } else {
+        // searchableTrackingNo = (String) contents.get(orderNo).get("C");
+        // }
+        // // 개별 운송장 조회 함수 & // 구분 작업
+        // DHLTrackingVO trackingVo = dHLService.filterShipment(searchableTrackingNo);
+        // // 완료 안되었으면, false
+        // if (trackingVo.getTypeOfIssue().equals("delivered")) {
+        // // 완료 되었으면, DB update and SpreadSheet Update.
+        // trackingVOs.add(trackingVo);
+        // String range = "M" + String.valueOf(contents.get(orderNo).get("row"));
+        // spreadSheet.updateRow(Arrays.asList("True"), range);
 
-                } else {
-                    continue;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-        // 한번에 업데이트 칠 것.
-        return insertDeliveredShipments(trackingVOs) > 0 ? true : false;
+        // } else {
+        // continue;
+        // }
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // return false;
+        // }
+        // }
+        // // 한번에 업데이트 칠 것.
+        // return insertDeliveredShipments(trackingVOs) > 0 ? true : false;
+        return false;
     }
 
     // 데이터 삽입하는 부분
+    // 배송 완료된 데이터를 삽입함.
     private int insertDeliveredShipments(List<DHLTrackingVO> deliveredShipments) {
         try {
             Integer isSuccessful = dhlMapper.insertDeliveredShipments(deliveredShipments);
@@ -309,6 +328,7 @@ public class DHLShipmentHanldingService {
         return 0;
     }
 
+    // 문제가 있는 배송건들에 대해 삽입함.
     private int insertErrorShipments(List<DHLTrackingVO> erraneousShipments) {
         for (DHLTrackingVO vo : erraneousShipments) {
             System.out.println(vo.toString());

@@ -40,10 +40,11 @@ public class SpreadSheetCRUDService {
     }
 
     public List<List<Object>> getContents(String range) {
-        Sheets sheet = spreadSheet.getSheetsService();
+        Sheets sheets = spreadSheet.getSheetsService();
         range = sheet + "!" + range;
+        System.out.println(range);
         try {
-            ValueRange response = sheet.spreadsheets().values().get(this.spreadSheetID, range).execute();
+            ValueRange response = sheets.spreadsheets().values().get(this.spreadSheetID, range).execute();
             List<List<Object>> values = response.getValues();
 
             if (values == null || values.isEmpty()) {
