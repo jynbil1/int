@@ -102,8 +102,6 @@ public class SpreadSheetCRUDService {
     }
 
     public boolean updateRow(List<Object> updateObj, String range) {
-        System.out.println(range);
-        System.out.println((String) updateObj.get(0));
         try {
             Sheets sheet = spreadSheet.getSheetsService();
 
