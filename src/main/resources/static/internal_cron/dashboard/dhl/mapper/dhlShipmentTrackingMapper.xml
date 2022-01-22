@@ -61,8 +61,7 @@
             delivered_orders.order_no is null and
             delivered_orders.tracking_no is null and
             issue_orders.order_no is null and 
-            issue_orders.tracking_no is null
-        limit 100;
+            issue_orders.tracking_no is null;
     </select>
 
     <select id="getOrderDetailByTrackingNo" parameterType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
