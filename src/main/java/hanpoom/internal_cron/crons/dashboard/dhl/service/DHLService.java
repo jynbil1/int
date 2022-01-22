@@ -52,9 +52,11 @@ public class DHLService {
         this.shipmentStatusCode = shipmentStatusCode;
     }
 
-    // Service
-    // Investigate Shipped Orders
-    public DHLTrackingVO filterShipment(String trackingNo) {
+    public DHLTrackingVO filterShipment(DHLTrackingVO searchVo) {
+        // Tracking No 를 조회해서 값이 하나 이상이 나올 수 있기 때문에 대비해야 함.
+
+        DHLTrackingVO trackingVo = getOrderDetailByTrackingNo(searchVo);
+        List<String> trackingNos = new ArrayList<>();
 
         // DHL 배송 상태를 파악하는 JSON 파일 객체를 담고 있다
         JSONObject shipmentCode = new JSONObject();
@@ -64,47 +66,31 @@ public class DHLService {
             ioe.printStackTrace();
         }
 
-        // DB 에서 가져온 데이터와 DHL 데이터와 메핑해주기 위해 필요.
-        DHLTrackingVO trackingVo = getOrderDetailByTrackingNo(trackingNo);
-
-        DHLTrackingResponse response = dHLShipmentTrackingService.trackShipment(trackingNo);
-
-        // 정상적인 조회가 아닌경우,
-        if (!response.getStatus().getActionStatus().equals("Success")) {
-            // 해당 값에 대한 오류 표기 하고
-            return new DHLTrackingVO(trackingVo.getOrder_no(),
-                    trackingVo.getTracking_no(),
-                    trackingVo.getShipment_class());
-        }
         // 데이터 중에서 배송 완료가 된 이벤트 코드가 있는지 확인이 필요.
         // DHL 전산의 이유로 인해 이상한 데이터 처리(순서가 이상함 등 )가 있을 수 있음.
         // status.json 에서 정의된 이벤트 코드 유형의 가중치가 가장 높은 값을 가지고 나온다.
-        JSONObject priortyLevel = shipmentCode.getJSONObject("priorityLevel");
+        // JSONObject priortyLevel = shipmentCode.getJSONObject("priorityLevel");
         JSONObject shipmentEventCode = shipmentCode.getJSONObject("status");
 
-        // int currentPriorityNo = 99;
-        // String currentEventCode = "";
+        DHLTrackingResponse response = dHLShipmentTrackingService.trackShipment(trackingVo.getTracking_no());
 
-        // ShipmentEvent selectedEvent = new ShipmentEvent();
-        // for (ShipmentEvent event : response.getShipmentEvents()) {
-        // currentEventCode =
-        // shipmentEventCode.getJSONObject(event.getEventCode()).getString("hpGroup");
-
-        // if (priortyLevel.getInt(currentEventCode) < currentPriorityNo) {
-        // selectedEvent = event;
-        // currentPriorityNo = priortyLevel.getInt(currentEventCode);
-        // }
-        // }
+        // 정상적인 조회가 아닌경우,
+        try {
+            if (!response.getStatus().getActionStatus().equals("Success")) {
+                // 해당 값에 대한 오류 표기 하고
+                return new DHLTrackingVO(
+                        trackingVo.getOrder_no(),
+                        trackingVo.getTracking_no(),
+                        trackingVo.getShipment_class());
+            }
+        } catch (NullPointerException np) {
+            System.out.println(response.toString());
+        }
 
         // events 들 중 배송 완료 값이 있으면 오케이. 없으면 제일 최신 데이터 가져오기
         ShipmentEvent selectedEvent = null;
-        // "WC", "FD" 는 타배송사
-        // 타 배송사로 배송하는 건들 또한 결국에는 배송 완료 처리가 되는 사례가 많다.
-        // 반복문을 돌릴 때 아래 후보 값을 만나면 바로 탈출하기 때문에, 거꾸로 조회를 하면서 탐색하는게
-        // 타 배송사 처리보다 배송완료 처리의 값을 먼저 만나 반복문을 탈출할 수 있다.
-        List<ShipmentEvent> shipmentLists = response.getShipmentEvents();
-        Collections.reverse(shipmentLists);
-        for (ShipmentEvent event : shipmentLists) {
+        // "WC", "FD" 는 타 배송사
+        for (ShipmentEvent event : response.getShipmentEvents()) {
             if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK", "WC", "FD").contains(event.getEventCode())) {
                 selectedEvent = event;
                 break;
@@ -121,91 +107,44 @@ public class DHLService {
                 .getString("hpGroup");
 
         String orderNo = String.valueOf(response.getShipmentDetail().getShipmentReference());
+        DHLTrackingVO responseVo = new DHLTrackingVO();
+
+        responseVo.setOrder_no(orderNo);
+        responseVo.setEvent(response.getTrackingNo());
+        responseVo.setShipped_dtime(response.getShipmentDetail().getShippedDate());
+        responseVo.setEvent(shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"));
+        responseVo.setEvent_code(selectedEvent.getEventCode());
+        responseVo.setEvent_dtime(String.format("%s %s", selectedEvent.getDate(), selectedEvent.getTime()));
+        responseVo.setShipment_class(trackingVo.getShipment_class());
+        responseVo.setShipment_issue_type(eventCase);
+
         switch (eventCase) {
             case "delivered":
-                return new DHLTrackingVO(
-                        orderNo,
-                        response.getTrackingNo(),
-                        selectedEvent.getEventCode(),
-                        shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                        selectedEvent.getDate(),
-                        selectedEvent.getTime(),
-                        response.getShipmentDetail().getShippedDate());
+                return responseVo;
+
             case "returned":
-                return new DHLTrackingVO(
-                        orderNo,
-                        trackingVo.getOrder_date(),
-                        response.getTrackingNo(),
-                        selectedEvent.getEventCode(),
-                        shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                        selectedEvent.getDate(),
-                        selectedEvent.getTime(),
-                        response.getShipmentDetail().getShippedDate(),
-                        trackingVo.getShipment_class(),
-                        eventCase);
+                responseVo.setTypeOfIssue("other-issue");
+                return responseVo;
+
             case "urgency-customs":
-                return new DHLTrackingVO(
-                        orderNo,
-                        trackingVo.getOrder_date(),
-                        response.getTrackingNo(),
-                        selectedEvent.getEventCode(),
-                        shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                        selectedEvent.getDate(),
-                        selectedEvent.getTime(),
-                        selectedEvent.getFurtherDetails(),
-                        selectedEvent.getNextSteps(),
-                        response.getShipmentDetail().getShippedDate(),
-                        trackingVo.getShipment_class(),
-                        eventCase);
+                responseVo.setEventRemarkDetails(selectedEvent.getFurtherDetails());
+                responseVo.setEventRemarkNextSteps(selectedEvent.getNextSteps());
+                responseVo.setTypeOfIssue("clearance-issue");
+                return responseVo;
 
             case "urgency-shipment":
-                return new DHLTrackingVO(
-                        orderNo,
-                        trackingVo.getOrder_date(),
-                        response.getTrackingNo(),
-                        selectedEvent.getEventCode(),
-                        shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                        selectedEvent.getDate(),
-                        selectedEvent.getTime(),
-                        response.getShipmentDetail().getShippedDate(),
-                        trackingVo.getShipment_class(),
-                        eventCase);
+                responseVo.setTypeOfIssue("other-issue");
+                return responseVo;
+
             case "refuse":
-                return new DHLTrackingVO(
-                        orderNo,
-                        trackingVo.getOrder_date(),
-                        response.getTrackingNo(),
-                        selectedEvent.getEventCode(),
-                        shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                        selectedEvent.getDate(),
-                        selectedEvent.getTime(),
-                        response.getShipmentDetail().getShippedDate(),
-                        trackingVo.getShipment_class(),
-                        eventCase);
+                responseVo.setTypeOfIssue("other-issue");
+                return responseVo;
             case "exception":
-                return new DHLTrackingVO(
-                        orderNo,
-                        trackingVo.getOrder_date(),
-                        response.getTrackingNo(),
-                        selectedEvent.getEventCode(),
-                        shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                        selectedEvent.getDate(),
-                        selectedEvent.getTime(),
-                        response.getShipmentDetail().getShippedDate(),
-                        trackingVo.getShipment_class(),
-                        eventCase);
+                responseVo.setTypeOfIssue("other-issue");
+                return responseVo;
             case "clearance-delay":
-                return new DHLTrackingVO(
-                        orderNo,
-                        trackingVo.getOrder_date(),
-                        response.getTrackingNo(),
-                        selectedEvent.getEventCode(),
-                        shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                        selectedEvent.getDate(),
-                        selectedEvent.getTime(),
-                        response.getShipmentDetail().getShippedDate(),
-                        trackingVo.getShipment_class(),
-                        eventCase);
+                responseVo.setTypeOfIssue("other-issue");
+                return responseVo;
             // 이하 차후 목적을 위해 남겨놓음.
             // case "clearance-process":
             // break;
@@ -218,30 +157,24 @@ public class DHLService {
 
             // shipped 인 상태에서 아직도 발송을 안한 케이스의 경우 문제로 빠짐.
             case "shipment-ready":
-                return new DHLTrackingVO(
-                        orderNo,
-                        trackingVo.getOrder_date(),
-                        response.getTrackingNo(),
-                        selectedEvent.getEventCode(),
-                        shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                        selectedEvent.getDate(),
-                        selectedEvent.getTime(),
-                        response.getShipmentDetail().getShippedDate(),
-                        trackingVo.getShipment_class(),
-                        eventCase);
+                responseVo.setTypeOfIssue("other-issue");
+                return responseVo;
             // 위의 조건에도 부합하지 않은 건들은 배송 기간을 조회하여 지연여부를 확인함.
             default:
-                // int delayAllowableDays = 10;
-                // if (!response.get.equals("regular")){
-                // delayAllowableDays = 5;
-                // }
-                    // 차후에 바꿔야 할듯.
-                if (isDelayedShipment(response.getShipmentEvents(), 10)) {
+                // 무무면 5일 일반은 10일
+                int delayAllowableDays = 10;
+                if (!trackingVo.getShipment_class().equals("regular")) {
+                    delayAllowableDays = 5;
+                }
+
+                if (isDelayedShipment(response.getShipmentEvents(), delayAllowableDays)) {
                     return new DHLTrackingVO(
                             orderNo,
                             response.getTrackingNo(),
-                            response.getShipmentDetail().getShippedDate());
+                            response.getShipmentDetail().getShippedDate(),
+                            trackingVo.getShipment_class());
                 }
+                break;
         }
         return null;
     }
@@ -301,6 +234,7 @@ public class DHLService {
 
             // 반환된 매 운송장 값의 결과.
             for (DHLTrackingResponse response : storage.getResponses()) {
+                String shipmentClass = jsonMap.get(response.getTrackingNo()).get("shipment_class");
 
                 // 정상적인 조회가 아닌경우,
                 try {
@@ -310,7 +244,7 @@ public class DHLService {
                         untrackableOrders.add(new DHLTrackingVO(
                                 jsonMap.get(response.getTrackingNo()).get("order_no"),
                                 response.getTrackingNo(),
-                                jsonMap.get(response.getTrackingNo()).get("shipment_class")));
+                                shipmentClass));
                         continue;
                     }
                 } catch (NullPointerException np) {
@@ -354,99 +288,54 @@ public class DHLService {
                 // 위에서 가중치가 가장 높은 Event 를 추출함.
                 String eventCase = shipmentEventCode.getJSONObject(selectedEvent.getEventCode())
                         .getString("hpGroup");
-
                 String orderNo = String.valueOf(response.getShipmentDetail().getShipmentReference());
+
+                DHLTrackingVO responseVo = new DHLTrackingVO();
+                responseVo.setOrder_no(orderNo);
+                responseVo.setEvent(response.getTrackingNo());
+                responseVo.setShipped_dtime(response.getShipmentDetail().getShippedDate());
+                responseVo.setEvent(shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"));
+                responseVo.setEvent_code(selectedEvent.getEventCode());
+                responseVo.setEvent_dtime(String.format("%s %s", selectedEvent.getDate(), selectedEvent.getTime()));
+                responseVo.setShipment_class(shipmentClass);
+                responseVo.setShipment_issue_type(eventCase);
+                responseVo.setOrder_date(jsonMap.get(response.getTrackingNo()).get("order_date"));
+
                 switch (eventCase) {
                     case "delivered":
-                        deliveredOrders.add(new DHLTrackingVO(
-                                orderNo,
-                                response.getTrackingNo(),
-                                selectedEvent.getEventCode(),
-                                shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                                selectedEvent.getDate(),
-                                selectedEvent.getTime(),
-                                response.getShipmentDetail().getShippedDate()));
+                        deliveredOrders.add(responseVo);
                         break;
-                    case "returned":
-                        returnedOrders.add(new DHLTrackingVO(
-                                orderNo,
-                                jsonMap.get(response.getTrackingNo()).get("order_date"),
-                                response.getTrackingNo(),
-                                selectedEvent.getEventCode(),
-                                shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                                selectedEvent.getDate(),
-                                selectedEvent.getTime(),
-                                response.getShipmentDetail().getShippedDate(),
-                                jsonMap.get(response.getTrackingNo()).get("shipment_class"),
-                                eventCase));
-                        break;
-                    case "urgency-customs":
-                        customIssueOrders.add(new DHLTrackingVO(
-                                orderNo,
-                                jsonMap.get(response.getTrackingNo()).get("order_date"),
-                                response.getTrackingNo(),
-                                selectedEvent.getEventCode(),
-                                shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                                selectedEvent.getDate(),
-                                selectedEvent.getTime(),
-                                selectedEvent.getFurtherDetails(),
-                                selectedEvent.getNextSteps(),
-                                response.getShipmentDetail().getShippedDate(),
-                                jsonMap.get(response.getTrackingNo()).get("shipment_class"),
-                                eventCase));
 
+                    case "returned":
+                        responseVo.setTypeOfIssue("other-issue");
+                        returnedOrders.add(responseVo);
                         break;
+
+                    case "urgency-customs":
+                        responseVo.setEventRemarkDetails(selectedEvent.getFurtherDetails());
+                        responseVo.setEventRemarkNextSteps(selectedEvent.getNextSteps());
+                        responseVo.setTypeOfIssue("clearance-issue");
+                        customIssueOrders.add(responseVo);
+                        break;
+
                     case "urgency-shipment":
-                        otherIssueOrders.add(new DHLTrackingVO(
-                                orderNo,
-                                jsonMap.get(response.getTrackingNo()).get("order_date"),
-                                response.getTrackingNo(),
-                                selectedEvent.getEventCode(),
-                                shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                                selectedEvent.getDate(),
-                                selectedEvent.getTime(),
-                                response.getShipmentDetail().getShippedDate(),
-                                jsonMap.get(response.getTrackingNo()).get("shipment_class"),
-                                eventCase));
+                        responseVo.setTypeOfIssue("other-issue");
+                        otherIssueOrders.add(responseVo);
                         break;
+
                     case "refuse":
-                        otherIssueOrders.add(new DHLTrackingVO(
-                                orderNo,
-                                jsonMap.get(response.getTrackingNo()).get("order_date"),
-                                response.getTrackingNo(),
-                                selectedEvent.getEventCode(),
-                                shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                                selectedEvent.getDate(),
-                                selectedEvent.getTime(),
-                                response.getShipmentDetail().getShippedDate(),
-                                jsonMap.get(response.getTrackingNo()).get("shipment_class"),
-                                eventCase));
+                        responseVo.setTypeOfIssue("other-issue");
+                        otherIssueOrders.add(responseVo);
                         break;
+
                     case "exception":
-                        otherIssueOrders.add(new DHLTrackingVO(
-                                orderNo,
-                                jsonMap.get(response.getTrackingNo()).get("order_date"),
-                                response.getTrackingNo(),
-                                selectedEvent.getEventCode(),
-                                shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                                selectedEvent.getDate(),
-                                selectedEvent.getTime(),
-                                response.getShipmentDetail().getShippedDate(),
-                                jsonMap.get(response.getTrackingNo()).get("shipment_class"),
-                                eventCase));
+                        responseVo.setTypeOfIssue("other-issue");
+                        otherIssueOrders.add(responseVo);
                         break;
+
                     case "clearance-delay":
-                        otherIssueOrders.add(new DHLTrackingVO(
-                                orderNo,
-                                jsonMap.get(response.getTrackingNo()).get("order_date"),
-                                response.getTrackingNo(),
-                                selectedEvent.getEventCode(),
-                                shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                                selectedEvent.getDate(),
-                                selectedEvent.getTime(),
-                                response.getShipmentDetail().getShippedDate(),
-                                jsonMap.get(response.getTrackingNo()).get("shipment_class"),
-                                eventCase));
+                        responseVo.setTypeOfIssue("other-issue");
+                        otherIssueOrders.add(responseVo);
                         break;
                     // 이하 차후 목적을 위해 남겨놓음.
                     // case "clearance-process":
@@ -460,23 +349,14 @@ public class DHLService {
 
                     // shipped 인 상태에서 아직도 발송을 안한 케이스의 경우 문제로 빠짐.
                     case "shipment-ready":
-                        otherIssueOrders.add(new DHLTrackingVO(
-                                orderNo,
-                                jsonMap.get(response.getTrackingNo()).get("order_date"),
-                                response.getTrackingNo(),
-                                selectedEvent.getEventCode(),
-                                shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"),
-                                selectedEvent.getDate(),
-                                selectedEvent.getTime(),
-                                response.getShipmentDetail().getShippedDate(),
-                                jsonMap.get(response.getTrackingNo()).get("shipment_class"),
-                                eventCase));
+                        responseVo.setTypeOfIssue("other-issue");
+                        otherIssueOrders.add(responseVo);
                         break;
                     // 위의 조건에도 부합하지 않은 건들은 배송 기간을 조회하여 지연여부를 확인함.
                     default:
                         // 무무면 5일 일반은 10일
                         int delayAllowableDays = 10;
-                        if (!jsonMap.get(response.getTrackingNo()).get("shipment_class").equals("regular")) {
+                        if (!shipmentClass.equals("regular")) {
                             delayAllowableDays = 5;
                         }
 
@@ -485,7 +365,7 @@ public class DHLService {
                                     orderNo,
                                     response.getTrackingNo(),
                                     response.getShipmentDetail().getShippedDate(),
-                                    jsonMap.get(response.getTrackingNo()).get("shipment_class")));
+                                    shipmentClass));
                         }
                         break;
                 }
@@ -536,9 +416,9 @@ public class DHLService {
         return null;
     };
 
-    private DHLTrackingVO getOrderDetailByTrackingNo(String trackingNo) {
+    private DHLTrackingVO getOrderDetailByTrackingNo(DHLTrackingVO searcVo) {
         try {
-            return mapper.getOrderDetailByTrackingNo(trackingNo);
+            return mapper.getOrderDetailByTrackingNo(searcVo);
         } catch (Exception e) {
             e.printStackTrace();
         }

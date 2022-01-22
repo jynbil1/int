@@ -1,7 +1,9 @@
 package hanpoom.internal_cron.crons.dashboard.dhl.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +25,8 @@ public class DHLShipmentHanldingService {
     private static final String SHIPMENT_REPORT_HOOK_URL = "https://hooks.slack.com/services/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";
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
+    private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
     private final static String SPREADSHEET_ID = "1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw";
     private final static String SHEET = "배송상황";
     private final static int SHEET_ID = 448567097;
@@ -172,14 +176,13 @@ public class DHLShipmentHanldingService {
             for (DHLTrackingVO orderShipment : orderShipments) {
                 // 반짝이랑 무무는 포함하면 안됨. 여기에서 입력에 성공한 값에 대해서만 집계를 해야함.
                 dataSets.add(Arrays.asList(
-                        today, orderShipment.getShipment_class(), orderShipment.getOrder_no(),
+                        "FALSE", today, orderShipment.getShipment_class(), orderShipment.getOrder_no(),
                         orderShipment.getTracking_no(), "",
                         orderShipment.getOrder_date() == null ? "" : orderShipment.getOrder_date(),
                         orderShipment.getShipped_dtime() == null ? "" : orderShipment.getShipped_dtime(),
                         "", "",
                         orderShipment.getShipment_issue_type() == null ? "" : orderShipment.getShipment_issue_type(),
-                        orderShipment.getEvent(), "FALSE", "",
-                        "FALSE", ""));
+                        orderShipment.getEvent(), "FALSE", "", ""));
             }
             return spreadSheet.insertRows(dataSets);
         } catch (Exception e) {
@@ -200,7 +203,7 @@ public class DHLShipmentHanldingService {
         int rowIndex = 0;
         for (List<Object> content : contents) {
             ++rowIndex;
-            boolean isCompleted = (boolean) content.get(13).equals("TRUE");
+            boolean isCompleted = (boolean) content.get(0).equals("TRUE");
             if (rowIndex <= 1) {
                 // 헤더 부분 점프
                 continue;
@@ -236,7 +239,7 @@ public class DHLShipmentHanldingService {
 
         for (DHLTrackingVO vo : trackingVos) {
             // C 컬럼에 운송장 번호가 있음.
-            String oldTrackingNo = (String) contents.get(vo.getOrder_no()).get("C");
+            String oldTrackingNo = (String) contents.get(vo.getOrder_no()).get("E");
             String newTrackingNo = vo.getTracking_no();
 
             if (oldTrackingNo.equals(newTrackingNo)) {
@@ -256,13 +259,13 @@ public class DHLShipmentHanldingService {
         } else {
             for (String orderNo : new ArrayList<>(contents.keySet())) {
                 Map<String, Object> selectedRow = contents.get(orderNo);
-                String range = "E" + String.valueOf((Integer) selectedRow.get("row"));
+                String range = "F" + String.valueOf((Integer) selectedRow.get("row"));
 
-                // spreadSheet.setSheet(SHEET);
+                spreadSheet.setSheet(SHEET);
                 spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
                 // spreadSheet.setSheetID(SHEET_ID);
 
-                spreadSheet.updateRow(Arrays.asList((String)selectedRow.get("E")), range);
+                spreadSheet.updateRow(Arrays.asList((String) selectedRow.get("F")), range);
             }
             return contents.size();
         }
@@ -280,41 +283,56 @@ public class DHLShipmentHanldingService {
         // order_no{rowNo: val, colAlph:datum... }
 
         // 업데이트는 한번에 칠 것.
-        // spreadSheet.setSheet(SHEET);
-        // spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
-        // spreadSheet.setSheetID(SHEET_ID);
-        // List<DHLTrackingVO> trackingVOs = new ArrayList<>();
-        // Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
-        // String searchableTrackingNo = "";
-        // for (String orderNo : new ArrayList<>(contents.keySet())) {
-        // try {
-        // String newTrackingNo = (String) contents.get(orderNo).get("D");
-        // if (newTrackingNo.strip().length() > 9) {
-        // // 새로운 운송장 자리에 값이 있으면
-        // searchableTrackingNo = newTrackingNo;
-        // } else {
-        // searchableTrackingNo = (String) contents.get(orderNo).get("C");
-        // }
-        // // 개별 운송장 조회 함수 & // 구분 작업
-        // DHLTrackingVO trackingVo = dHLService.filterShipment(searchableTrackingNo);
-        // // 완료 안되었으면, false
-        // if (trackingVo.getTypeOfIssue().equals("delivered")) {
-        // // 완료 되었으면, DB update and SpreadSheet Update.
-        // trackingVOs.add(trackingVo);
-        // String range = "M" + String.valueOf(contents.get(orderNo).get("row"));
-        // spreadSheet.updateRow(Arrays.asList("True"), range);
 
-        // } else {
-        // continue;
-        // }
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // return false;
-        // }
-        // }
-        // // 한번에 업데이트 칠 것.
-        // return insertDeliveredShipments(trackingVOs) > 0 ? true : false;
-        return false;
+        // spreadSheet.setSheetID(SHEET_ID);
+        List<DHLTrackingVO> trackingVOs = new ArrayList<>();
+        Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
+        String searchableTrackingNo = "";
+        for (String orderNo : new ArrayList<>(contents.keySet())) {
+            try {
+                String newTrackingNo = (String) contents.get(orderNo).get("F");
+                if (newTrackingNo.strip().length() > 9) {
+                    // 새로운 운송장 자리에 값이 있으면
+                    searchableTrackingNo = newTrackingNo;
+                } else {
+                    searchableTrackingNo = (String) contents.get(orderNo).get("E");
+                }
+                // 개별 운송장 조회 함수 & // 구분 작업
+                DHLTrackingVO trackingVo = dHLService.filterShipment(new DHLTrackingVO(orderNo, searchableTrackingNo));
+                // 완료 안되었으면, false
+                if (trackingVo.getTypeOfIssue().equals("delivered")) {
+                    // 완료 되었으면, DB update and SpreadSheet Update.
+                    // 1. 배송 완료일자 - I
+                    // 2. 배송 기간 - J
+                    // 3. 완료 여부 - A
+                    LocalDateTime shippedDtime = LocalDateTime.parse(trackingVo.getShipped_dtime(),
+                            DateTimeFormatter.ofPattern(DATETIME_PATTERN));
+                    LocalDateTime deliveredDtime = LocalDateTime.parse(trackingVo.getEvent_dtime(),
+                            DateTimeFormatter.ofPattern(DATETIME_PATTERN));
+
+                    float shippingDuration = (float) LocalDateTime.from(shippedDtime).until(deliveredDtime,
+                            ChronoUnit.HOURS);
+
+                    trackingVOs.add(trackingVo);
+                    String row = String.valueOf(contents.get(orderNo).get("row"));
+
+                    spreadSheet.setSheet(SHEET);
+                    spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
+
+                    spreadSheet.updateRow(Arrays.asList("True"), "A" + row);
+                    spreadSheet.updateRow(Arrays.asList(trackingVo.getEvent_dtime()), "I" + row);
+                    spreadSheet.updateRow(Arrays.asList(shippingDuration), "J" + row);
+
+                } else {
+                    continue;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        // 한번에 업데이트 칠 것.
+        return insertDeliveredShipments(trackingVOs) > 0 ? true : false;
     }
 
     // 데이터 삽입하는 부분

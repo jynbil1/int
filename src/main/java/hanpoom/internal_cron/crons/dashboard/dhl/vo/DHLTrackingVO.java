@@ -32,6 +32,12 @@ public class DHLTrackingVO {
     public DHLTrackingVO() {
     }
 
+    // 스프레드 시트에서 읽어드린 데이터 로우로 운송장 재탐색하는 목적
+    public DHLTrackingVO(String orderNo, String trackingNo) {
+        this.order_no = orderNo;
+        this.tracking_no = trackingNo;
+    }
+
     // for Untracable Orders
     public DHLTrackingVO(String orderNo, String trackingNo, String shipmentClass) {
         this.order_no = orderNo;
@@ -56,79 +62,4 @@ public class DHLTrackingVO {
         this.typeOfIssue = "delay";
         this.shipment_class = shipmentClass;
     }
-
-    // for delivered
-    public DHLTrackingVO(String orderNo, String trackingNo,
-            String eventCode, String event, String eventDate,
-            String eventTime, String shipped_dtime) {
-        this.order_no = orderNo;
-        this.tracking_no = trackingNo;
-        this.event_code = eventCode;
-        this.event = event;
-        this.event_dtime = String.format("%s %s", eventDate, eventTime);
-        this.shipped_dtime = shipped_dtime;
-        this.typeOfIssue = "delivered";
-
-        // this.event_dtime = LocalDateTime.parse(eventDate + " " + eventTime,
-        // DateTimeFormatter.ofPattern(DATETIME_FORMAT));
-
-    }
-
-    // for issue orders
-    public DHLTrackingVO(String orderNo,
-            String order_date,
-            String trackingNo,
-            String eventCode,
-            String event,
-            String eventDate,
-            String eventTime,
-            String shipped_dtime,
-            String shipment_class,
-            String shipment_issue_type) {
-        this.order_no = orderNo;
-        this.order_date = order_date;
-        this.tracking_no = trackingNo;
-        this.event_code = eventCode;
-        this.event = event;
-        this.event_dtime = String.format("%s %s", eventDate, eventTime);
-        this.shipped_dtime = shipped_dtime;
-        this.shipment_class = shipment_class;
-        this.shipment_issue_type = shipment_issue_type;
-        this.typeOfIssue = "other-issue";
-
-    }
-
-    // for customs clearanace issue orders
-    public DHLTrackingVO(String orderNo,
-            String order_date,
-            String trackingNo,
-            String eventCode,
-            String event,
-            String eventDate,
-            String eventTime,
-            String eventRemarkDetails,
-            String eventRemarkNextSteps,
-            String shipped_dtime,
-            String shipment_class,
-            String shipment_issue_type) {
-        this.order_no = orderNo;
-        this.order_date = order_date;
-        this.tracking_no = trackingNo;
-        this.event_code = eventCode;
-        this.event = event;
-        this.event_dtime = String.format("%s %s", eventDate, eventTime);
-        this.eventRemarkDetails = eventRemarkDetails;
-        this.eventRemarkNextSteps = eventRemarkNextSteps;
-        this.shipped_dtime = shipped_dtime;
-        this.shipment_class = shipment_class;
-        this.shipment_issue_type = shipment_issue_type;
-        this.typeOfIssue = "clearance-issue";
-
-
-        // this.event_dtime = LocalDateTime.parse(eventDate + " " + eventTime,
-        // DateTimeFormatter.ofPattern(DATETIME_FORMAT));
-
-    }
-    // public DHLTrackingVO(){}
-
 }
