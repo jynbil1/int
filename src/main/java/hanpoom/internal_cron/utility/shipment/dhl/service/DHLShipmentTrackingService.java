@@ -247,7 +247,7 @@ public class DHLShipmentTrackingService implements DHLAPI {
         shipper.setShipperDetail(shipmentInfo.getString("ShipperName"),
                 shipperObj.optString("City"), shipperObj.optString("Suburb"),
                 shipperObj.optString("StateOrProvinceCode"),
-                shipperObj.get("PostalCode").toString(), shipperObj.optString("CountryCode"));
+                shipperObj.optString("PostalCode"), shipperObj.optString("CountryCode"));
 
         // Shipment Info -> Shipment Detail -> Consignee
         JSONObject consigneeObj = shipmentInfo.getJSONObject("Consignee");
@@ -255,7 +255,7 @@ public class DHLShipmentTrackingService implements DHLAPI {
                 consigneeObj.optString("City"),
                 consigneeObj.optString("Suburb"),
                 consigneeObj.optString("StateOrProvinceCode"),
-                consigneeObj.get("PostalCode").toString(), consigneeObj.optString("CountryCode"));
+                consigneeObj.optString("PostalCode"), consigneeObj.optString("CountryCode"));
 
         // Recycle the variable declared above for the shipmentEvents
 

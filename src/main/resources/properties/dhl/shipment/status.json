@@ -82,7 +82,7 @@
             "eventGroup": "Clearance delay",
             "engDesc": "Customs status updated",
             "korDesc": "세관 정보가 업데이트 되었습니다.",
-            "hpGroup": "clearance-delay"
+            "hpGroup": "in-transit"
         },
         "UD": {
             "eventGroup": "Clearance delay",

@@ -35,9 +35,18 @@ public class DHLCron {
     public void cronJobShipmentMonitoringSystem() {
         LocalDateTime now = LocalDateTime.now();
         String executeTime = now.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
-        System.out.println(executeTime + " 에 배송 모니터링 작업이 시작되었습니다.");
+        System.out.println(executeTime + " 에 작업이 시작되었습니다.");
 
         DHLTrackingResult result = dHLService.filterShipments();
+
+        // // 통관 문제
+        // System.out.println(dHLService.getCustomsIssueOrders().toString());
+        // // 기타 문제
+        // System.out.println(dHLService.getOtherIssueOrders().toString());
+        // // 배송 완료
+        // System.out.println(dHLService.getDeliveredOrders().toString());
+        // System.out.println(dHLService.getUntrackableOrders().toString());
+        // System.out.println(dHLService.getDelayedOrders().toString());
 
         if (dHLService.getDeliveredOrders().size() > 0) {
             dHLShipmentHanldingService.processDeliveredOrders(dHLService.getDeliveredOrders());
@@ -64,6 +73,7 @@ public class DHLCron {
 
         }
 
+
         String executeMessage = now.format(DateTimeFormatter.ofPattern(DATE_PATTERN + " HH"));
         String messageText = "%s시 발송 모니터링 현황\n"
                 + "---------------------------------------------------\n"
@@ -71,7 +81,7 @@ public class DHLCron {
                 + "통관 문제: %s 건\n\n" + "조회 불가: %s 건\n"
                 + "이외 문제: %s 건\n" + "반송 완료: %s 건\n"
                 + "---------------------------------------------------\n"
-                + "배송중: %s 건\n"
+                + "배송중: %s 건\n" 
                 + "<https://docs.google.com/spreadsheets/d/1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw/edit#gid=448567097|문제 보러가기>";
 
         boolean isSent = dHLShipmentHanldingService.sendSlackMessage(
@@ -112,6 +122,8 @@ public class DHLCron {
         // 2. order no 로 wphpm_postmeta 데이터 찾기
         // 3. DB 데이터랑 엑셀 데이터 비교
         // 4. 다른거 갱신
+        dHLShipmentHanldingService.updateSheetRowToNewTrackingNo();
+
     }
 
     // 이미 처리했던 데이터들을 조회하여 문제가 발생한 건들을 다시 파악한다.
@@ -125,6 +137,8 @@ public class DHLCron {
         // 2. 운송장 번호로 현황 조회하기
         // 3. 완료 되었으면, 완료 일자, 완료일자 - 발송일자 => 소요기간
         // 4. 3번 값 갱신하고 완료여부에 체크하기.
+        dHLShipmentHanldingService.checkNUpdateCompleteShipments();
+
     }
 
 }

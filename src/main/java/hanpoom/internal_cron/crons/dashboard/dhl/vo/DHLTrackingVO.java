@@ -47,6 +47,7 @@ public class DHLTrackingVO {
         this.event = "발송물 조회가 되지 않습니다.";
         this.event_dtime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
         this.typeOfIssue = "untrackable";
+        this.shipment_issue_type = "untrackable";
         this.shipment_class = shipmentClass;
     }
 

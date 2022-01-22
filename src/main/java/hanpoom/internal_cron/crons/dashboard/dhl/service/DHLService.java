@@ -483,7 +483,7 @@ public class DHLService {
                     .count();
 
             if (days >= delayAllowableDays) {
-                System.out.println(String.valueOf(days) + " 일 지남.");
+                // System.out.println(String.valueOf(days) + " 일 지남.");
                 return true;
             } else {
                 return false;
