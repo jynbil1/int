@@ -212,12 +212,12 @@ public class DHLShipmentHanldingService {
                 continue;
             } else {
                 Map<String, Object> row = new HashMap<>();
-                for (int i = 1; i < 13; ++i) {
+                for (int i = 0; i < columns.size()-1; ++i) {
                     // Alphabet: 값
                     row.put(columns.get(i), content.get(i));
                 }
                 row.put("row", rowIndex);
-                excelMap.put((String) content.get(2), row);
+                excelMap.put((String) content.get(3), row);
             }
         }
         return excelMap;
@@ -247,7 +247,7 @@ public class DHLShipmentHanldingService {
             } else {
                 // 같지 않으면
                 Map<String, Object> tmp = contents.get(vo.getOrder_no());
-                tmp.put("E", vo.getTracking_no());
+                tmp.put("F", vo.getTracking_no());
                 contents.put(vo.getOrder_no(), tmp);
             }
         }
@@ -285,17 +285,19 @@ public class DHLShipmentHanldingService {
         // 업데이트는 한번에 칠 것.
 
         // spreadSheet.setSheetID(SHEET_ID);
+
         List<DHLTrackingVO> trackingVOs = new ArrayList<>();
         Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
+
         String searchableTrackingNo = "";
         for (String orderNo : new ArrayList<>(contents.keySet())) {
             try {
-                String newTrackingNo = (String) contents.get(orderNo).get("F");
+                String newTrackingNo = (String) contents.get(orderNo).get("G");
                 if (newTrackingNo.strip().length() > 9) {
                     // 새로운 운송장 자리에 값이 있으면
                     searchableTrackingNo = newTrackingNo;
                 } else {
-                    searchableTrackingNo = (String) contents.get(orderNo).get("E");
+                    searchableTrackingNo = (String) contents.get(orderNo).get("F");
                 }
                 // 개별 운송장 조회 함수 & // 구분 작업
                 DHLTrackingVO trackingVo = dHLService.filterShipment(new DHLTrackingVO(orderNo, searchableTrackingNo));
@@ -321,7 +323,7 @@ public class DHLShipmentHanldingService {
 
                     spreadSheet.updateRow(Arrays.asList("True"), "A" + row);
                     spreadSheet.updateRow(Arrays.asList(trackingVo.getEvent_dtime()), "I" + row);
-                    spreadSheet.updateRow(Arrays.asList(shippingDuration), "J" + row);
+                    spreadSheet.updateRow(Arrays.asList(String.format("%.2g%n",(float)shippingDuration/24)), "J" + row);
 
                 } else {
                     continue;

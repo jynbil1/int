@@ -88,14 +88,23 @@ public class DHLService {
         }
 
         // events 들 중 배송 완료 값이 있으면 오케이. 없으면 제일 최신 데이터 가져오기
-        ShipmentEvent selectedEvent = null;
+
         // "WC", "FD" 는 타 배송사
+        ShipmentEvent selectedEvent = null;
+
         for (ShipmentEvent event : response.getShipmentEvents()) {
-            if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK", "WC", "FD").contains(event.getEventCode())) {
+            if (Arrays.asList("WC", "FD").contains(event.getEventCode())) {
                 selectedEvent = event;
                 break;
             }
         }
+        for (ShipmentEvent event : response.getShipmentEvents()) {
+            if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK").contains(event.getEventCode())) {
+                selectedEvent = event;
+                break;
+            }
+        }
+
         if (selectedEvent == null) {
             selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
         }
@@ -110,7 +119,7 @@ public class DHLService {
         DHLTrackingVO responseVo = new DHLTrackingVO();
 
         responseVo.setOrder_no(orderNo);
-        responseVo.setEvent(response.getTrackingNo());
+        responseVo.setTracking_no(response.getTrackingNo());
         responseVo.setShipped_dtime(response.getShipmentDetail().getShippedDate());
         responseVo.setEvent(shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"));
         responseVo.setEvent_code(selectedEvent.getEventCode());
@@ -120,6 +129,8 @@ public class DHLService {
 
         switch (eventCase) {
             case "delivered":
+                responseVo.setTypeOfIssue("delivered");
+
                 return responseVo;
 
             case "returned":
@@ -271,10 +282,17 @@ public class DHLService {
                 // }
                 // }
                 // events 들 중 배송 완료 값이 있으면 오케이. 없으면 제일 최신 데이터 가져오기
-                ShipmentEvent selectedEvent = null;
                 // "WC", "FD" 는 타 배송사
+                ShipmentEvent selectedEvent = null;
+
                 for (ShipmentEvent event : response.getShipmentEvents()) {
-                    if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK", "WC", "FD").contains(event.getEventCode())) {
+                    if (Arrays.asList("WC", "FD").contains(event.getEventCode())) {
+                        selectedEvent = event;
+                        break;
+                    }
+                }
+                for (ShipmentEvent event : response.getShipmentEvents()) {
+                    if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK").contains(event.getEventCode())) {
                         selectedEvent = event;
                         break;
                     }
@@ -292,7 +310,7 @@ public class DHLService {
 
                 DHLTrackingVO responseVo = new DHLTrackingVO();
                 responseVo.setOrder_no(orderNo);
-                responseVo.setEvent(response.getTrackingNo());
+                responseVo.setTracking_no(response.getTrackingNo());
                 responseVo.setShipped_dtime(response.getShipmentDetail().getShippedDate());
                 responseVo.setEvent(shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"));
                 responseVo.setEvent_code(selectedEvent.getEventCode());
@@ -303,6 +321,7 @@ public class DHLService {
 
                 switch (eventCase) {
                     case "delivered":
+                        responseVo.setTypeOfIssue("delivered");
                         deliveredOrders.add(responseVo);
                         break;
 
