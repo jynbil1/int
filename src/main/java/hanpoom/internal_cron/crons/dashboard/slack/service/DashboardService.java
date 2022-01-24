@@ -1,6 +1,7 @@
 package hanpoom.internal_cron.crons.dashboard.slack.service;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.crons.dashboard.common.mapper.CommonMapper;
@@ -37,7 +38,7 @@ public class DashboardService {
         String currentYearRevenue;
         try {
             // get the corresponding startdate and enddate
-            int thisYear = DateTime.now().getYear();
+            int thisYear = LocalDateTime.now().getYear();
             currentYearRevenue = "$"
                     + commonMapper.getRevenue(new DateRangeVO(calendar.getStartOfYear(thisYear, true),
                             calendar.getEndOfYearOpt(thisYear, true)));
