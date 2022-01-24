@@ -9,10 +9,10 @@
 		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>hanpoom</groupId>
-	<artifactId>wms</artifactId>
-	<version>2.0.1-RELEASE</version>
-	<name>wms</name>
-	<description>Hanpoom WMS-Roland</description>
+	<artifactId>int-cron</artifactId>
+	<version>1.0.0-ALPAH</version>
+	<name>int-cron</name>
+	<description>Hanpoom Internal Cron Job</description>
 
 	<properties>
 		<java.version>11</java.version>
@@ -201,21 +201,6 @@
 			<version>2.9.2</version>
 		</dependency>
 
-		<!-- GEO IP-->
-		<!-- Let you know the location of the ip -->
-		<dependency>
-			<groupId>javainetlocator</groupId>
-			<artifactId>inetaddresslocator</artifactId>
-			<version>2.18</version>
-		</dependency>
-
-		<!-- DB Logback -->
-		<dependency>
-			<groupId>org.bgee.log4jdbc-log4j2</groupId>
-			<artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
-			<version>1.16</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -257,7 +242,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>WMS-Roland</finalName>
+		<finalName>INT-CRON</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
