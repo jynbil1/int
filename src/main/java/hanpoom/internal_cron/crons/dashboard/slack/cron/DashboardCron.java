@@ -31,18 +31,19 @@ public class DashboardCron {
         String notificationMessage = "***" + strDate + "시 리포팅 ***" 
                 + "\n전일 매출: " + dashboardService.getYesterdayRevenue()
                 + "\n신규 가입자: " + dashboardService.getNewCustomers()
+                + "\n전일 주문건: " + dashboardService.getNewOrders()
                 + "\n금년 총 매출: " + dashboardService.getCurrentYearRevenue()
                 + "\n누적 회원: " + dashboardService.getTotalCustomers();
         System.out.println(notificationMessage);
-        boolean isSent = new SlackService().sendNotification(notificationMessage);
-        if (!isSent) {
-            isSent = new SlackService().sendNotification(notificationMessage);
-            if (!isSent) {
-                System.out.println("결국 실패했습니다.");
-            }
-        } else {
-            System.out.println("슬랙 알림 오케이.");
-        }
+        // boolean isSent = new SlackService().sendNotification(notificationMessage);
+        // if (!isSent) {
+        //     isSent = new SlackService().sendNotification(notificationMessage);
+        //     if (!isSent) {
+        //         System.out.println("결국 실패했습니다.");
+        //     }
+        // } else {
+        //     System.out.println("슬랙 알림 오케이.");
+        // }
     }
 
 }
