@@ -6,7 +6,7 @@ target/
 **/application.properties
 **/application-local.properties
 **/application-prod.properties
-tokens/StoredCredential
+# tokens/StoredCredential
 
 ### Files ###
 *.jar
