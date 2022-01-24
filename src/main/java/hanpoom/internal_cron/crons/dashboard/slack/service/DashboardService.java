@@ -24,7 +24,8 @@ public class DashboardService {
         String yesterdayRevenue;
         try {
             yesterdayRevenue = "$"
-                    + commonMapper.getRevenue(new DateRangeVO(calendar.getStartofYesterday(true), calendar.getEndofYesterday(true)));
+                    + commonMapper.getRevenue(
+                            new DateRangeVO(calendar.getStartofYesterday(true), calendar.getEndofYesterday(true)));
         } catch (Exception e) {
             yesterdayRevenue = "집계에 실패했습니다.";
             e.printStackTrace();
@@ -38,8 +39,8 @@ public class DashboardService {
             // get the corresponding startdate and enddate
             int thisYear = DateTime.now().getYear();
             currentYearRevenue = "$"
-                    + commonMapper.getRevenue(new DateRangeVO(calendar.getStartOfYear(thisYear, true)
-                    , calendar.getEndOfYearOpt(thisYear, true)));
+                    + commonMapper.getRevenue(new DateRangeVO(calendar.getStartOfYear(thisYear, true),
+                            calendar.getEndOfYearOpt(thisYear, true)));
         } catch (Exception e) {
             currentYearRevenue = "집계에 실패했습니다.";
             e.printStackTrace();
@@ -67,5 +68,16 @@ public class DashboardService {
             e.printStackTrace();
         }
         return totalCustomers;
+    }
+
+    public String getNewOrders() {
+        String totalOrders = null;
+        try {
+            totalOrders = commonMapper.getTotalOrders(
+                    new DateRangeVO(calendar.getStartofYesterday(true), calendar.getEndofYesterday(true))) + " 건";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return totalOrders;
     }
 }
