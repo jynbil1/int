@@ -201,13 +201,6 @@
 			<version>2.9.2</version>
 		</dependency>
 
-		<!-- Aws SDK for Amazon S3 -->
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk</artifactId>
-			<version>1.11.901</version>
-		</dependency>
-
 		<!-- GEO IP-->
 		<!-- Let you know the location of the ip -->
 		<dependency>
