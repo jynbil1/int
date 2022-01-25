@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ConfigurationPropertiesScan
 @MapperScan(value = {"hanpoom.internal_cron.*"})
 public class RolandApplication {
- 
+
 	public static void main(String[] args) {
 		SpringApplication.run(RolandApplication.class, args);
 	} 
