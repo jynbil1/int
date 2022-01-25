@@ -93,12 +93,6 @@ public class DHLService {
         ShipmentEvent selectedEvent = null;
 
         for (ShipmentEvent event : response.getShipmentEvents()) {
-            if (Arrays.asList("WC", "FD").contains(event.getEventCode())) {
-                selectedEvent = event;
-                break;
-            }
-        }
-        for (ShipmentEvent event : response.getShipmentEvents()) {
             if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK").contains(event.getEventCode())) {
                 selectedEvent = event;
                 break;
@@ -285,12 +279,6 @@ public class DHLService {
                 // "WC", "FD" 는 타 배송사
                 ShipmentEvent selectedEvent = null;
 
-                for (ShipmentEvent event : response.getShipmentEvents()) {
-                    if (Arrays.asList("WC", "FD").contains(event.getEventCode())) {
-                        selectedEvent = event;
-                        break;
-                    }
-                }
                 for (ShipmentEvent event : response.getShipmentEvents()) {
                     if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK").contains(event.getEventCode())) {
                         selectedEvent = event;
