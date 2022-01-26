@@ -212,7 +212,7 @@ public class DHLShipmentHanldingService {
                 continue;
             } else {
                 Map<String, Object> row = new HashMap<>();
-                for (int i = 0; i < columns.size()-1; ++i) {
+                for (int i = 0; i < columns.size() - 1; ++i) {
                     // Alphabet: 값
                     row.put(columns.get(i), content.get(i));
                 }
@@ -323,11 +323,14 @@ public class DHLShipmentHanldingService {
 
                     spreadSheet.updateRow(Arrays.asList("True"), "A" + row);
                     spreadSheet.updateRow(Arrays.asList(trackingVo.getEvent_dtime()), "I" + row);
-                    spreadSheet.updateRow(Arrays.asList(String.format("%.2g%n",(float)shippingDuration/24)), "J" + row);
+                    spreadSheet.updateRow(Arrays.asList(String.format("%.2g%n", (float) shippingDuration / 24)),
+                            "J" + row);
 
                 } else {
                     continue;
                 }
+            } catch (NullPointerException npe) {
+                continue;
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;

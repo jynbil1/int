@@ -88,6 +88,7 @@ public class DHLService {
         }
 
         // events 들 중 배송 완료 값이 있으면 오케이. 없으면 제일 최신 데이터 가져오기
+        int noOfShipmentOnHold = 0;
 
         // "WC", "FD" 는 타 배송사
         ShipmentEvent selectedEvent = null;
@@ -97,6 +98,17 @@ public class DHLService {
                 selectedEvent = event;
                 break;
             }
+        }
+
+        for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
+            if (currentEvent.getEventCode().equals("OH")) {
+                noOfShipmentOnHold += 1;
+            }
+            if (noOfShipmentOnHold >= 3) {
+                selectedEvent = currentEvent;
+                break;
+            }
+
         }
 
         if (selectedEvent == null) {
@@ -278,13 +290,28 @@ public class DHLService {
                 // events 들 중 배송 완료 값이 있으면 오케이. 없으면 제일 최신 데이터 가져오기
                 // "WC", "FD" 는 타 배송사
                 ShipmentEvent selectedEvent = null;
+                // Shipment on Hold 는 다양한 이유로 발생한다.
+                // 해당 이벤트가 3건 이상 발생하면 문제를 보고한다.
+                int noOfShipmentOnHold = 0;
 
+                // 배송이 완료 되었으면 완료되었다고 하면 되지만.
                 for (ShipmentEvent event : response.getShipmentEvents()) {
                     if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK").contains(event.getEventCode())) {
                         selectedEvent = event;
                         break;
                     }
                 }
+                for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
+                    if (currentEvent.getEventCode().equals("OH")) {
+                        noOfShipmentOnHold += 1;
+                    }
+                    if (noOfShipmentOnHold >= 3) {
+                        selectedEvent = currentEvent;
+                        break;
+                    }
+
+                }
+                // 만약 배송 완료된 것을 못찾았으면
                 if (selectedEvent == null) {
                     selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
                 }

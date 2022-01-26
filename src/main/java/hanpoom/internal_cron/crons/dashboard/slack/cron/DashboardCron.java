@@ -35,15 +35,15 @@ public class DashboardCron {
                 + "\n금년 총 매출: " + dashboardService.getCurrentYearRevenue()
                 + "\n누적 회원: " + dashboardService.getTotalCustomers();
         System.out.println(notificationMessage);
-        // boolean isSent = new SlackService().sendNotification(notificationMessage);
-        // if (!isSent) {
-        //     isSent = new SlackService().sendNotification(notificationMessage);
-        //     if (!isSent) {
-        //         System.out.println("결국 실패했습니다.");
-        //     }
-        // } else {
-        //     System.out.println("슬랙 알림 오케이.");
-        // }
+        boolean isSent = new SlackService().sendNotification(notificationMessage);
+        if (!isSent) {
+            isSent = new SlackService().sendNotification(notificationMessage);
+            if (!isSent) {
+                System.out.println("결국 실패했습니다.");
+            }
+        } else {
+            System.out.println("슬랙 알림 오케이.");
+        }
     }
 
 }

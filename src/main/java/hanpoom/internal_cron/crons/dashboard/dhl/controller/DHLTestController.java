@@ -27,10 +27,10 @@ public class DHLTestController {
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-    @GetMapping("/investigate-issue-occurred-orders")
-    public String investigateIssueOccurredOrders() {
-        return null;
-    }
+    // @GetMapping("/investigate-issue-occurred-orders")
+    // public String investigateIssueOccurredOrders() {
+    //     return null;
+    // }
 
     // @GetMapping("/investigate-shipped-orders-inactive")
     // public String testStatus() {

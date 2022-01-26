@@ -8,9 +8,11 @@ import org.springframework.context.annotation.PropertySource;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @Configuration
 @PropertySource("classpath:properties/google/spreadsheet/api/credentials.properties")
 @ConfigurationProperties(prefix = "google.spreadsheet")
