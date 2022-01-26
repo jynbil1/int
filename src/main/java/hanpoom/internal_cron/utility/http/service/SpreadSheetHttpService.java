@@ -5,28 +5,30 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import org.json.JSONObject;
-import org.springframework.stereotype.Service;
 
 import lombok.Setter;
 import lombok.ToString;
 
 @Setter
 @ToString
-@Service
-public class HttpService {
+public class SpreadSheetHttpService {
+
     private final static String ENCODING = "UTF-8";
 
     private String url;
     private StringBuilder body;
     private String contentType;
+    private String token;
 
     public JSONObject get() {
         try {
-            HttpURLConnection con = initiateConncetion();
+            HttpURLConnection con = initiateConnection();
             con.setRequestMethod("GET");
             return new JSONObject(getResponse(con, "GET"));
         } catch (IOException ioe) {
@@ -37,8 +39,9 @@ public class HttpService {
 
     public JSONObject post() {
         try {
-            HttpURLConnection con = initiateConncetion();
+            HttpURLConnection con = initiateConnection();
             con.setRequestMethod("POST");
+            con.setDoOutput(true);
             return new JSONObject(getResponse(con, "POST"));
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -46,12 +49,16 @@ public class HttpService {
         return null;
     }
 
-    private HttpURLConnection initiateConncetion() throws IOException {
+    private HttpURLConnection initiateConnection() throws IOException {
         URL url = new URL(this.url);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestProperty("Content-Type", "application/" + this.contentType);
         con.setDoInput(true);
-        con.setDoOutput(true);
+
+        if (this.token != null) {
+            con.setRequestProperty("Authorization", "Bearer " + this.token);
+        }
+
         return con;
     }
 

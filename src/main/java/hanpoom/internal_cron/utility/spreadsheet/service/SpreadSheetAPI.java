@@ -1,98 +1,83 @@
 package hanpoom.internal_cron.utility.spreadsheet.service;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 
-import hanpoom.internal_cron.utility.http.service.HttpService;
-import hanpoom.internal_cron.utility.spreadsheet.config.SpreadSheetConfig;
+import hanpoom.internal_cron.utility.http.service.SpreadSheetHttpService;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 
-@Service
+@ToString
 @AllArgsConstructor
-public class SpreadSheetAPI {
-    private SpreadSheetConfig config;
-    private HttpService httpService;
+@Service
+public class SpreadSheetAPI extends SpreadSheetAPITools {
 
-    private static final String CONTENT_TYPE = "x-www-form-urlencoded";
+    private SpreadSheetAPIValidation api;
+    // private SpreadSheetConfig config;
 
-    public String getIntialURL() {
-        String initialUrl = "https://accounts.google.com/o/oauth2/v2/auth?"
-                + "client_id=" + config.getClient_id()
-                + "&redirect_uri=" + config.getRedirect_uri()
-                + "&response_type=code"
-                + "&scope=https://www.googleapis.com/auth/spreadsheets"
-                + "&access_type=offline";
+    private static final String TOKEN = "access_token";
 
-        return initialUrl;
-    }
-
-    public JSONObject validateToken(String code) {
-        String validateUrl = "https://oauth2.googleapis.com/token";
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("grant_type=authorization_code");
-        sb.append("&client_id=" + config.getClient_id());
-        sb.append("&client_secret=" + config.getClient_secret());
-        sb.append("&redirect_uri=" + config.getRedirect_uri());
-        sb.append("&code=" + code);
-
-        httpService.setBody(sb);
-        httpService.setContentType(CONTENT_TYPE);
-        httpService.setUrl(validateUrl);
-
-        return httpService.post();
-    }
-
-    public String refreshToken() {
-        String refreshTokenURL = "https://oauth2.googleapis.com/token";
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("grant_type=refresh_token");
-        sb.append("&client_id=" + config.getClient_id());
-        sb.append("&client_secret=" + config.getClient_secret());
-        sb.append("&refresh_token=" + config.getRefresh_token());
+    @Override
+    public List<List<Object>> readSheetData(String range) {
+        String url = "https://sheets.googleapis.com/v4/spreadsheets/" + this.spreadSheetID + "/values/";
 
         try {
-            URL url = new URL(refreshTokenURL);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            con.setRequestProperty("Host", "oauth2.googleapis.com");
-            con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            con.setDoInput(true);
-            con.setDoOutput(true);
-
-            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()))) {
-                bw.write(sb.toString());
-                bw.flush();
-            }
-
-            String readLine;
-            StringBuilder builder = new StringBuilder();
-            if (con.getResponseCode() != 200) {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getErrorStream(), "utf-8"))) {
-                    while ((readLine = reader.readLine()) != null) {
-                        builder.append(readLine);
-                    }
-                }
-            } else {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
-                    while ((readLine = reader.readLine()) != null) {
-                        builder.append(readLine);
-                    }
-                }
-            }
-            System.out.println(builder.toString());
-        } catch (Exception e) {
+            url += URLEncoder.encode(range, "utf-8");
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
+        SpreadSheetHttpService httpService = new SpreadSheetHttpService();
+
+        httpService.setContentType("json");
+        httpService.setUrl(url);
+        httpService.setToken(api.refreshToken().getString(TOKEN));
+
+        JSONArray jsonArray = httpService.get().optJSONArray("values");
+
+        List<List<Object>> data = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length() - 0; ++i) {
+            List<Object> row = new ArrayList<>();
+            for (int j = 0; j < jsonArray.optJSONArray(i).length() - 0; ++j) {
+                row.add(jsonArray.optJSONArray(i).getString(j));
+            }
+            data.add(row);
+        }
+        return data;
+
+    }
+
+    @Override
+    public Integer insertRow() {
+        // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public Integer insertRows() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Integer updateRows() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Integer deleteRows() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
