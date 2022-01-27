@@ -3,16 +3,13 @@ package hanpoom.internal_cron.utility.spreadsheet.service;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.utility.http.service.SpreadSheetHttpService;
+import hanpoom.internal_cron.utility.spreadsheet.config.SpreadSheetConfig;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 
@@ -22,9 +19,7 @@ import lombok.ToString;
 public class SpreadSheetAPI extends SpreadSheetAPITools {
 
     private SpreadSheetAPIValidation api;
-    // private SpreadSheetConfig config;
-
-    private static final String TOKEN = "access_token";
+    private SpreadSheetConfig config;
 
     @Override
     public List<List<Object>> readSheetData(String range) {
@@ -40,7 +35,8 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
 
         httpService.setContentType("json");
         httpService.setUrl(url);
-        httpService.setToken(api.refreshToken().getString(TOKEN));
+        tokenValidator();
+        httpService.setToken(this.token);
 
         JSONArray jsonArray = httpService.get().optJSONArray("values");
 
@@ -57,27 +53,60 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
     }
 
     @Override
-    public Integer insertRow() {
-        // TODO Auto-generated method stub
+    public Integer insertRow(List<Object> row) {
+        String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s:append";
+        try {
+            url = String.format(url, this.spreadSheetID, URLEncoder.encode(this.sheetName, "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        SpreadSheetHttpService httpService = new SpreadSheetHttpService();
+
+        httpService.setContentType("json");
+        httpService.setUrl(url);
+        tokenValidator();
+        httpService.setToken(this.token);
+
         return null;
     }
 
     @Override
-    public Integer insertRows() {
-        // TODO Auto-generated method stub
+    public Integer insertRows(List<List<Object>> rows) {
+        SpreadSheetHttpService httpService = new SpreadSheetHttpService();
+
+        tokenValidator();
+        httpService.setToken(this.token);
         return null;
     }
 
     @Override
     public Integer updateRows() {
-        // TODO Auto-generated method stub
+        SpreadSheetHttpService httpService = new SpreadSheetHttpService();
+
+        tokenValidator();
+        httpService.setToken(this.token);
         return null;
     }
 
     @Override
     public Integer deleteRows() {
-        // TODO Auto-generated method stub
+        SpreadSheetHttpService httpService = new SpreadSheetHttpService();
+
+        tokenValidator();
+        httpService.setToken(this.token);
         return null;
+    }
+
+    @Override
+    protected String tokenValidator() {
+        if (this.token == null) {
+            this.token = api.refreshToken();
+            return this.token;
+        } else {
+            this.token = api.validateTokenOpt(this.token);
+            return this.token;
+        }
     }
 
 }

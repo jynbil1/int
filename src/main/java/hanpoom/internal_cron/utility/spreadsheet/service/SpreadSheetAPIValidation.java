@@ -13,6 +13,7 @@ public class SpreadSheetAPIValidation {
     private SpreadSheetConfig config;
 
     private static final String CONTENT_TYPE = "x-www-form-urlencoded";
+    private static final String TOKEN = "access_token";
 
     public String getIntialURL() {
         String initialUrl = "https://accounts.google.com/o/oauth2/v2/auth?"
@@ -43,7 +44,7 @@ public class SpreadSheetAPIValidation {
         return httpService.post();
     }
 
-    public JSONObject refreshToken() {
+    public String refreshToken() {
         String refreshTokenURL = "https://oauth2.googleapis.com/token";
 
         StringBuilder sb = new StringBuilder();
@@ -57,6 +58,27 @@ public class SpreadSheetAPIValidation {
         httpService.setContentType(CONTENT_TYPE);
         httpService.setUrl(refreshTokenURL);
 
-        return httpService.post();
+        return httpService.post().optString(TOKEN);
+    }
+
+    public boolean isValidToken(String token) {
+        String requestUrl = "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=" + token;
+        SpreadSheetHttpService httpService = new SpreadSheetHttpService();
+        httpService.setContentType("json");
+        httpService.setUrl(requestUrl);
+        JSONObject json = httpService.get();
+        if (json.optInt("expires_in") < 10) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public String validateTokenOpt(String token){
+        if (!isValidToken(token)) {
+            return refreshToken();
+        } else {
+            return "";
+        }
     }
 }

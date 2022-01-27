@@ -1,12 +1,8 @@
 package hanpoom.internal_cron.utility.spreadsheet.controller;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tomcat.util.http.parser.Ranges;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,9 +52,28 @@ public class SpreadSheetTestController {
         api.setSpreadSheetID(SPREADSHEET_ID);
 
         String range = SHEET_NAME + "!" + "A:L";
-        Map<String, Object> param = new HashMap<>();
-        // param.put("ranges", range);
-        // param.put("includeGridData", false);
+        List<List<Object>> object = api.readSheetData(range);
+        // System.out.println(object.toString());
+    }
+
+    @ResponseBody
+    @GetMapping("/insertData")
+    public void insertData() {
+        api.setSheetID(SHEET_ID);
+        api.setSpreadSheetID(SPREADSHEET_ID);
+
+        String range = SHEET_NAME + "!" + "A:L";
+        List<List<Object>> object = api.readSheetData(range);
+        System.out.println(object.toString());
+    }
+
+    @ResponseBody
+    @GetMapping("/updateData")
+    public void updateData() {
+        api.setSheetID(SHEET_ID);
+        api.setSpreadSheetID(SPREADSHEET_ID);
+
+        String range = SHEET_NAME + "!" + "A:L";
         List<List<Object>> object = api.readSheetData(range);
         System.out.println(object.toString());
     }
