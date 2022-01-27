@@ -5,10 +5,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
 import org.json.JSONObject;
 
@@ -25,6 +23,7 @@ public class SpreadSheetHttpService {
     private StringBuilder body;
     private String contentType;
     private String token;
+    private JSONObject jsonBody;
 
     public JSONObject get() {
         try {
@@ -62,14 +61,20 @@ public class SpreadSheetHttpService {
         return con;
     }
 
+  
     private String getResponse(HttpURLConnection con, String requestMethod) {
         String readLine;
         StringBuilder builder = new StringBuilder();
-
         try {
             if (requestMethod.equals("POST")) {
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()))) {
-                    bw.write(this.body.toString());
+                    if (this.jsonBody != null) {
+                        bw.write(this.jsonBody.toString());
+
+                    } else {
+                        bw.write(this.body.toString());
+
+                    }
                     bw.flush();
                 }
             }

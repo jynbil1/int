@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.utility.http.service.SpreadSheetHttpService;
 import hanpoom.internal_cron.utility.spreadsheet.config.SpreadSheetConfig;
+import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 
@@ -52,8 +54,9 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
 
     }
 
+    // 몇개 넣든 무조건 2차원 JSONArray.
     @Override
-    public Integer insertRow(List<Object> row) {
+    public UpdateSheetVO insertRows(JSONArray row) {
         String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s:append";
         try {
             url = String.format(url, this.spreadSheetID, URLEncoder.encode(this.sheetName, "utf-8"));
@@ -61,18 +64,32 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
             e.printStackTrace();
         }
 
+        StringBuilder sb = new StringBuilder();
+        sb.append("valueInputOption=" + "USER_ENTERED");
+        sb.append("&insertDataOption=" + "INSERT_ROWS");
+        sb.append("&includeValuesInResponse=" + false);
+        sb.append("&responseDateTimeRenderOption=" + "FORMATTED_STRING");
+
+        url = url + "?" + sb.toString();
+
         SpreadSheetHttpService httpService = new SpreadSheetHttpService();
 
         httpService.setContentType("json");
         httpService.setUrl(url);
+        httpService.setJsonBody(new JSONObject().put("values", row));
         tokenValidator();
         httpService.setToken(this.token);
+        JSONObject response = httpService.post().optJSONObject("updates");
 
-        return null;
+        return new UpdateSheetVO(response.optString("spreadsheetId"),
+                response.optString("updatedRange"),
+                response.optInt("updatedRows"),
+                response.optInt("updatedColumns"),
+                response.optInt("updatedCells"));
     }
 
     @Override
-    public Integer insertRows(List<List<Object>> rows) {
+    public UpdateSheetVO updateRows() {
         SpreadSheetHttpService httpService = new SpreadSheetHttpService();
 
         tokenValidator();
@@ -81,16 +98,7 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
     }
 
     @Override
-    public Integer updateRows() {
-        SpreadSheetHttpService httpService = new SpreadSheetHttpService();
-
-        tokenValidator();
-        httpService.setToken(this.token);
-        return null;
-    }
-
-    @Override
-    public Integer deleteRows() {
+    public UpdateSheetVO deleteRows() {
         SpreadSheetHttpService httpService = new SpreadSheetHttpService();
 
         tokenValidator();

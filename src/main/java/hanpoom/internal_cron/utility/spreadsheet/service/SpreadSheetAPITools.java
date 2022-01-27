@@ -2,6 +2,9 @@ package hanpoom.internal_cron.utility.spreadsheet.service;
 
 import java.util.List;
 
+import org.json.JSONArray;
+
+import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 import lombok.Setter;
 
 @Setter
@@ -13,13 +16,11 @@ public abstract class SpreadSheetAPITools {
 
     abstract List<List<Object>> readSheetData(String parameter);
 
-    abstract Integer insertRow(List<Object> row);
+    abstract UpdateSheetVO insertRows(JSONArray row);
 
-    abstract Integer insertRows(List<List<Object>> rows);
+    abstract UpdateSheetVO updateRows();
 
-    abstract Integer updateRows();
-
-    abstract Integer deleteRows();
+    abstract UpdateSheetVO deleteRows();
 
     abstract String tokenValidator();
     

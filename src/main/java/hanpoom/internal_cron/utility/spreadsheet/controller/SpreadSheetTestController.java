@@ -1,8 +1,12 @@
 package hanpoom.internal_cron.utility.spreadsheet.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPIValidation;
+import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -48,7 +53,7 @@ public class SpreadSheetTestController {
     @ResponseBody
     @GetMapping("/readSheet")
     public void readSheet() {
-        api.setSheetID(SHEET_ID);
+        api.setSheetName(SHEET_NAME);
         api.setSpreadSheetID(SPREADSHEET_ID);
 
         String range = SHEET_NAME + "!" + "A:L";
@@ -59,12 +64,15 @@ public class SpreadSheetTestController {
     @ResponseBody
     @GetMapping("/insertData")
     public void insertData() {
-        api.setSheetID(SHEET_ID);
+        api.setSheetName(SHEET_NAME);
         api.setSpreadSheetID(SPREADSHEET_ID);
+        
+        JSONArray array = new JSONArray();
+        array.put(true);
+        array.put("2022-04-05");
 
-        String range = SHEET_NAME + "!" + "A:L";
-        List<List<Object>> object = api.readSheetData(range);
-        System.out.println(object.toString());
+        UpdateSheetVO updatedSheet = api.insertRows(new JSONArray().put(array));
+        System.out.println(updatedSheet.toString());
     }
 
     @ResponseBody
