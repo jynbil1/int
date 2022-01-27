@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import hanpoom.internal_cron.crons.dashboard.dhl.service.DHLService;
 import hanpoom.internal_cron.crons.dashboard.dhl.service.DHLShipmentHanldingService;
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingResult;
+import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO;
 
 @RestController
 public class DHLTestController {
@@ -91,8 +92,8 @@ public class DHLTestController {
                         result.getTotalDeliveries(),
                         result.getTotalDelays(),
                         result.getTotalCustomsIssues(),
-                        result.getTotalOtherIssues(),
                         result.getTotalUntrackables(),
+                        result.getTotalOtherIssues(),
                         result.getTotalReturned(),
                         result.getTotalInTransit()));
         if (!isSent) {
@@ -141,4 +142,10 @@ public class DHLTestController {
 
     }
    
+
+    @GetMapping("/getSingleShipment")
+    public void getSingleShipment(){
+        DHLTrackingVO trackingVo = dHLService.filterShipment(new DHLTrackingVO("655755", "6673310420"));
+        System.out.println(trackingVo);
+    }
 }

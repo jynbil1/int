@@ -87,12 +87,15 @@ public class DHLCron {
         boolean isSent = dHLShipmentHanldingService.sendSlackMessage(
                 String.format(messageText,
                         executeMessage,
+
                         result.getTotalDeliveries(),
                         result.getTotalDelays(),
                         result.getTotalCustomsIssues(),
-                        result.getTotalOtherIssues(),
+
                         result.getTotalUntrackables(),
+                        result.getTotalOtherIssues(),
                         result.getTotalReturned(),
+                        
                         result.getTotalInTransit()));
         if (!isSent) {
             System.out.println("현황 결과를 출력하지 못했습니다.");

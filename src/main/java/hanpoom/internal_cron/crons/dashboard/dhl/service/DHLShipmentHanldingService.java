@@ -133,9 +133,9 @@ public class DHLShipmentHanldingService {
         SlackMessage slackMessage = new SlackMessage();
 
         try {
-            System.out.println(messageText);
-            // slackMessage.setText(messageText);
-            // api.call(slackMessage);
+            // System.out.println(messageText);
+            slackMessage.setText(messageText);
+            api.call(slackMessage);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

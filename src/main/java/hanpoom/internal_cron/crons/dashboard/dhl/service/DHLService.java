@@ -114,7 +114,7 @@ public class DHLService {
         if (selectedEvent == null) {
             selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
             if (selectedEvent.getEventCode().equals("OH")) {
-                selectedEvent.setEventDesc("ITH");
+                selectedEvent.setEventCode("ITH");
                 selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
             } 
         }
@@ -320,7 +320,7 @@ public class DHLService {
                 if (selectedEvent == null) {
                     selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
                     if (selectedEvent.getEventCode().equals("OH")) {
-                        selectedEvent.setEventDesc("ITH");
+                        selectedEvent.setEventCode("ITH");
                         selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
                     } 
                 }
