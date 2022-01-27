@@ -5,33 +5,26 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.GlobalDashboardService;
-import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.SpreadSheetCRUDService;
 import hanpoom.internal_cron.utility.calendar.service.CalendarService;
+import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
+import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
+import lombok.AllArgsConstructor;
 
 @Component
+@AllArgsConstructor
 public class GlobalDashboardCron {
 
     private GlobalDashboardService dashboard;
-    private SpreadSheetCRUDService spreadSheet;
     private CalendarService calendar;
-
-    public GlobalDashboardCron(GlobalDashboardService dashboard,
-            SpreadSheetCRUDService spreadSheet,
-            CalendarService calendar) {
-        this.dashboard = dashboard;
-        this.spreadSheet = spreadSheet;
-        this.calendar = calendar;
-    }
+    private SpreadSheetAPI sheetApi;
 
     private final static String SPREADSHEET_ID = "114n3w9q8ytp0z5zFoiOo1xg_cP2nt3yspYKQJvT1KuU";
     private final static String SHEET = "22 GLOBAL_DASHBOARD";
-    private final static int SHEET_ID = 1110823798;
-    public final String STARTING_COLUMN = "D";
-    public final int STARTIIG_ROW = 5;
 
     // "0 0 * * * *" = the top of every hour of every day.
     // "* * * * * *" = 매초 실행 합니다.
@@ -67,16 +60,13 @@ public class GlobalDashboardCron {
         // 4. 상품 마진
         String totalMargins = dashboard.getLastWeekMargins();
 
-        spreadSheet.setSheet(SHEET);
-        spreadSheet.setSheetID(SHEET_ID);
-        spreadSheet.setSpreadSheetID(SPREADSHEET_ID);
-        spreadSheet.setStartingColumn(STARTING_COLUMN);
-        spreadSheet.setStartingRow(STARTIIG_ROW);
+        sheetApi.setSheetName(SHEET);
+        sheetApi.setSpreadSheetID(SPREADSHEET_ID);
 
         // C 컬럼은 주 차를 뜻한다. 주 차가 제일 높은 값을 가져온다.
         // 가져온 값 중 숫자가 없으면 1 부터 시작한다.
         int maxInt = 0;
-        List<List<Object>> currentCContent = spreadSheet.getContents("C:C");
+        List<List<Object>> currentCContent = sheetApi.readSheetData("C:C");
         for (List<Object> data : currentCContent) {
             for (Object datum : data) {
                 String strValue = String.valueOf(datum);
@@ -104,14 +94,17 @@ public class GlobalDashboardCron {
                         String.valueOf(maxInt), revenue,
                         newCustomers, newPurchasers, newRepurchasers,
                         totalOrders, totalMargins);
-        boolean isInserted = spreadSheet.insertRow(dataSet);
 
-        if (isInserted) {
+        JSONArray array = new JSONArray();
+        for (Object obj : dataSet) {
+            array.put(obj);
+        }
+        UpdateSheetVO sheetVo = sheetApi.insertRows(new JSONArray().put(array));
+        System.out.println(sheetVo.toString());
+        if (sheetVo.getUpdatedCells() > 0) {
             System.out.println("성공적으로 데이터를 입력했습니다.");
         } else {
             System.out.println("실패");
         }
-        ;
     }
-
 }

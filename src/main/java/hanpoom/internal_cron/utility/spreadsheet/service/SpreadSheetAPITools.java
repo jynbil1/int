@@ -1,5 +1,7 @@
 package hanpoom.internal_cron.utility.spreadsheet.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -13,15 +15,38 @@ public abstract class SpreadSheetAPITools {
     protected String sheetName;
     protected int sheetID;
     protected String token;
+    protected String cellAt;
+
+    private static final String ENCODING = "utf-8";
+
+    // public void setSheetName(String sheetName, boolean containsNonEnglishChar) {
+    // if (containsNonEnglishChar){
+    // try {
+    // this.sheetName = URLEncoder.encode(sheetName, ENCODING);
+    // } catch (UnsupportedEncodingException e) {
+    // e.printStackTrace();
+    // }
+    // } else {
+    // this.sheetName = sheetName;
+    // }
+
+    // }
+    public void setSheetName(String sheetName) {
+        try {
+            this.sheetName = URLEncoder.encode(sheetName, ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
 
     abstract List<List<Object>> readSheetData(String parameter);
 
-    abstract UpdateSheetVO insertRows(JSONArray row);
+    abstract UpdateSheetVO insertRows(JSONArray rows);
 
-    abstract UpdateSheetVO updateRows();
+    abstract UpdateSheetVO updateRows(JSONArray rows);
 
-    abstract UpdateSheetVO deleteRows();
+    abstract UpdateSheetVO deleteRows(JSONArray rows);
 
     abstract String tokenValidator();
-    
+
 }

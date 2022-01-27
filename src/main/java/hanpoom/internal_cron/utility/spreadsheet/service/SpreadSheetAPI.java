@@ -25,13 +25,8 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
 
     @Override
     public List<List<Object>> readSheetData(String range) {
-        String url = "https://sheets.googleapis.com/v4/spreadsheets/" + this.spreadSheetID + "/values/";
-
-        try {
-            url += URLEncoder.encode(range, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s!%s";
+        url = String.format(url, this.spreadSheetID, this.sheetName, range);
 
         SpreadSheetHttpService httpService = new SpreadSheetHttpService();
 
@@ -56,13 +51,9 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
 
     // 몇개 넣든 무조건 2차원 JSONArray.
     @Override
-    public UpdateSheetVO insertRows(JSONArray row) {
+    public UpdateSheetVO insertRows(JSONArray rows) {
         String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s:append";
-        try {
-            url = String.format(url, this.spreadSheetID, URLEncoder.encode(this.sheetName, "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        url = String.format(url, this.spreadSheetID, this.sheetName);
 
         StringBuilder sb = new StringBuilder();
         sb.append("valueInputOption=" + "USER_ENTERED");
@@ -76,9 +67,10 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
 
         httpService.setContentType("json");
         httpService.setUrl(url);
-        httpService.setJsonBody(new JSONObject().put("values", row));
+        httpService.setJsonBody(new JSONObject().put("values", rows));
         tokenValidator();
         httpService.setToken(this.token);
+
         JSONObject response = httpService.post().optJSONObject("updates");
 
         return new UpdateSheetVO(response.optString("spreadsheetId"),
@@ -89,16 +81,38 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
     }
 
     @Override
-    public UpdateSheetVO updateRows() {
+    public UpdateSheetVO updateRows(JSONArray rows) {
+        String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s!%s";
+
+        url = String.format(url, this.spreadSheetID, this.sheetName, this.cellAt);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("includeValuesInResponse=" + false);
+        sb.append("&responseDateTimeRenderOption=" + "FORMATTED_STRING");
+        sb.append("&responseValueRenderOption=" + "FORMATTED_VALUE");
+        sb.append("&valueInputOption=" + "USER_ENTERED");
+
+        url = url + "?" + sb.toString();
+
         SpreadSheetHttpService httpService = new SpreadSheetHttpService();
 
+        httpService.setContentType("json");
+        httpService.setUrl(url);
+        httpService.setJsonBody(new JSONObject().put("values", rows));
         tokenValidator();
         httpService.setToken(this.token);
-        return null;
+
+        JSONObject response = httpService.put();
+
+        return new UpdateSheetVO(response.optString("spreadsheetId"),
+                response.optString("updatedRange"),
+                response.optInt("updatedRows"),
+                response.optInt("updatedColumns"),
+                response.optInt("updatedCells"));
     }
 
     @Override
-    public UpdateSheetVO deleteRows() {
+    public UpdateSheetVO deleteRows(JSONArray row) {
         SpreadSheetHttpService httpService = new SpreadSheetHttpService();
 
         tokenValidator();

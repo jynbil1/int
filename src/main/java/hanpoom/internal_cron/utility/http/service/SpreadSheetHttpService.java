@@ -48,6 +48,18 @@ public class SpreadSheetHttpService {
         return null;
     }
 
+    public JSONObject put() {
+        try {
+            HttpURLConnection con = initiateConnection();
+            con.setRequestMethod("PUT");
+            con.setDoOutput(true);
+            return new JSONObject(getResponse(con, "PUT"));
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return null;
+    }
+
     private HttpURLConnection initiateConnection() throws IOException {
         URL url = new URL(this.url);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -66,9 +78,10 @@ public class SpreadSheetHttpService {
         String readLine;
         StringBuilder builder = new StringBuilder();
         try {
-            if (requestMethod.equals("POST")) {
+            if (requestMethod.equals("POST") || requestMethod.equals("PUT")) {
                 try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()))) {
                     if (this.jsonBody != null) {
+                        System.out.println(this.jsonBody.toString());
                         bw.write(this.jsonBody.toString());
 
                     } else {

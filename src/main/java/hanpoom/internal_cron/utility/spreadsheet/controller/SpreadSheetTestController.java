@@ -78,12 +78,18 @@ public class SpreadSheetTestController {
     @ResponseBody
     @GetMapping("/updateData")
     public void updateData() {
-        api.setSheetID(SHEET_ID);
+        api.setSheetName(SHEET_NAME);
         api.setSpreadSheetID(SPREADSHEET_ID);
+        api.setCellAt("C222");
+        
+        JSONArray array = new JSONArray();
+        array.put("tes12451t");
+        array.put("test123");
 
-        String range = SHEET_NAME + "!" + "A:L";
-        List<List<Object>> object = api.readSheetData(range);
-        System.out.println(object.toString());
+        UpdateSheetVO updatedSheet = api.updateRows(new JSONArray().put(array));
+        // UpdateSheetVO updatedSheet = api.updateRows(array);
+        
+        System.out.println(updatedSheet.toString());
     }
 
 }
