@@ -79,9 +79,9 @@ public class SpreadSheetHttpService {
         StringBuilder builder = new StringBuilder();
         try {
             if (requestMethod.equals("POST") || requestMethod.equals("PUT")) {
-                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(con.getOutputStream()))) {
+                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), ENCODING))) {
                     if (this.jsonBody != null) {
-                        System.out.println(this.jsonBody.toString());
+                        // System.out.println(this.jsonBody.toString());
                         bw.write(this.jsonBody.toString());
 
                     } else {

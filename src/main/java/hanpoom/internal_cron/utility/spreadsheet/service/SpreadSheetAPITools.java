@@ -43,6 +43,7 @@ public abstract class SpreadSheetAPITools {
 
     abstract UpdateSheetVO insertRows(JSONArray rows);
 
+    abstract UpdateSheetVO updateRow(JSONArray rows, String range);
     abstract UpdateSheetVO updateRows(JSONArray rows);
 
     abstract UpdateSheetVO deleteRows(JSONArray rows);

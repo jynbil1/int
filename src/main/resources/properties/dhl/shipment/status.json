@@ -54,6 +54,12 @@
             "korDesc": "배송중 입니다.",
             "hpGroup": "in-transit"
         },
+        "ITH": {
+            "eventGroup": "In transit",
+            "engDesc": "In transit - DHL on hold",
+            "korDesc": "배송중 이나, 현제 DHL 에서 보관중입니다.",
+            "hpGroup": "in-transit"
+        },
         "SM": {
             "eventGroup": "In transit",
             "engDesc": "Scheduled to move",

@@ -1,6 +1,7 @@
 package hanpoom.internal_cron.utility.shipment.dhl.vo.response.element;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -8,7 +9,9 @@ import lombok.ToString;
 public class ShipmentEvent {
     private String date;
     private String time;
+    @Setter
     private String eventCode;
+    @Setter
     private String eventDesc;
     private String areaCode;
     private String areaDesc;

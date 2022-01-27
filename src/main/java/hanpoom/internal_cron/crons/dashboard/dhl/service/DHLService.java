@@ -113,6 +113,10 @@ public class DHLService {
 
         if (selectedEvent == null) {
             selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
+            if (selectedEvent.getEventCode().equals("OH")) {
+                selectedEvent.setEventDesc("ITH");
+                selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
+            } 
         }
 
         // 상황에 따라 담아 처리할 리스트 마련.
@@ -311,9 +315,14 @@ public class DHLService {
                     }
 
                 }
-                // 만약 배송 완료된 것을 못찾았으면
+                // 배송이 완료된 것도 없고, 통관문제인게 없으나, 제일 최신 데이터가 Shipment on Hold 일 경우에는,
+                // code 를 ITH 로 변경한다.
                 if (selectedEvent == null) {
                     selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
+                    if (selectedEvent.getEventCode().equals("OH")) {
+                        selectedEvent.setEventDesc("ITH");
+                        selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
+                    } 
                 }
 
                 // 상황에 따라 담아 처리할 리스트 마련.

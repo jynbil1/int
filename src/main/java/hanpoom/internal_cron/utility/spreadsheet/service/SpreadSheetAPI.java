@@ -1,7 +1,5 @@
 package hanpoom.internal_cron.utility.spreadsheet.service;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +70,36 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
         httpService.setToken(this.token);
 
         JSONObject response = httpService.post().optJSONObject("updates");
+
+        return new UpdateSheetVO(response.optString("spreadsheetId"),
+                response.optString("updatedRange"),
+                response.optInt("updatedRows"),
+                response.optInt("updatedColumns"),
+                response.optInt("updatedCells"));
+    }
+    @Override
+    public UpdateSheetVO updateRow(JSONArray row, String range) {
+        String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s!%s";
+
+        url = String.format(url, this.spreadSheetID, this.sheetName, range);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("includeValuesInResponse=" + false);
+        sb.append("&responseDateTimeRenderOption=" + "FORMATTED_STRING");
+        sb.append("&responseValueRenderOption=" + "FORMATTED_VALUE");
+        sb.append("&valueInputOption=" + "USER_ENTERED");
+
+        url = url + "?" + sb.toString();
+
+        SpreadSheetHttpService httpService = new SpreadSheetHttpService();
+
+        httpService.setContentType("json");
+        httpService.setUrl(url);
+        httpService.setJsonBody(new JSONObject().put("values", new JSONArray().put(row)));
+        tokenValidator();
+        httpService.setToken(this.token);
+
+        JSONObject response = httpService.put();
 
         return new UpdateSheetVO(response.optString("spreadsheetId"),
                 response.optString("updatedRange"),
