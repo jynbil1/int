@@ -31,7 +31,7 @@ public class DHLCron {
     // US CA. (GMT-8)
     // 미국 CA (GMT-8) 오후 6 시 이후, 대부분의 배달 작업이 끝나는 시간대를 고려하여 스케줄러를 수행
     // @Scheduled(cron = "0 0 11 * * TUE-SAT", zone = "Asia/Seoul")
-    // @Scheduled(cron = "0 0 11 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 11 * * *", zone = "Asia/Seoul")
     public void cronJobShipmentMonitoringSystem() {
         LocalDateTime now = LocalDateTime.now();
         String executeTime = now.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
@@ -95,7 +95,7 @@ public class DHLCron {
                         result.getTotalUntrackables(),
                         result.getTotalOtherIssues(),
                         result.getTotalReturned(),
-                        
+
                         result.getTotalInTransit()));
         if (!isSent) {
             System.out.println("현황 결과를 출력하지 못했습니다.");
@@ -115,7 +115,7 @@ public class DHLCron {
     // 기존에 문제가 되어 스프레드 시트에 올라온 건들 중, 완료되지 않은 건들을 파악한다.
     // 파악한 건들 중 시트에 적혀있는 운송장 번호와 현재 wphpm_postmeta 의 값이 다른지 확인한다.
     // 다르면 업데이트 쳐준다.
-    // @Scheduled(cron = "0 30 11 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 30 11 * * *", zone = "Asia/Seoul")
     public void cronJobIssueOrdersNewTrackingNoMonitoringSystem() {
         LocalDateTime now = LocalDateTime.now();
         String executeTime = now.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
@@ -130,7 +130,7 @@ public class DHLCron {
     }
 
     // 이미 처리했던 데이터들을 조회하여 문제가 발생한 건들을 다시 파악한다.
-    // @Scheduled(cron = "0 0 12 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 12 * * *", zone = "Asia/Seoul")
     public void cronJobIssueOrderReMonitoringSystem() {
         LocalDateTime now = LocalDateTime.now();
         String executeTime = now.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
