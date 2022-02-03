@@ -286,12 +286,12 @@ public class DHLShipmentHanldingService {
         String searchableTrackingNo = "";
         for (String orderNo : new ArrayList<>(contents.keySet())) {
             try {
-                String newTrackingNo = (String) contents.get(orderNo).get("G");
+                String newTrackingNo = (String) contents.get(orderNo).get("F");
                 if (newTrackingNo.strip().length() > 9) {
                     // 새로운 운송장 자리에 값이 있으면
                     searchableTrackingNo = newTrackingNo;
                 } else {
-                    searchableTrackingNo = (String) contents.get(orderNo).get("F");
+                    searchableTrackingNo = (String) contents.get(orderNo).get("E");
                 }
                 // 개별 운송장 조회 함수 & // 구분 작업
                 DHLTrackingVO trackingVo = dHLService.filterShipment(new DHLTrackingVO(orderNo, searchableTrackingNo));
@@ -346,6 +346,7 @@ public class DHLShipmentHanldingService {
                 return 0;
             }
         } catch (DataIntegrityViolationException sqlCons) {
+            System.out.println(sqlCons.getMessage());
             System.out.println("이미 있는 데이터를 삽입하려고 하고 있습니다.");
         } catch (Exception e) {
             e.printStackTrace();

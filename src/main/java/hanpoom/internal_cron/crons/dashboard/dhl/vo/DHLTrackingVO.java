@@ -52,9 +52,10 @@ public class DHLTrackingVO {
     }
 
     // for Delayed Orders
-    public DHLTrackingVO(String orderNo, String trackingNo, String shipped_dtime, String shipmentClass) {
+    public DHLTrackingVO(String orderNo, String trackingNo, String orderDate, String shipped_dtime, String shipmentClass) {
         this.order_no = orderNo;
         this.tracking_no = trackingNo;
+        this.order_date = orderDate;
         // DLY - Customized Event Code -> Delayed Shipping
         this.event_code = "DLY";
         this.event = "발송물의 배송이 지연되고 있습니다.";

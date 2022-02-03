@@ -99,16 +99,16 @@ public class DHLService {
                 break;
             }
         }
-
-        for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
-            if (currentEvent.getEventCode().equals("OH")) {
-                noOfShipmentOnHold += 1;
+        if (selectedEvent == null) {
+            for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
+                if (currentEvent.getEventCode().equals("OH")) {
+                    noOfShipmentOnHold += 1;
+                }
+                if (noOfShipmentOnHold >= 3) {
+                    selectedEvent = currentEvent;
+                    break;
+                }
             }
-            if (noOfShipmentOnHold >= 3) {
-                selectedEvent = currentEvent;
-                break;
-            }
-
         }
 
         if (selectedEvent == null) {
@@ -116,7 +116,7 @@ public class DHLService {
             if (selectedEvent.getEventCode().equals("OH")) {
                 selectedEvent.setEventCode("ITH");
                 selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
-            } 
+            }
         }
 
         // 상황에 따라 담아 처리할 리스트 마련.
@@ -135,6 +135,7 @@ public class DHLService {
         responseVo.setEvent_code(selectedEvent.getEventCode());
         responseVo.setEvent_dtime(String.format("%s %s", selectedEvent.getDate(), selectedEvent.getTime()));
         responseVo.setShipment_class(trackingVo.getShipment_class());
+        responseVo.setOrder_date(trackingVo.getOrder_date());
         responseVo.setShipment_issue_type(eventCase);
 
         switch (eventCase) {
@@ -192,6 +193,7 @@ public class DHLService {
                     return new DHLTrackingVO(
                             orderNo,
                             response.getTrackingNo(),
+                            trackingVo.getOrder_date(),
                             response.getShipmentDetail().getShippedDate(),
                             trackingVo.getShipment_class());
                 }
@@ -305,15 +307,16 @@ public class DHLService {
                         break;
                     }
                 }
-                for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
-                    if (currentEvent.getEventCode().equals("OH")) {
-                        noOfShipmentOnHold += 1;
+                if (selectedEvent == null) {
+                    for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
+                        if (currentEvent.getEventCode().equals("OH")) {
+                            noOfShipmentOnHold += 1;
+                        }
+                        if (noOfShipmentOnHold >= 3) {
+                            selectedEvent = currentEvent;
+                            break;
+                        }
                     }
-                    if (noOfShipmentOnHold >= 3) {
-                        selectedEvent = currentEvent;
-                        break;
-                    }
-
                 }
                 // 배송이 완료된 것도 없고, 통관문제인게 없으나, 제일 최신 데이터가 Shipment on Hold 일 경우에는,
                 // code 를 ITH 로 변경한다.
@@ -322,7 +325,7 @@ public class DHLService {
                     if (selectedEvent.getEventCode().equals("OH")) {
                         selectedEvent.setEventCode("ITH");
                         selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
-                    } 
+                    }
                 }
 
                 // 상황에 따라 담아 처리할 리스트 마련.
@@ -404,9 +407,12 @@ public class DHLService {
                         }
 
                         if (isDelayedShipment(response.getShipmentEvents(), delayAllowableDays)) {
+                            // responseVo.setOrder_date(jsonMap.get(response.getTrackingNo()).get("order_date"));
+
                             delayedOrders.add(new DHLTrackingVO(
                                     orderNo,
                                     response.getTrackingNo(),
+                                    jsonMap.get(response.getTrackingNo()).get("order_date"),
                                     response.getShipmentDetail().getShippedDate(),
                                     shipmentClass));
                         }

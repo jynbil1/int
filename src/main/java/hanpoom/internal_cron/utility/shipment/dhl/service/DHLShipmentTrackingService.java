@@ -123,7 +123,7 @@ public class DHLShipmentTrackingService implements DHLAPI {
         DHLTrackingResponse response = new DHLTrackingResponse();
         // 운송장은 값이 없어도 잘 나옴.
         // AWBNumber
-        response.setTrackingNo(String.valueOf(jsonObject.getLong("AWBNumber")));
+        response.setTrackingNo(String.valueOf(jsonObject.optLong("AWBNumber")));
         Status status = new Status();
 
         // 조회한 운송장의 결과값이 제대로 반환을 했는지부터 검사해야함.
