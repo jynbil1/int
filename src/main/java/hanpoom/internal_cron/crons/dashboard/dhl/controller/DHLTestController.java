@@ -151,9 +151,9 @@ public class DHLTestController {
     // }
    
 
-    // @GetMapping("/getSingleShipment")
-    // public void getSingleShipment(){
-    //     DHLTrackingVO trackingVo = dHLService.filterShipment(new DHLTrackingVO("655755", "6673310420"));
-    //     System.out.println(trackingVo);
-    // }
+    @GetMapping("/getSingleShipment")
+    public void getSingleShipment(){
+        DHLTrackingVO trackingVo = dHLService.filterShipment(new DHLTrackingVO("653662", "5017207495"));
+        System.out.println(trackingVo);
+    }
 }

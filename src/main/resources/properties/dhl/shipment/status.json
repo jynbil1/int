@@ -88,7 +88,7 @@
             "eventGroup": "Clearance delay",
             "engDesc": "Customs status updated",
             "korDesc": "세관 정보가 업데이트 되었습니다.",
-            "hpGroup": "in-transit"
+            "hpGroup": "urgency-customs"
         },
         "UD": {
             "eventGroup": "Clearance delay",
@@ -117,6 +117,12 @@
         "BN": {
             "eventGroup": "Customs clearance",
             "engDesc": "Broker notified to arrange for clearance",
+            "korDesc": "세관 검사가 진행될 예정입니다.",
+            "hpGroup": "clearance-process"
+        },
+        "CUS": {
+            "eventGroup": "Customs Status Updated Soon",
+            "engDesc": "Custom status has been updated.",
             "korDesc": "세관 검사가 진행될 예정입니다.",
             "hpGroup": "clearance-process"
         },

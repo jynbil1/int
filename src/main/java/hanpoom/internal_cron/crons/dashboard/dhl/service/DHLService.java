@@ -87,37 +87,7 @@ public class DHLService {
             System.out.println(response.toString());
         }
 
-        // events 들 중 배송 완료 값이 있으면 오케이. 없으면 제일 최신 데이터 가져오기
-        int noOfShipmentOnHold = 0;
-
-        // "WC", "FD" 는 타 배송사
-        ShipmentEvent selectedEvent = null;
-
-        for (ShipmentEvent event : response.getShipmentEvents()) {
-            if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK").contains(event.getEventCode())) {
-                selectedEvent = event;
-                break;
-            }
-        }
-        if (selectedEvent == null) {
-            for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
-                if (currentEvent.getEventCode().equals("OH")) {
-                    noOfShipmentOnHold += 1;
-                }
-                if (noOfShipmentOnHold >= 3) {
-                    selectedEvent = currentEvent;
-                    break;
-                }
-            }
-        }
-
-        if (selectedEvent == null) {
-            selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
-            if (selectedEvent.getEventCode().equals("OH")) {
-                selectedEvent.setEventCode("ITH");
-                selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
-            }
-        }
+        ShipmentEvent selectedEvent = analyzeShipmentHistory(response, shipmentEventCode);
 
         // 상황에 따라 담아 처리할 리스트 마련.
         // 한품 내에서 지정한 기준에 의거하여 배송 상태에 따른 각 다른 업무를 처리한다.
@@ -295,38 +265,10 @@ public class DHLService {
                 // }
                 // events 들 중 배송 완료 값이 있으면 오케이. 없으면 제일 최신 데이터 가져오기
                 // "WC", "FD" 는 타 배송사
-                ShipmentEvent selectedEvent = null;
+                
                 // Shipment on Hold 는 다양한 이유로 발생한다.
                 // 해당 이벤트가 3건 이상 발생하면 문제를 보고한다.
-                int noOfShipmentOnHold = 0;
-
-                // 배송이 완료 되었으면 완료되었다고 하면 되지만.
-                for (ShipmentEvent event : response.getShipmentEvents()) {
-                    if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK").contains(event.getEventCode())) {
-                        selectedEvent = event;
-                        break;
-                    }
-                }
-                if (selectedEvent == null) {
-                    for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
-                        if (currentEvent.getEventCode().equals("OH")) {
-                            noOfShipmentOnHold += 1;
-                        }
-                        if (noOfShipmentOnHold >= 3) {
-                            selectedEvent = currentEvent;
-                            break;
-                        }
-                    }
-                }
-                // 배송이 완료된 것도 없고, 통관문제인게 없으나, 제일 최신 데이터가 Shipment on Hold 일 경우에는,
-                // code 를 ITH 로 변경한다.
-                if (selectedEvent == null) {
-                    selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
-                    if (selectedEvent.getEventCode().equals("OH")) {
-                        selectedEvent.setEventCode("ITH");
-                        selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
-                    }
-                }
+                ShipmentEvent selectedEvent = analyzeShipmentHistory(response, shipmentEventCode);
 
                 // 상황에 따라 담아 처리할 리스트 마련.
                 // 한품 내에서 지정한 기준에 의거하여 배송 상태에 따른 각 다른 업무를 처리한다.
@@ -439,6 +381,49 @@ public class DHLService {
                         deliveredOrders.size() + customIssueOrders.size() +
                         otherIssueOrders.size() + delayedOrders.size() +
                         untrackableOrders.size() + returnedOrders.size()));
+    }
+
+    private ShipmentEvent analyzeShipmentHistory(DHLTrackingResponse response, JSONObject shipmentEventCode) {
+        int noOfShipmentOnHold = 0;
+
+        // 배송이 완료 되었으면 완료되었다고 하면 되지만.
+        for (ShipmentEvent event : response.getShipmentEvents()) {
+            if (Arrays.asList("BR", "DL", "TP", "DD", "PD", "OK").contains(event.getEventCode())) {
+                return event;
+            }
+        }
+        // Shipment On hold 는 한 두번 나오면 괜찮지만, 계속 나오게 되면 문제인 건임.
+        for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
+            if (currentEvent.getEventCode().equals("OH")) {
+                noOfShipmentOnHold += 1;
+            }
+            if (noOfShipmentOnHold >= 3) {
+                return currentEvent;
+
+            }
+        }
+
+        // Customs Status Updated 는 한 두번 나오면 괜찮지만, 계속 나오게 되면 문제인 건임.
+        for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
+            if (currentEvent.getEventCode().equals("RR")) {
+                noOfShipmentOnHold += 1;
+            }
+            if (noOfShipmentOnHold >= 3) {
+                return currentEvent;
+            }
+        }
+
+        // 배송이 완료된 것도 없고, 통관문제인게 없으나, 제일 최신 데이터가 Shipment on Hold 일 경우에는,
+        // code 를 ITH 로 변경한다.
+        ShipmentEvent selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
+        if (selectedEvent.getEventCode().equals("OH")) {
+            selectedEvent.setEventCode("ITH");
+            selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
+        } else if (selectedEvent.getEventCode().equals("RR")) {
+            selectedEvent.setEventCode("CUS");
+            selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("CUS").getString("korDesc"));
+        }
+        return selectedEvent;
     }
 
     // DB DATA Processing
