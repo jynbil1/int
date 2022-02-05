@@ -204,11 +204,17 @@
             "korDesc": "DHL 에 보관되어 있습니다.",
             "hpGroup": "urgency-customs"
         },
-        "CS": {
+        "CS(for commented text purposes": {
             "eventGroup": "Exception",
             "engDesc": "Closed Shipment",
             "korDesc": "닫힌 배송물입니다.",
             "hpGroup": "closed"
+        },
+        "CS": {
+            "eventGroup": "Exception",
+            "engDesc": "Please Contact DHL.",
+            "korDesc": "DHL 에 연락주십시오.",
+            "hpGroup": "urgency-customs"
         },
         "SC": {
             "eventGroup": "Exception",
@@ -262,7 +268,7 @@
             "eventGroup": "Delivered",
             "engDesc": "Delivery arranged, no details expected",
             "korDesc": "배송 예정일정이 조정되었습니다. 추가 정보 없음.",
-            "hpGroup": "delivered"
+            "hpGroup": "delivery-soon"
         },
         "DD": {
             "eventGroup": "Delivered",

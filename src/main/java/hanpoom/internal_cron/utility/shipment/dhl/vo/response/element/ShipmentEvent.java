@@ -26,7 +26,7 @@ public class ShipmentEvent {
         this.date = date;
         this.time = time;
         this.eventCode = eventCode;
-        this.eventDesc = eventCode;
+        this.eventDesc = eventDesc;
         this.areaCode = areaCode;
         this.areaDesc = areaDesc;
         this.furtherDetails = furtherDetails;
