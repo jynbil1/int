@@ -17,8 +17,8 @@ public class GlobalDashboardService {
     }
 
     public String getLastWeekRevenue() {
-        System.out.println(calendar.getPreviousWeekMonday(true));
-        System.out.println(calendar.getPreviousWeekSunday(true));
+        // System.out.println(calendar.getPreviousWeekMonday(true));
+        // System.out.println(calendar.getPreviousWeekSunday(true));
         String lastWeekRevenue;
         try {
             lastWeekRevenue = commonMapper
