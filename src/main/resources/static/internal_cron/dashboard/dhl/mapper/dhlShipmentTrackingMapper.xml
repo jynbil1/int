@@ -2,13 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="hanpoom.internal_cron.crons.dashboard.dhl.mapper.DHLMapper">
 
-    <select id="getTrackableOrders" parameterType="java.util.Map" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
+    <select id="getTrackableOrders" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
         select
             orders.order_no,
             orders.order_date,
             details.shipment_class,
             details.tracking_no
-        <!-- out_orders.out_dtime -->
         from
             (select
                 id as order_no,
@@ -62,6 +61,11 @@
             delivered_orders.tracking_no is null and
             issue_orders.order_no is null and 
             issue_orders.tracking_no is null;
+    </select>
+
+    <select id="getDelivered"></select>
+    <select id="getError">
+        select count(id) f
     </select>
 
     <select id="getOrderDetailByTrackingNo" parameterType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">

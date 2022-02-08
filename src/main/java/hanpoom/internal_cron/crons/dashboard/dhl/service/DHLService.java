@@ -449,7 +449,7 @@ public class DHLService {
             dateRange.put("start_dtime", start_dtime);
             dateRange.put("end_dtime", end_dtime);
             System.out.println(String.format("%s 부터 %s 까지의 기록을 조회합니다.", start_dtime, end_dtime));
-            trackingVOs = mapper.getTrackableOrders(dateRange);
+            trackingVOs = mapper.getTrackableOrders();
             System.out.println(String.valueOf(trackingVOs.size()) + " 개를 조회합니다.");
 
             return trackingVOs;

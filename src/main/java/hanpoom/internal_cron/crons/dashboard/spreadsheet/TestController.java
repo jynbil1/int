@@ -36,73 +36,73 @@ public class TestController {
     // "0 0 0 25 12 ?" = every Christmas Day at midnight
 
     // 매주 월요일 자정이 되면 수행.
-    @GetMapping("/new-spread-get")
-    public void cronJobGloabalWeeklyDashboard() {
-        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarService.DATE_TIME_FORMAT_PATTERN));
-        System.out.println(now + " 에 작업을 수행함");
+    // @GetMapping("/new-spread-get")
+    // public void cronJobGloabalWeeklyDashboard() {
+    //     String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarService.DATE_TIME_FORMAT_PATTERN));
+    //     System.out.println(now + " 에 작업을 수행함");
 
-        // 데이터를 가져온다.
-        // 1. 매출
-        String revenue = dashboard.getLastWeekRevenue();
-        // 2. 유저 수
-        // 2.1. 신규 가입자
-        String newCustomers = dashboard.getLastWeekNewUsers();
-        // 2.2. 신규 가입자 중 기간내 신규 구매자
-        String newPurchasers = dashboard.getLastWeekNewPurchase();
-        // 2.3. 신규 가입자 중 기간 내 재구매
-        String newRepurchasers = dashboard.getLastWeekRePurchase();
+    //     // 데이터를 가져온다.
+    //     // 1. 매출
+    //     String revenue = dashboard.getLastWeekRevenue();
+    //     // 2. 유저 수
+    //     // 2.1. 신규 가입자
+    //     String newCustomers = dashboard.getLastWeekNewUsers();
+    //     // 2.2. 신규 가입자 중 기간내 신규 구매자
+    //     String newPurchasers = dashboard.getLastWeekNewPurchase();
+    //     // 2.3. 신규 가입자 중 기간 내 재구매
+    //     String newRepurchasers = dashboard.getLastWeekRePurchase();
 
-        // 3. 주문건 수
-        String totalOrders = dashboard.getLastWeekTotalOrders();
+    //     // 3. 주문건 수
+    //     String totalOrders = dashboard.getLastWeekTotalOrders();
 
-        // 4. 상품 마진
-        String totalMargins = dashboard.getLastWeekMargins();
+    //     // 4. 상품 마진
+    //     String totalMargins = dashboard.getLastWeekMargins();
 
-        sheetApi.setSheetName(SHEET);
-        sheetApi.setSpreadSheetID(SPREADSHEET_ID);
+    //     sheetApi.setSheetName(SHEET);
+    //     sheetApi.setSpreadSheetID(SPREADSHEET_ID);
 
-        // C 컬럼은 주 차를 뜻한다. 주 차가 제일 높은 값을 가져온다.
-        // 가져온 값 중 숫자가 없으면 1 부터 시작한다.
-        int maxInt = 0;
-        List<List<Object>> currentCContent = sheetApi.readSheetData("C:C");
-        for (List<Object> data : currentCContent) {
-            for (Object datum : data) {
-                String strValue = String.valueOf(datum);
-                if (strValue.length() > 0) {
-                    try {
-                        int intVal = Integer.parseInt(strValue);
-                        if (maxInt < intVal) {
-                            maxInt = intVal;
-                        } else {
-                            continue;
-                        }
-                    } catch (NumberFormatException nfe) {
-                        continue;
-                    }
-                }
-            }
-        }
-        // 가져온 값 더하기 1을 한다.
-        maxInt += 1;
+    //     // C 컬럼은 주 차를 뜻한다. 주 차가 제일 높은 값을 가져온다.
+    //     // 가져온 값 중 숫자가 없으면 1 부터 시작한다.
+    //     int maxInt = 0;
+    //     List<List<Object>> currentCContent = sheetApi.readSheetData("C:C");
+    //     for (List<Object> data : currentCContent) {
+    //         for (Object datum : data) {
+    //             String strValue = String.valueOf(datum);
+    //             if (strValue.length() > 0) {
+    //                 try {
+    //                     int intVal = Integer.parseInt(strValue);
+    //                     if (maxInt < intVal) {
+    //                         maxInt = intVal;
+    //                     } else {
+    //                         continue;
+    //                     }
+    //                 } catch (NumberFormatException nfe) {
+    //                     continue;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     // 가져온 값 더하기 1을 한다.
+    //     maxInt += 1;
 
-        // 가져온 데이터를 엑셀 시트에 기입한다.
-        List<Object> dataSet = Arrays
-                .asList(calendar.getPreviousWeekMonday(false),
-                        calendar.getPreviousWeekSunday(false),
-                        String.valueOf(maxInt), revenue,
-                        newCustomers, newPurchasers, newRepurchasers,
-                        totalOrders, totalMargins);
+    //     // 가져온 데이터를 엑셀 시트에 기입한다.
+    //     List<Object> dataSet = Arrays
+    //             .asList(calendar.getPreviousWeekMonday(false),
+    //                     calendar.getPreviousWeekSunday(false),
+    //                     String.valueOf(maxInt), revenue,
+    //                     newCustomers, newPurchasers, newRepurchasers,
+    //                     totalOrders, totalMargins);
 
-        JSONArray array = new JSONArray();
-        for (Object obj : dataSet) {
-            array.put(obj);
-        }
-        UpdateSheetVO sheetVo = sheetApi.insertRows(new JSONArray().put(array));
-        System.out.println(sheetVo.toString());
-        if (sheetVo.getUpdatedCells() > 0) {
-            System.out.println("성공적으로 데이터를 입력했습니다.");
-        } else {
-            System.out.println("실패");
-        }
-    }
+    //     JSONArray array = new JSONArray();
+    //     for (Object obj : dataSet) {
+    //         array.put(obj);
+    //     }
+    //     UpdateSheetVO sheetVo = sheetApi.insertRows(new JSONArray().put(array));
+    //     System.out.println(sheetVo.toString());
+    //     if (sheetVo.getUpdatedCells() > 0) {
+    //         System.out.println("성공적으로 데이터를 입력했습니다.");
+    //     } else {
+    //         System.out.println("실패");
+    //     }
+    // }
 }
