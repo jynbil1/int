@@ -56,10 +56,20 @@ public class DHLShipmentHanldingService {
     // 배송 완료 처리 건.
     public void processDeliveredOrders(List<DHLTrackingVO> trackingVoList) {
         // 값을 넣고, 성공하면 넣은 값을 슬랙 알림을 위해 입력한 수 만큼을 리턴
-        
-        System.out.println("배송완료건");
-        System.out.println(trackingVoList.toString());
-        System.out.println("====================================");
+
+        // System.out.println("배송완료건");
+        // System.out.println(trackingVoList.toString());
+        // System.out.println("====================================");
+
+        // int index = 0;
+        // for (DHLTrackingVO vo : trackingVoList) {
+        //     System.out.println(String.valueOf(index) + ": " + vo.getOrder_no());
+        //     index += 1;
+        //     if (index == 44 || index == 45) {
+        //         System.out.println(vo.toString());
+        //     }
+        // }
+
         insertDeliveredShipments(trackingVoList);
 
     }
@@ -71,8 +81,9 @@ public class DHLShipmentHanldingService {
         System.out.println("통관 문제 건");
         System.out.println(trackingVoList.toString());
         System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() && spreadSheetInserted.getUpdatedCells() > 0) {
-        //     return 1;
+        // if (dbInserted == trackingVoList.size() &&
+        // spreadSheetInserted.getUpdatedCells() > 0) {
+        // return 1;
         // }
         // return 0;
     }
@@ -84,8 +95,9 @@ public class DHLShipmentHanldingService {
         // System.out.println("기타 문제 건");
         // System.out.println(trackingVoList.toString());
         // System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() && spreadSheetInserted.getUpdatedCells() > 0) {
-        //     return 1;
+        // if (dbInserted == trackingVoList.size() &&
+        // spreadSheetInserted.getUpdatedCells() > 0) {
+        // return 1;
         // }
         // return 0;
     }
@@ -97,8 +109,9 @@ public class DHLShipmentHanldingService {
         // System.out.println("배송 지연되고 있는 건 처리");
         // System.out.println(trackingVoList.toString());
         // System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() && spreadSheetInserted.getUpdatedCells() > 0) {
-        //     return 1;
+        // if (dbInserted == trackingVoList.size() &&
+        // spreadSheetInserted.getUpdatedCells() > 0) {
+        // return 1;
         // }
         // return 0;
     }
@@ -111,8 +124,9 @@ public class DHLShipmentHanldingService {
         // System.out.println("조회가 불가한 건");
         // System.out.println(trackingVoList.toString());
         // System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() && spreadSheetInserted.getUpdatedCells() > 0) {
-        //     return 1;
+        // if (dbInserted == trackingVoList.size() &&
+        // spreadSheetInserted.getUpdatedCells() > 0) {
+        // return 1;
         // }
         // return 0;
     }
@@ -125,8 +139,9 @@ public class DHLShipmentHanldingService {
         // System.out.println("반송된 건");
         // System.out.println(trackingVoList.toString());
         // System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() && spreadSheetInserted.getUpdatedCells() > 0) {
-        //     return 1;
+        // if (dbInserted == trackingVoList.size() &&
+        // spreadSheetInserted.getUpdatedCells() > 0) {
+        // return 1;
         // }
         // return 0;
     }
@@ -313,6 +328,10 @@ public class DHLShipmentHanldingService {
                     float shippingDuration = (float) LocalDateTime.from(shippedDtime).until(deliveredDtime,
                             ChronoUnit.HOURS);
 
+                    if (trackingVo.getOrder_no().length() > 9) {
+                        trackingVo.setOrder_no(orderNo);
+                    }
+
                     trackingVOs.add(trackingVo);
                     String row = String.valueOf(contents.get(orderNo).get("row"));
 
@@ -336,6 +355,15 @@ public class DHLShipmentHanldingService {
             }
         }
         // 한번에 업데이트 칠 것.
+        // int index = 0;
+        // for (DHLTrackingVO vo: trackingVOs) {
+        //     System.out.println(vo.getOrder_no());
+        //     if (index == 23 || index == 24) {
+        //         System.out.println(vo.toString());
+        //     }
+        //     index += 1; 
+
+        // }
         return insertDeliveredShipments(trackingVOs) > 0 ? true : false;
     }
 

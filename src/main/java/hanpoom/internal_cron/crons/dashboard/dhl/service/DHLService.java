@@ -275,7 +275,21 @@ public class DHLService {
                 // 위에서 가중치가 가장 높은 Event 를 추출함.
                 String eventCase = shipmentEventCode.getJSONObject(selectedEvent.getEventCode())
                         .getString("hpGroup");
-                String orderNo = String.valueOf(response.getShipmentDetail().getShipmentReference());
+
+                String orderNo = null;
+                // 운송장 레퍼런스 입력하는 곳에 항상 절대적으로 주문 번호가 들어가는 것이 아니기 때문에 문제가 발생한다.
+                // 그리하여 아래와 같이 DB 의 값을 먼저 우선시 하고, 정상적이지 않을 경우 운송장에 적힌 Reference 값을 사용하는데,
+                // 반환된 값 또한 정상적 주문번호가 아닐 경우, 해당 반복문을 건너뛴다.
+                try {
+                    orderNo = jsonMap.get(response.getTrackingNo()).get("order_no");
+                } catch (NullPointerException npe) {
+                    orderNo = String.valueOf(response.getShipmentDetail().getShipmentReference());
+                    if (String.valueOf(orderNo).length() > 9) {
+                        System.out.println("정상적인 주문 번호를 찾을 수 없습니다.");
+                        System.out.println(response.toString());
+                        continue;
+                    }
+                }
 
                 DHLTrackingVO responseVo = new DHLTrackingVO();
                 responseVo.setOrder_no(orderNo);
@@ -409,7 +423,7 @@ public class DHLService {
         for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
             if (currentEvent.getEventCode().equals("RR")) {
                 noOfCustomstatusUpdated += 1;
-            } else if (!currentEvent.getEventCode().equals("RR") && noOfCustomstatusUpdated> 0){
+            } else if (!currentEvent.getEventCode().equals("RR") && noOfCustomstatusUpdated > 0) {
                 // 값이 RR 이 아니고 찾은 CustomstatusUpdated 건이 0 보다 클 때
                 noOfCustomstatusUpdated -= 1;
             }
