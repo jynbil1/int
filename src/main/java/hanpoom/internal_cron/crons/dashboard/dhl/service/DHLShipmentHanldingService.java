@@ -79,7 +79,9 @@ public class DHLShipmentHanldingService {
         int dbInserted = insertErrorShipments(trackingVoList);
         UpdateSheetVO spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
         System.out.println("통관 문제 건");
-        System.out.println(trackingVoList.toString());
+        for (DHLTrackingVO vo: trackingVoList) {
+            System.out.println(vo.toString());
+        }
         System.out.println("====================================");
         // if (dbInserted == trackingVoList.size() &&
         // spreadSheetInserted.getUpdatedCells() > 0) {
@@ -204,7 +206,17 @@ public class DHLShipmentHanldingService {
 
         spreadSheetApi.setSheetName(SHEET);
         spreadSheetApi.setSpreadSheetID(SPREADSHEET_ID);
-        List<List<Object>> contents = spreadSheetApi.readSheetData("A:N");
+
+        List<List<Object>> contents = new ArrayList<>();
+        try {
+            contents = spreadSheetApi.readSheetData("A:N");
+        } catch (NullPointerException npe) {
+            System.out.println(SHEET);
+            System.out.println(SPREADSHEET_ID);
+            System.out.println(LocalDateTime.now().toString() + "통합시트 데이터 불러오는 과정에서 오류 남.");
+            return null;
+        }
+
         List<String> columns = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N");
 
         Map<String, Map<String, Object>> excelMap = new HashMap<>();
