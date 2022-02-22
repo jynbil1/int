@@ -357,6 +357,7 @@ public class DHLService {
                     // 위의 조건에도 부합하지 않은 건들은 배송 기간을 조회하여 지연여부를 확인함.
                     default:
                         // 무무면 5일 일반은 10일
+                        // System.out.println(jsonMap.get(response.getTrackingNo()).toString());
                         int delayAllowableDays = 10;
                         if (!shipmentClass.equals("regular")) {
                             delayAllowableDays = 5;

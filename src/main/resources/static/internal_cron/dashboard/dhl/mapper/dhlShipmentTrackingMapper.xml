@@ -6,7 +6,7 @@
         select
             orders.order_no,
             orders.order_date,
-            details.shipment_class,
+            ifnull(details.shipment_class, 'regular') as shipment_class,
             details.tracking_no
         from
             (select

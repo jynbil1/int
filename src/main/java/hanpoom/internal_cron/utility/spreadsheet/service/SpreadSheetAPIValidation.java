@@ -67,7 +67,7 @@ public class SpreadSheetAPIValidation {
         httpService.setContentType("json");
         httpService.setUrl(requestUrl);
         JSONObject json = httpService.get();
-        if (json.optInt("expires_in") > 100) {
+        if (json.optInt("expires_in") > 1000) {
             return true;
         } else {
             return false;
@@ -78,7 +78,7 @@ public class SpreadSheetAPIValidation {
         if (!isValidToken(token)) {
             return refreshToken();
         } else {
-            return "";
+            return token;
         }
     }
 }

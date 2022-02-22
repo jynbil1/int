@@ -313,7 +313,10 @@ public class DHLShipmentHanldingService {
 
         List<DHLTrackingVO> trackingVOs = new ArrayList<>();
         Map<String, Map<String, Object>> contents = readIncompleteSheetOrders();
-
+        System.out.println("------------------");
+        System.out.println("checkNupdateCompleteShipments 중 readIncompleteSheetOrders 를 처리하는 과정");
+        System.out.println(contents.toString());
+        System.out.println("=---------=--------");
         String searchableTrackingNo = "";
         for (String orderNo : new ArrayList<>(contents.keySet())) {
             try {

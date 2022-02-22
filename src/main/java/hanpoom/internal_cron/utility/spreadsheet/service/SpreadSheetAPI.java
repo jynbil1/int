@@ -77,6 +77,7 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
                 response.optInt("updatedColumns"),
                 response.optInt("updatedCells"));
     }
+
     @Override
     public UpdateSheetVO updateRow(JSONArray row, String range) {
         String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s!%s";
@@ -100,7 +101,7 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
         httpService.setToken(this.token);
 
         JSONObject response = httpService.put();
-
+        // System.out.println(response.toString());
         return new UpdateSheetVO(response.optString("spreadsheetId"),
                 response.optString("updatedRange"),
                 response.optInt("updatedRows"),
