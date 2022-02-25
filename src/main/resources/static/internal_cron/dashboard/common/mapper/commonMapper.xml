@@ -50,24 +50,41 @@
                     orders.order_no = refund_orders.parent_order_no ) as united_orders
         inner join
             (select
-                a.order_no,
-                group_concat(a.subtotal) as subtotal,
-                group_concat(a.shipping) as shipping,
-                group_concat(a.order_total) as order_total,
-                group_concat(a.order_discount) as order_discount
-            from	
-                (select
-                    post_id as order_no,
-                    case when meta_key = 'rs_cart_subtotal' then meta_value end as subtotal,
-                    case when meta_key = '_order_shipping' then meta_value end as shipping,
-                    case when meta_key = '_order_total' then meta_value end as order_total,
-                    case when meta_key = '_cart_discount' then meta_value end as order_discount
-                from	
-                    wphpm_postmeta
-                where
-                    meta_key in ('rs_cart_subtotal', '_order_shipping', '_order_total', '_cart_discount') ) as a
-            group by
-                a.order_no ) as details
+					b.order_no,
+                    case when b.order_currency ="KRW" then b.subtotal/b.exchange_rate
+                    else b.subtotal end as subtotal,
+                    case when b.order_currency ="KRW" then b.shipping/b.exchange_rate
+                    else b.shipping end as shipping,
+                    case when b.order_currency ="KRW" then b.order_total/b.exchange_rate
+                    else b.order_total end as order_total,
+                    case when b.order_currency ="KRW" then b.order_discount/b.exchange_rate
+                    else b.order_discount end as order_discount               
+                from
+				(
+					select
+						a.order_no,
+						group_concat(a.subtotal) as subtotal,
+						group_concat(a.shipping) as shipping,
+						group_concat(a.order_total) as order_total,
+						group_concat(a.order_discount) as order_discount,
+						group_concat(a.exchange_rate) as exchange_rate,
+						COALESCE(group_concat(a.order_currency),"USD") as order_currency
+                    from
+                        (select
+                            post_id as order_no,
+                            case when meta_key = 'rs_cart_subtotal' then meta_value end as subtotal,
+                            case when meta_key = '_order_shipping' then meta_value end as shipping,
+                            case when meta_key = '_order_total' then meta_value end as order_total,
+                            case when meta_key = '_cart_discount' then meta_value end as order_discount,
+                            case when meta_key = '_exchange_rate_usd_krw' then meta_value end as exchange_rate,
+                            case when meta_key = '_order_currency' then meta_value end as order_currency
+                        from
+                            wphpm_postmeta
+                        where
+                            meta_key in ('rs_cart_subtotal', '_order_shipping', '_order_total', '_cart_discount', '_exchange_rate_usd_krw', '_order_currency') ) as a
+                    group by
+                        a.order_no ) as b
+            ) as details
         on
             united_orders.order_no = details.order_no;
     </select>
