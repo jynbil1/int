@@ -95,7 +95,13 @@ public class DHLShipmentTrackingService implements DHLAPI {
     public DHLTrackingResponseStorage trackShipments(List<String> trackingNos) {
         DHLTrackingRequest request = new DHLTrackingRequest(trackingNos);
         String requestJson = request.getValidatedJSONRequest().toString();
-        JSONArray responseJsonArray = callAPI(requestJson).getJSONArray("ArrayOfAWBInfoItem");
+        JSONArray responseJsonArray = new JSONArray();
+        try {
+            responseJsonArray = callAPI(requestJson).getJSONArray("ArrayOfAWBInfoItem");
+        } catch (NullPointerException npe) {
+            System.out.println(requestJson.toString());
+            npe.printStackTrace();
+        }
 
         List<DHLTrackingResponse> responses = new ArrayList<>();
         DHLTrackingResponse response = new DHLTrackingResponse();

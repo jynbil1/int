@@ -48,27 +48,27 @@ public class DHLCron {
         // System.out.println(dHLService.getUntrackableOrders().toString());
         // System.out.println(dHLService.getDelayedOrders().toString());
 
-        if (dHLService.getDeliveredOrders().size() > 0) {
-            dHLShipmentHanldingService.processDeliveredOrders(dHLService.getDeliveredOrders());
+        if (!dHLService.getDeliveredOrders().isEmpty()) {
+            dHLShipmentHanldingService.insertDeliveredShipments(dHLService.getDeliveredOrders());
         }
 
-        if (dHLService.getCustomsIssueOrders().size() > 0) {
+        if (!dHLService.getCustomsIssueOrders().isEmpty()) {
             dHLShipmentHanldingService.processCustomsIssueOrders(dHLService.getCustomsIssueOrders());
         }
 
-        if (dHLService.getOtherIssueOrders().size() > 0) {
+        if (!dHLService.getOtherIssueOrders().isEmpty()) {
             dHLShipmentHanldingService.processOtherIssueOrders(dHLService.getOtherIssueOrders());
 
         }
-        if (dHLService.getDelayedOrders().size() > 0) {
+        if (!dHLService.getDelayedOrders().isEmpty()) {
             dHLShipmentHanldingService.processDelayedOrders(dHLService.getDelayedOrders());
 
         }
-        if (dHLService.getUntrackableOrders().size() > 0) {
+        if (!dHLService.getUntrackableOrders().isEmpty()) {
             dHLShipmentHanldingService.processUntrackableOrders(dHLService.getUntrackableOrders());
 
         }
-        if (dHLService.getReturnedOrders().size() > 0) {
+        if (!dHLService.getReturnedOrders().isEmpty()) {
             dHLShipmentHanldingService.processReturnedOrders(dHLService.getReturnedOrders());
 
         }

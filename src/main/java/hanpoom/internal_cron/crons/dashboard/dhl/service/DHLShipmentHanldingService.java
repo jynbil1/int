@@ -54,7 +54,7 @@ public class DHLShipmentHanldingService {
     private int otherIssueOrders;
 
     // 배송 완료 처리 건.
-    public void processDeliveredOrders(List<DHLTrackingVO> trackingVoList) {
+    // public void processDeliveredOrders(List<DHLTrackingVO> trackingVoList) {
         // 값을 넣고, 성공하면 넣은 값을 슬랙 알림을 위해 입력한 수 만큼을 리턴
 
         // System.out.println("배송완료건");
@@ -70,9 +70,8 @@ public class DHLShipmentHanldingService {
         //     }
         // }
 
-        insertDeliveredShipments(trackingVoList);
-
-    }
+    //     insertDeliveredShipments(trackingVoList);
+    // }
 
     // 통관 문제 건.
     public void processCustomsIssueOrders(List<DHLTrackingVO> trackingVoList) {
@@ -168,7 +167,7 @@ public class DHLShipmentHanldingService {
     // 스프레드 시트에 CRUD하는 부분.
     public UpdateSheetVO insertIntoSpreadSheet(List<DHLTrackingVO> orderShipments) {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN));
-        List<List<Object>> dataSets = new ArrayList<>();
+        // List<List<Object>> dataSets = new ArrayList<>();
         // 생성일자 주문번호 송장번호 변경된송장
         // 주문일자 출고일자 배송완료일자 배송기간(n.m일)
         // 배송상태구분 배송특이사항 DHL문의여부 DHL확인내용
@@ -384,7 +383,7 @@ public class DHLShipmentHanldingService {
 
     // 데이터 삽입하는 부분
     // 배송 완료된 데이터를 삽입함.
-    private int insertDeliveredShipments(List<DHLTrackingVO> deliveredShipments) {
+    public int insertDeliveredShipments(List<DHLTrackingVO> deliveredShipments) {
         try {
             Integer isSuccessful = dhlMapper.insertDeliveredShipments(deliveredShipments);
             if (isSuccessful <= 1) {
