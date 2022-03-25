@@ -182,16 +182,16 @@ public class DHLService {
         int index = 1;
         int accIndex = 1;
         // 한번에 많은 데이터를 요청하면 안되므로, 50개씩 묶는작업이다.
+        System.out.println(orderTrackingList.size());
         for (DHLTrackingVO orderTracking : orderTrackingList) {
-
             // 처리해야 할 건이 한번에 처리할 건보다 더 많을 경우,
             if (orderTrackingList.size() > limit) {
-                if (index > limit || orderTrackingList.size() == accIndex) {
+                trackingNos.add(orderTracking.getTracking_no());
+                if (index == limit || orderTrackingList.size() == accIndex) {
                     trackingSets.add(trackingNos);
                     trackingNos = new ArrayList<>();
-                    index = 1;
+                    index = 0;
                 }
-                trackingNos.add(orderTracking.getTracking_no());
                 ++index;
                 ++accIndex;
             } else {
@@ -203,6 +203,13 @@ public class DHLService {
                 }
             }
         }
+        // int cnt = 0;
+        // System.out.println("*------------------------------------*");
+        // for (List<String> nos : trackingSets) {
+        //     System.out.println(String.valueOf(cnt) + ": " + String.valueOf(nos.size()));
+        //     ++cnt;
+        // }
+
         // 50개씩 묶은 데이터를 매 요청에 담아 조회하고 데이터를 구분한다.
         // DHL 배송 상태를 파악하는 JSON 파일 객체를 담고 있다
         JSONObject shipmentCode = new JSONObject();

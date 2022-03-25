@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.utility.http.service.SpreadSheetHttpService;
-import hanpoom.internal_cron.utility.spreadsheet.config.SpreadSheetConfig;
 import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
@@ -19,7 +18,6 @@ import lombok.ToString;
 public class SpreadSheetAPI extends SpreadSheetAPITools {
 
     private SpreadSheetAPIValidation api;
-    private SpreadSheetConfig config;
 
     @Override
     public List<List<Object>> readSheetData(String range) {
