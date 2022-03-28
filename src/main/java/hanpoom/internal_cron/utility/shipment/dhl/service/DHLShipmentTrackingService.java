@@ -95,12 +95,22 @@ public class DHLShipmentTrackingService implements DHLAPI {
     public DHLTrackingResponseStorage trackShipments(List<String> trackingNos) {
         DHLTrackingRequest request = new DHLTrackingRequest(trackingNos);
         String requestJson = request.getValidatedJSONRequest().toString();
+        JSONObject JsonResponse = new JSONObject();
         JSONArray responseJsonArray = new JSONArray();
         try {
-            responseJsonArray = callAPI(requestJson).getJSONArray("ArrayOfAWBInfoItem");
-        } catch (NullPointerException npe) {
-            System.out.println(requestJson.toString());
-            npe.printStackTrace();
+            JsonResponse = callAPI(requestJson);
+            responseJsonArray = JsonResponse.optJSONArray("ArrayOfAWBInfoItem");
+            if (responseJsonArray == null) {
+                return null;
+            }
+        } catch (Exception e) {
+            System.out.println("-------------------------");
+            System.out.println(e.getMessage());
+            System.out.println("ArrayOfAWBInfoItem 를 못찾는 건 발생: ");
+            System.out.println(JsonResponse.toString());
+            // jsone.printStackTrace();
+            System.out.println("-------------------------");
+            return null;
         }
 
         List<DHLTrackingResponse> responses = new ArrayList<>();
@@ -115,8 +125,12 @@ public class DHLShipmentTrackingService implements DHLAPI {
                 }
             } catch (JSONException jsone) {
                 System.out.println("-------------------------");
+                System.out.println("ArrayOfAWBInfoItem 를 못찾는 건 발생: ");
+
                 System.out.println(responseJsonArray.getJSONObject(index).toString());
-                jsone.printStackTrace();
+                // jsone.printStackTrace();
+                System.out.println("-------------------------");
+                continue;
 
             }
         }

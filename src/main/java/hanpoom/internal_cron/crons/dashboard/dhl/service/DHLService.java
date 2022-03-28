@@ -231,7 +231,9 @@ public class DHLService {
 
         for (List<String> trackingSet : trackingSets) {
             DHLTrackingResponseStorage storage = dHLShipmentTrackingService.trackShipments(trackingSet);
-
+            if (storage == null) {
+                continue;
+            }
             // 반환된 매 운송장 값의 결과.
             for (DHLTrackingResponse response : storage.getResponses()) {
                 String shipmentClass = jsonMap.get(response.getTrackingNo()).get("shipment_class");
