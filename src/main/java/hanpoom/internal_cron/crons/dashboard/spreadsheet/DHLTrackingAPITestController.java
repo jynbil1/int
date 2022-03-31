@@ -19,7 +19,7 @@ public class DHLTrackingAPITestController {
     @Autowired
     private DHLShipmentTrackingService shipmentTracking;
 
-    @GetMapping(value = "/dhl/api/track/{trackingNo}")
+    // @GetMapping(value = "/dhl/api/track/{trackingNo}")
     public Object getTrackingShipments(@PathVariable(value = "trackingNo") String trackingNo) {
         Set<String> trackingNos = new HashSet<>();
         Arrays.asList(trackingNo.split(",")).stream().forEach(el -> {

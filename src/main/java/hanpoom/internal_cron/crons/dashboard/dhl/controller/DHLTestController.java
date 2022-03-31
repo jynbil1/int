@@ -33,7 +33,7 @@ public class DHLTestController {
         return null;
     }
 
-    @GetMapping("/investigate-shipped-orders-inactive")
+    // @GetMapping("/investigate-shipped-orders-inactive")
     public void testStatus() {
         LocalDateTime now = LocalDateTime.now();
         String executeTime = now.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
@@ -114,7 +114,7 @@ public class DHLTestController {
     }
 
     // 이미 처리했던 데이터들을 조회하여 문제가 발생한 건들을 다시 파악한다.
-    @GetMapping("/update-issue-order")
+    // @GetMapping("/update-issue-order")
     public void updateShipmentStatusforIssueOrders() {
         LocalDateTime now = LocalDateTime.now();
         String executeTime = now.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
