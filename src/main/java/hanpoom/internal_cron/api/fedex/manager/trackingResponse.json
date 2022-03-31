@@ -1,0 +1,545 @@
+[
+  {
+    "trackResults": [
+      {
+        "packageDetails": {
+          "physicalPackagingType": "PACKAGE",
+          "sequenceNumber": "1",
+          "packagingDescription": {
+            "description": "Package",
+            "type": "YOUR_PACKAGING"
+          },
+          "count": "1",
+          "weightAndDimensions": {
+            "weight": [
+              { "unit": "LB", "value": "21.5" },
+              { "unit": "KG", "value": "9.75" }
+            ],
+            "dimensions": [
+              { "length": 22, "width": 17, "units": "IN", "height": 10 },
+              { "length": 55, "width": 43, "units": "CM", "height": 25 }
+            ]
+          },
+          "packageContent": []
+        },
+        "goodsClassificationCode": "",
+        "returnDetail": {},
+        "serviceDetail": {
+          "description": "FedEx Ground",
+          "shortDescription": "FG",
+          "type": "FEDEX_GROUND"
+        },
+        "estimatedDeliveryTimeWindow": { "window": {} },
+        "latestStatusDetail": {
+          "scanLocation": {
+            "residential": false,
+            "city": "Norton",
+            "countryCode": "US",
+            "stateOrProvinceCode": "VA",
+            "countryName": "United States"
+          },
+          "code": "DL",
+          "derivedCode": "DL",
+          "statusByLocale": "Delivered",
+          "description": "Delivered"
+        },
+        "specialHandlings": [
+          {
+            "description": "Direct Signature Required",
+            "type": "DIRECT_SIGNATURE_REQUIRED",
+            "paymentType": "OTHER"
+          }
+        ],
+        "originLocation": {
+          "locationContactAndAddress": {
+            "address": {
+              "residential": false,
+              "city": "SPOKANE",
+              "countryCode": "US",
+              "stateOrProvinceCode": "WA",
+              "countryName": "United States"
+            }
+          }
+        },
+        "recipientInformation": {
+          "address": {
+            "residential": false,
+            "city": "NORTON",
+            "countryCode": "US",
+            "stateOrProvinceCode": "VA",
+            "countryName": "United States"
+          }
+        },
+        "standardTransitTimeWindow": {
+          "window": { "ends": "2016-08-01T00:00:00-06:00" }
+        },
+        "additionalTrackingInfo": {
+          "hasAssociatedShipments": false,
+          "nickname": "",
+          "packageIdentifiers": [
+            {
+              "trackingNumberUniqueId": "",
+              "values": ["PO#174724"],
+              "carrierCode": "",
+              "type": "CUSTOMER_REFERENCE"
+            }
+          ]
+        },
+        "shipmentDetails": { "possessionStatus": true },
+        "availableImages": [{ "type": "SIGNATURE_PROOF_OF_DELIVERY" }],
+        "scanEvents": [
+          {
+            "date": "2014-01-09T13:31:00-05:00",
+            "derivedStatus": "Delivered",
+            "scanLocation": {
+              "residential": false,
+              "city": "Norton",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "24273",
+              "stateOrProvinceCode": "VA",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "eventDescription": "Delivered",
+            "locationType": "DELIVERY_LOCATION",
+            "eventType": "DL",
+            "derivedStatusCode": "DL",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-09T04:18:00-05:00",
+            "derivedStatus": "In transit",
+            "scanLocation": {
+              "residential": false,
+              "city": "KINGSPORT",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "37663",
+              "stateOrProvinceCode": "TN",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0376",
+            "eventDescription": "On FedEx vehicle for delivery",
+            "locationType": "VEHICLE",
+            "eventType": "OD",
+            "derivedStatusCode": "IT",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-09T04:09:00-05:00",
+            "derivedStatus": "In transit",
+            "scanLocation": {
+              "residential": false,
+              "city": "KINGSPORT",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "37663",
+              "stateOrProvinceCode": "TN",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0376",
+            "eventDescription": "At local FedEx facility",
+            "locationType": "DESTINATION_FEDEX_FACILITY",
+            "eventType": "AR",
+            "derivedStatusCode": "IT",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-08T23:26:00-05:00",
+            "derivedStatus": "In transit",
+            "scanLocation": {
+              "residential": false,
+              "city": "KNOXVILLE",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "37921",
+              "stateOrProvinceCode": "TN",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0379",
+            "eventDescription": "In transit",
+            "locationType": "FEDEX_FACILITY",
+            "eventType": "IT",
+            "derivedStatusCode": "IT",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-08T18:14:07-06:00",
+            "derivedStatus": "In transit",
+            "scanLocation": {
+              "residential": false,
+              "city": "NASHVILLE",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "37207",
+              "stateOrProvinceCode": "TN",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0371",
+            "eventDescription": "Departed FedEx location",
+            "locationType": "FEDEX_FACILITY",
+            "eventType": "DP",
+            "derivedStatusCode": "IT",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-08T15:16:00-06:00",
+            "derivedStatus": "In transit",
+            "scanLocation": {
+              "residential": false,
+              "city": "NASHVILLE",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "37207",
+              "stateOrProvinceCode": "TN",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0371",
+            "eventDescription": "Arrived at FedEx location",
+            "locationType": "FEDEX_FACILITY",
+            "eventType": "AR",
+            "derivedStatusCode": "IT",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-07T00:29:00-06:00",
+            "derivedStatus": "In transit",
+            "scanLocation": {
+              "residential": false,
+              "city": "CHICAGO",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "60638",
+              "stateOrProvinceCode": "IL",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0604",
+            "eventDescription": "Arrived at FedEx location",
+            "locationType": "FEDEX_FACILITY",
+            "eventType": "AR",
+            "derivedStatusCode": "IT",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-03T19:12:30-08:00",
+            "derivedStatus": "In transit",
+            "scanLocation": {
+              "residential": false,
+              "city": "SPOKANE",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "99216",
+              "stateOrProvinceCode": "WA",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0992",
+            "eventDescription": "Left FedEx origin facility",
+            "locationType": "ORIGIN_FEDEX_FACILITY",
+            "eventType": "DP",
+            "derivedStatusCode": "IT",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-03T18:33:00-08:00",
+            "derivedStatus": "In transit",
+            "scanLocation": {
+              "residential": false,
+              "city": "SPOKANE",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "99216",
+              "stateOrProvinceCode": "WA",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0992",
+            "eventDescription": "Arrived at FedEx location",
+            "locationType": "FEDEX_FACILITY",
+            "eventType": "AR",
+            "derivedStatusCode": "IT",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-03T15:00:00-08:00",
+            "derivedStatus": "Picked up",
+            "scanLocation": {
+              "residential": false,
+              "city": "SPOKANE",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "99216",
+              "stateOrProvinceCode": "WA",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0992",
+            "eventDescription": "Picked up",
+            "locationType": "PICKUP_LOCATION",
+            "eventType": "PU",
+            "derivedStatusCode": "PU",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-03T14:31:00-08:00",
+            "derivedStatus": "Initiated",
+            "scanLocation": {
+              "residential": false,
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "83854",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "eventDescription": "Shipment information sent to FedEx",
+            "locationType": "CUSTOMER",
+            "eventType": "OC",
+            "derivedStatusCode": "IN",
+            "exceptionCode": ""
+          }
+        ],
+        "availableNotifications": [],
+        "deliveryDetails": {
+          "receivedByName": "ROLLINS",
+          "locationDescription": "Shipping/Receiving",
+          "actualDeliveryAddress": {
+            "residential": false,
+            "city": "Norton",
+            "countryCode": "US",
+            "stateOrProvinceCode": "VA",
+            "countryName": "United States"
+          },
+          "locationType": "SHIPPING_RECEIVING",
+          "deliveryOptionEligibilityDetails": [
+            {
+              "eligibility": "INELIGIBLE",
+              "option": "INDIRECT_SIGNATURE_RELEASE"
+            },
+            {
+              "eligibility": "INELIGIBLE",
+              "option": "REDIRECT_TO_HOLD_AT_LOCATION"
+            },
+            { "eligibility": "INELIGIBLE", "option": "REROUTE" },
+            { "eligibility": "INELIGIBLE", "option": "RESCHEDULE" },
+            { "eligibility": "INELIGIBLE", "option": "RETURN_TO_SHIPPER" },
+            { "eligibility": "INELIGIBLE", "option": "DISPUTE_DELIVERY" },
+            { "eligibility": "INELIGIBLE", "option": "SUPPLEMENT_ADDRESS" }
+          ],
+          "deliveryAttempts": "0"
+        },
+        "shipperInformation": {
+          "address": {
+            "residential": false,
+            "city": "POST FALLS",
+            "countryCode": "US",
+            "stateOrProvinceCode": "ID",
+            "countryName": "United States"
+          }
+        },
+        "trackingNumberInfo": {
+          "trackingNumberUniqueId": "12013~122816215025810~FDEG",
+          "carrierCode": "FDXG",
+          "trackingNumber": "122816215025810"
+        },
+        "lastUpdatedDestinationAddress": {
+          "residential": false,
+          "city": "Norton",
+          "countryCode": "US",
+          "stateOrProvinceCode": "VA",
+          "countryName": "United States"
+        },
+        "dateAndTimes": [
+          {
+            "dateTime": "2014-01-09T13:31:00-05:00",
+            "type": "ACTUAL_DELIVERY"
+          },
+          { "dateTime": "2016-08-01T00:00:00-06:00", "type": "ACTUAL_PICKUP" },
+          { "dateTime": "2020-08-15T00:00:00-06:00", "type": "SHIP" }
+        ]
+      }
+    ],
+    "trackingNumber": "122816215025810"
+  },
+  {
+    "trackResults": [
+      {
+        "packageDetails": {
+          "physicalPackagingType": "PACKAGE",
+          "sequenceNumber": "1",
+          "packagingDescription": {
+            "description": "Package",
+            "type": "YOUR_PACKAGING"
+          },
+          "count": "1",
+          "weightAndDimensions": {
+            "weight": [
+              { "unit": "LB", "value": "4.4" },
+              { "unit": "KG", "value": "2.0" }
+            ]
+          },
+          "packageContent": []
+        },
+        "goodsClassificationCode": "",
+        "returnDetail": {},
+        "serviceDetail": {
+          "description": "FedEx Home Delivery",
+          "shortDescription": "HD",
+          "type": "GROUND_HOME_DELIVERY"
+        },
+        "estimatedDeliveryTimeWindow": { "window": {} },
+        "latestStatusDetail": {
+          "scanLocation": {
+            "residential": false,
+            "city": "Jefferson",
+            "countryCode": "US",
+            "stateOrProvinceCode": "GA",
+            "countryName": "United States"
+          },
+          "code": "PU",
+          "derivedCode": "PU",
+          "delayDetail": { "status": "DELAYED" },
+          "statusByLocale": "Picked up",
+          "description": "Picked up"
+        },
+        "originLocation": {
+          "locationContactAndAddress": {
+            "address": {
+              "residential": false,
+              "city": "FLORENCE",
+              "countryCode": "US",
+              "stateOrProvinceCode": "SC",
+              "countryName": "United States"
+            }
+          }
+        },
+        "recipientInformation": {
+          "address": {
+            "residential": false,
+            "city": "JEFFERSON",
+            "countryCode": "US",
+            "stateOrProvinceCode": "GA",
+            "countryName": "United States"
+          }
+        },
+        "standardTransitTimeWindow": {
+          "window": { "ends": "2016-08-01T00:00:00-06:00" }
+        },
+        "additionalTrackingInfo": {
+          "hasAssociatedShipments": false,
+          "nickname": "",
+          "packageIdentifiers": [
+            {
+              "trackingNumberUniqueId": "",
+              "values": ["53089528"],
+              "carrierCode": "",
+              "type": "GROUND_SHIPMENT_ID"
+            },
+            {
+              "trackingNumberUniqueId": "",
+              "values": ["DT706344197515"],
+              "carrierCode": "",
+              "type": "TRACKING_NUMBER_OR_DOORTAG"
+            }
+          ]
+        },
+        "shipmentDetails": { "possessionStatus": true },
+        "availableImages": [],
+        "scanEvents": [
+          {
+            "date": "2014-01-06T10:18:00-05:00",
+            "derivedStatus": "Picked up",
+            "scanLocation": {
+              "residential": false,
+              "city": "FLORENCE",
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "29506",
+              "stateOrProvinceCode": "SC",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "locationId": "0295",
+            "eventDescription": "Picked up",
+            "locationType": "PICKUP_LOCATION",
+            "eventType": "PU",
+            "derivedStatusCode": "PU",
+            "exceptionCode": ""
+          },
+          {
+            "date": "2014-01-03T17:58:00-05:00",
+            "derivedStatus": "Initiated",
+            "scanLocation": {
+              "residential": false,
+              "countryCode": "US",
+              "streetLines": [""],
+              "postalCode": "295545594",
+              "countryName": "United States"
+            },
+            "exceptionDescription": "",
+            "eventDescription": "Shipment information sent to FedEx",
+            "locationType": "CUSTOMER",
+            "eventType": "OC",
+            "derivedStatusCode": "IN",
+            "exceptionCode": ""
+          }
+        ],
+        "availableNotifications": [],
+        "deliveryDetails": {
+          "deliveryOptionEligibilityDetails": [
+            {
+              "eligibility": "INELIGIBLE",
+              "option": "INDIRECT_SIGNATURE_RELEASE"
+            },
+            {
+              "eligibility": "INELIGIBLE",
+              "option": "REDIRECT_TO_HOLD_AT_LOCATION"
+            },
+            { "eligibility": "INELIGIBLE", "option": "REROUTE" },
+            { "eligibility": "INELIGIBLE", "option": "RESCHEDULE" },
+            { "eligibility": "INELIGIBLE", "option": "RETURN_TO_SHIPPER" },
+            { "eligibility": "INELIGIBLE", "option": "DISPUTE_DELIVERY" },
+            { "eligibility": "INELIGIBLE", "option": "SUPPLEMENT_ADDRESS" }
+          ],
+          "deliveryAttempts": "0"
+        },
+        "shipperInformation": {
+          "address": {
+            "residential": false,
+            "city": "HEMINGWAY",
+            "countryCode": "US",
+            "stateOrProvinceCode": "SC",
+            "countryName": "United States"
+          }
+        },
+        "trackingNumberInfo": {
+          "trackingNumberUniqueId": "12013~020207021381215~FDEG",
+          "carrierCode": "FDXG",
+          "trackingNumber": "020207021381215"
+        },
+        "lastUpdatedDestinationAddress": {
+          "residential": false,
+          "city": "Jefferson",
+          "countryCode": "US",
+          "stateOrProvinceCode": "GA",
+          "countryName": "United States"
+        },
+        "dateAndTimes": [
+          {
+            "dateTime": "2023-12-31T00:00:00-06:00",
+            "type": "ESTIMATED_DELIVERY"
+          },
+          { "dateTime": "2016-08-01T00:00:00-06:00", "type": "ACTUAL_PICKUP" },
+          { "dateTime": "2020-08-15T00:00:00-06:00", "type": "SHIP" }
+        ]
+      }
+    ],
+    "trackingNumber": "020207021381215"
+  }
+]
