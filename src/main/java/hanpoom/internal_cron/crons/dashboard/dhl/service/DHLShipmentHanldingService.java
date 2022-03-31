@@ -24,7 +24,12 @@ import net.gpedro.integrations.slack.SlackMessage;
 
 @Service
 public class DHLShipmentHanldingService {
-    private static final String SHIPMENT_REPORT_HOOK_URL = "https://hooks.slack.com/services/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";
+    // Real
+    // private static final String SHIPMENT_REPORT_HOOK_URL =
+    // "https://hooks.slack.com/services/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";
+
+    // Testing
+    private static final String SHIPMENT_REPORT_HOOK_URL = "https://hooks.slack.com/services/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";
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
@@ -55,22 +60,22 @@ public class DHLShipmentHanldingService {
 
     // 배송 완료 처리 건.
     // public void processDeliveredOrders(List<DHLTrackingVO> trackingVoList) {
-        // 값을 넣고, 성공하면 넣은 값을 슬랙 알림을 위해 입력한 수 만큼을 리턴
+    // 값을 넣고, 성공하면 넣은 값을 슬랙 알림을 위해 입력한 수 만큼을 리턴
 
-        // System.out.println("배송완료건");
-        // System.out.println(trackingVoList.toString());
-        // System.out.println("====================================");
+    // System.out.println("배송완료건");
+    // System.out.println(trackingVoList.toString());
+    // System.out.println("====================================");
 
-        // int index = 0;
-        // for (DHLTrackingVO vo : trackingVoList) {
-        //     System.out.println(String.valueOf(index) + ": " + vo.getOrder_no());
-        //     index += 1;
-        //     if (index == 44 || index == 45) {
-        //         System.out.println(vo.toString());
-        //     }
-        // }
+    // int index = 0;
+    // for (DHLTrackingVO vo : trackingVoList) {
+    // System.out.println(String.valueOf(index) + ": " + vo.getOrder_no());
+    // index += 1;
+    // if (index == 44 || index == 45) {
+    // System.out.println(vo.toString());
+    // }
+    // }
 
-    //     insertDeliveredShipments(trackingVoList);
+    // insertDeliveredShipments(trackingVoList);
     // }
 
     // 통관 문제 건.
@@ -78,7 +83,7 @@ public class DHLShipmentHanldingService {
         int dbInserted = insertErrorShipments(trackingVoList);
         UpdateSheetVO spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
         System.out.println("통관 문제 건");
-        for (DHLTrackingVO vo: trackingVoList) {
+        for (DHLTrackingVO vo : trackingVoList) {
             System.out.println(vo.toString());
         }
         System.out.println("====================================");
@@ -371,11 +376,11 @@ public class DHLShipmentHanldingService {
         // 한번에 업데이트 칠 것.
         // int index = 0;
         // for (DHLTrackingVO vo: trackingVOs) {
-        //     System.out.println(vo.getOrder_no());
-        //     if (index == 23 || index == 24) {
-        //         System.out.println(vo.toString());
-        //     }
-        //     index += 1; 
+        // System.out.println(vo.getOrder_no());
+        // if (index == 23 || index == 24) {
+        // System.out.println(vo.toString());
+        // }
+        // index += 1;
 
         // }
         return insertDeliveredShipments(trackingVOs) > 0 ? true : false;

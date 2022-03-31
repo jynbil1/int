@@ -33,7 +33,9 @@
                 where
                     meta_key in ('_shipment_class', '_aftership_tracking_number') ) as a
             group by
-                a.order_no) as details
+                a.order_no
+            having 
+                length(tracking_no) <![CDATA[ < ]]> 11) as details
         on
             orders.order_no = details.order_no
         left join

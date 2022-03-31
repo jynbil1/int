@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,13 +18,16 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.crons.dashboard.dhl.mapper.DHLMapper;
+import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse;
+import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse.EventRemark;
+import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse.ServiceEvent;
+import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse.ShipmentEventItem;
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingResult;
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO;
 import hanpoom.internal_cron.utility.shipment.dhl.config.DHLShipmentStatusCode;
 import hanpoom.internal_cron.utility.shipment.dhl.service.DHLShipmentTrackingService;
 import hanpoom.internal_cron.utility.shipment.dhl.vo.response.DHLTrackingResponse;
 import hanpoom.internal_cron.utility.shipment.dhl.vo.response.DHLTrackingResponseStorage;
-import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.ShipmentEvent;
 import lombok.Getter;
 
 @Service
@@ -72,7 +75,7 @@ public class DHLService {
         // JSONObject priortyLevel = shipmentCode.getJSONObject("priorityLevel");
         JSONObject shipmentEventCode = shipmentCode.getJSONObject("status");
 
-        DHLTrackingResponse response = dHLShipmentTrackingService.trackShipment(trackingVo.getTracking_no());
+        DHLTrackResponse response = dHLShipmentTrackingService.trackSingleShipment(trackingVo.getTracking_no());
 
         // 정상적인 조회가 아닌경우,
         try {
@@ -87,22 +90,23 @@ public class DHLService {
             System.out.println(response.toString());
         }
 
-        ShipmentEvent selectedEvent = analyzeShipmentHistory(response, shipmentEventCode);
+        ShipmentEventItem selectedEvent = analyzeShipmentHistory(response, shipmentEventCode);
 
         // 상황에 따라 담아 처리할 리스트 마련.
         // 한품 내에서 지정한 기준에 의거하여 배송 상태에 따른 각 다른 업무를 처리한다.
         // 위에서 가중치가 가장 높은 Event 를 추출함.
-        String eventCase = shipmentEventCode.getJSONObject(selectedEvent.getEventCode())
+        String eventCode = selectedEvent.getServiceEvent().getEventCode();
+        String eventCase = shipmentEventCode.getJSONObject(eventCode)
                 .getString("hpGroup");
 
-        String orderNo = String.valueOf(response.getShipmentDetail().getShipmentReference());
+        String orderNo = String.valueOf(response.getShipmentInfo().getShipperReference().getReferenceId());
         DHLTrackingVO responseVo = new DHLTrackingVO();
 
         responseVo.setOrder_no(orderNo);
-        responseVo.setTracking_no(response.getTrackingNo());
-        responseVo.setShipped_dtime(response.getShipmentDetail().getShippedDate());
-        responseVo.setEvent(shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"));
-        responseVo.setEvent_code(selectedEvent.getEventCode());
+        responseVo.setTracking_no(response.getTrackingNumber());
+        responseVo.setShipped_dtime(selectedEvent.getDate() + " " + selectedEvent.getTime());
+        responseVo.setEvent(shipmentEventCode.getJSONObject(eventCode).getString("korDesc"));
+        responseVo.setEvent_code(eventCode);
         responseVo.setEvent_dtime(String.format("%s %s", selectedEvent.getDate(), selectedEvent.getTime()));
         responseVo.setShipment_class(trackingVo.getShipment_class());
         responseVo.setOrder_date(trackingVo.getOrder_date());
@@ -119,8 +123,8 @@ public class DHLService {
                 return responseVo;
 
             case "urgency-customs":
-                responseVo.setEventRemarkDetails(selectedEvent.getFurtherDetails());
-                responseVo.setEventRemarkNextSteps(selectedEvent.getNextSteps());
+                responseVo.setEventRemarkDetails(selectedEvent.getEventRemark().getFurtherDetail());
+                responseVo.setEventRemarkNextSteps(selectedEvent.getEventRemark().getNextStep());
                 responseVo.setTypeOfIssue("clearance-issue");
                 return responseVo;
 
@@ -159,12 +163,13 @@ public class DHLService {
                     delayAllowableDays = 5;
                 }
 
-                if (isDelayedShipment(response.getShipmentEvents(), delayAllowableDays)) {
+                if (isDelayedShipment(response.getShipmentInfo().getShipmentEvent().getShipmentEventItems(),
+                        delayAllowableDays)) {
                     return new DHLTrackingVO(
                             orderNo,
-                            response.getTrackingNo(),
+                            response.getTrackingNumber(),
                             trackingVo.getOrder_date(),
-                            response.getShipmentDetail().getShippedDate(),
+                            selectedEvent.getDate() + " " + selectedEvent.getTime(),
                             trackingVo.getShipment_class());
                 }
                 break;
@@ -203,12 +208,6 @@ public class DHLService {
                 }
             }
         }
-        // int cnt = 0;
-        // System.out.println("*------------------------------------*");
-        // for (List<String> nos : trackingSets) {
-        //     System.out.println(String.valueOf(cnt) + ": " + String.valueOf(nos.size()));
-        //     ++cnt;
-        // }
 
         // 50개씩 묶은 데이터를 매 요청에 담아 조회하고 데이터를 구분한다.
         // DHL 배송 상태를 파악하는 JSON 파일 객체를 담고 있다
@@ -230,13 +229,14 @@ public class DHLService {
         List<DHLTrackingVO> returnedOrders = new ArrayList<>();
 
         for (List<String> trackingSet : trackingSets) {
-            DHLTrackingResponseStorage storage = dHLShipmentTrackingService.trackShipments(trackingSet);
-            if (storage == null) {
+            List<DHLTrackResponse> responses = dHLShipmentTrackingService
+                    .trackMultipleShipments(new HashSet<>(trackingSet));
+            if (responses == null) {
                 continue;
             }
             // 반환된 매 운송장 값의 결과.
-            for (DHLTrackingResponse response : storage.getResponses()) {
-                String shipmentClass = jsonMap.get(response.getTrackingNo()).get("shipment_class");
+            for (DHLTrackResponse response : responses) {
+                String shipmentClass = jsonMap.get(response.getTrackingNumber()).get("shipment_class");
 
                 // 정상적인 조회가 아닌경우,
                 try {
@@ -244,8 +244,8 @@ public class DHLService {
 
                         // 해당 값에 대한 오류 표기 하고
                         untrackableOrders.add(new DHLTrackingVO(
-                                jsonMap.get(response.getTrackingNo()).get("order_no"),
-                                response.getTrackingNo(),
+                                jsonMap.get(response.getTrackingNumber()).get("order_no"),
+                                response.getTrackingNumber(),
                                 shipmentClass));
                         continue;
                     }
@@ -259,30 +259,16 @@ public class DHLService {
                 JSONObject priortyLevel = shipmentCode.getJSONObject("priorityLevel");
                 JSONObject shipmentEventCode = shipmentCode.getJSONObject("status");
 
-                // int currentPriorityNo = 99;
-                // String currentEventCode = "";
-
-                // ShipmentEvent selectedEvent = new ShipmentEvent();
-                // for (ShipmentEvent event : response.getShipmentEvents()) {
-                // currentEventCode =
-                // shipmentEventCode.getJSONObject(event.getEventCode()).getString("hpGroup");
-
-                // if (priortyLevel.getInt(currentEventCode) < currentPriorityNo) {
-                // selectedEvent = event;
-                // currentPriorityNo = priortyLevel.getInt(currentEventCode);
-                // }
-                // }
-                // events 들 중 배송 완료 값이 있으면 오케이. 없으면 제일 최신 데이터 가져오기
-                // "WC", "FD" 는 타 배송사
-
                 // Shipment on Hold 는 다양한 이유로 발생한다.
                 // 해당 이벤트가 3건 이상 발생하면 문제를 보고한다.
-                ShipmentEvent selectedEvent = analyzeShipmentHistory(response, shipmentEventCode);
+                ShipmentEventItem selectedEvent = analyzeShipmentHistory(response, shipmentEventCode);
 
                 // 상황에 따라 담아 처리할 리스트 마련.
                 // 한품 내에서 지정한 기준에 의거하여 배송 상태에 따른 각 다른 업무를 처리한다.
                 // 위에서 가중치가 가장 높은 Event 를 추출함.
-                String eventCase = shipmentEventCode.getJSONObject(selectedEvent.getEventCode())
+
+                String eventCode = selectedEvent.getServiceEvent().getEventCode();
+                String eventCase = shipmentEventCode.getJSONObject(eventCode)
                         .getString("hpGroup");
 
                 String orderNo = null;
@@ -290,9 +276,9 @@ public class DHLService {
                 // 그리하여 아래와 같이 DB 의 값을 먼저 우선시 하고, 정상적이지 않을 경우 운송장에 적힌 Reference 값을 사용하는데,
                 // 반환된 값 또한 정상적 주문번호가 아닐 경우, 해당 반복문을 건너뛴다.
                 try {
-                    orderNo = jsonMap.get(response.getTrackingNo()).get("order_no");
+                    orderNo = jsonMap.get(response.getTrackingNumber()).get("order_no");
                 } catch (NullPointerException npe) {
-                    orderNo = String.valueOf(response.getShipmentDetail().getShipmentReference());
+                    orderNo = String.valueOf(response.getShipmentInfo().getShipperReference().getReferenceId());
                     if (String.valueOf(orderNo).length() > 9) {
                         System.out.println("정상적인 주문 번호를 찾을 수 없습니다.");
                         System.out.println(response.toString());
@@ -302,14 +288,14 @@ public class DHLService {
 
                 DHLTrackingVO responseVo = new DHLTrackingVO();
                 responseVo.setOrder_no(orderNo);
-                responseVo.setTracking_no(response.getTrackingNo());
-                responseVo.setShipped_dtime(response.getShipmentDetail().getShippedDate());
-                responseVo.setEvent(shipmentEventCode.getJSONObject(selectedEvent.getEventCode()).getString("korDesc"));
-                responseVo.setEvent_code(selectedEvent.getEventCode());
+                responseVo.setTracking_no(response.getTrackingNumber());
+                responseVo.setShipped_dtime(selectedEvent.getDate() + " " + selectedEvent.getTime());
+                responseVo.setEvent(shipmentEventCode.getJSONObject(eventCode).getString("korDesc"));
+                responseVo.setEvent_code(eventCode);
                 responseVo.setEvent_dtime(String.format("%s %s", selectedEvent.getDate(), selectedEvent.getTime()));
                 responseVo.setShipment_class(shipmentClass);
                 responseVo.setShipment_issue_type(eventCase);
-                responseVo.setOrder_date(jsonMap.get(response.getTrackingNo()).get("order_date"));
+                responseVo.setOrder_date(jsonMap.get(response.getTrackingNumber()).get("order_date"));
 
                 switch (eventCase) {
                     case "delivered":
@@ -323,8 +309,10 @@ public class DHLService {
                         break;
 
                     case "urgency-customs":
-                        responseVo.setEventRemarkDetails(selectedEvent.getFurtherDetails());
-                        responseVo.setEventRemarkNextSteps(selectedEvent.getNextSteps());
+                        EventRemark remark = selectedEvent.getEventRemark();
+
+                        responseVo.setEventRemarkDetails(remark == null? "": remark.getFurtherDetail());
+                        responseVo.setEventRemarkNextSteps(remark == null? "": remark.getNextStep());
                         responseVo.setTypeOfIssue("clearance-issue");
                         customIssueOrders.add(responseVo);
                         break;
@@ -372,14 +360,15 @@ public class DHLService {
                             delayAllowableDays = 5;
                         }
 
-                        if (isDelayedShipment(response.getShipmentEvents(), delayAllowableDays)) {
+                        if (isDelayedShipment(response.getShipmentInfo().getShipmentEvent().getShipmentEventItems(),
+                                delayAllowableDays)) {
                             // responseVo.setOrder_date(jsonMap.get(response.getTrackingNo()).get("order_date"));
 
                             delayedOrders.add(new DHLTrackingVO(
                                     orderNo,
-                                    response.getTrackingNo(),
-                                    jsonMap.get(response.getTrackingNo()).get("order_date"),
-                                    response.getShipmentDetail().getShippedDate(),
+                                    response.getTrackingNumber(),
+                                    jsonMap.get(response.getTrackingNumber()).get("order_date"),
+                                    selectedEvent.getDate() + " " + selectedEvent.getTime(),
                                     shipmentClass));
                         }
                         break;
@@ -407,19 +396,21 @@ public class DHLService {
                         untrackableOrders.size() - returnedOrders.size()));
     }
 
-    private ShipmentEvent analyzeShipmentHistory(DHLTrackingResponse response, JSONObject shipmentEventCode) {
+    private ShipmentEventItem analyzeShipmentHistory(DHLTrackResponse response, JSONObject shipmentEventCode) {
         int noOfShipmentOnHold = 0;
         int noOfCustomstatusUpdated = 0;
 
+        List<ShipmentEventItem> eventItems = response.getShipmentInfo().getShipmentEvent().getShipmentEventItems();
+
         // 배송이 완료 되었으면 완료되었다고 하면 되지만.
-        for (ShipmentEvent event : response.getShipmentEvents()) {
-            if (Arrays.asList("BR", "DL", "DD", "PD", "OK").contains(event.getEventCode())) {
+        for (ShipmentEventItem event : eventItems) {
+            if (Arrays.asList("BR", "DL", "DD", "PD", "OK").contains(event.getServiceEvent().getEventCode())) {
                 return event;
             }
         }
         // Shipment On hold 는 한 두번 나오면 괜찮지만, 계속 나오게 되면 문제인 건임.
-        for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
-            if (currentEvent.getEventCode().equals("OH")) {
+        for (ShipmentEventItem currentEvent : eventItems) {
+            if (currentEvent.getServiceEvent().getEventCode().equals("OH")) {
                 noOfShipmentOnHold += 1;
             }
             if (noOfShipmentOnHold >= 3) {
@@ -430,10 +421,10 @@ public class DHLService {
 
         // Customs Status Updated 는 한 두번 나오면 괜찮지만, 계속 나오게 되면 문제인 건임.
         // 다만 이 경우에는, 연속적으로 3번 이상이 나올 경우라는 조건이 추가가 되어야 함.
-        for (ShipmentEvent currentEvent : response.getShipmentEvents()) {
-            if (currentEvent.getEventCode().equals("RR")) {
+        for (ShipmentEventItem currentEvent : eventItems) {
+            if (currentEvent.getServiceEvent().getEventCode().equals("RR")) {
                 noOfCustomstatusUpdated += 1;
-            } else if (!currentEvent.getEventCode().equals("RR") && noOfCustomstatusUpdated > 0) {
+            } else if (!currentEvent.getServiceEvent().getEventCode().equals("RR") && noOfCustomstatusUpdated > 0) {
                 // 값이 RR 이 아니고 찾은 CustomstatusUpdated 건이 0 보다 클 때
                 noOfCustomstatusUpdated -= 1;
             }
@@ -442,21 +433,21 @@ public class DHLService {
             }
         }
 
-        for (int i = 0; i < response.getShipmentEvents().size(); ++i) {
-
-        }
-
         // 배송이 완료된 것도 없고, 통관문제인게 없으나, 제일 최신 데이터가 Shipment on Hold 일 경우에는,
         // code 를 ITH 로 변경한다.
         // 그렇지 않으면 그냥 제일 최신 배송 상태를 가져온다.
-        ShipmentEvent selectedEvent = response.getShipmentEvents().get(response.getShipmentEvents().size() - 1);
-        if (selectedEvent.getEventCode().equals("OH")) {
-            selectedEvent.setEventCode("ITH");
-            selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
-        } else if (selectedEvent.getEventCode().equals("RR")) {
-            selectedEvent.setEventCode("CUS");
-            selectedEvent.setEventDesc(shipmentEventCode.getJSONObject("CUS").getString("korDesc"));
+        ShipmentEventItem selectedEvent = response.getShipmentInfo().getShipmentEvent().getShipmentEventItems()
+                .get(response.getShipmentInfo().getShipmentEvent().getShipmentEventItems().size() - 1);
+
+        ServiceEvent event = selectedEvent.getServiceEvent();
+        if (event.getEventCode().equals("OH")) {
+            event.setEventCode("ITH");
+            event.setDescription(shipmentEventCode.getJSONObject("ITH").getString("korDesc"));
+        } else if (event.getEventCode().equals("RR")) {
+            event.setEventCode("CUS");
+            event.setDescription(shipmentEventCode.getJSONObject("CUS").getString("korDesc"));
         }
+        selectedEvent.setServiceEvent(event);
         return selectedEvent;
     }
 
@@ -515,9 +506,10 @@ public class DHLService {
 
     // Filter the delayed days for the undelivered orders
     // 10 days of working days (2 weeks)
-    public boolean isDelayedShipment(List<ShipmentEvent> shipmentEvents, int delayAllowableDays) {
+    public boolean isDelayedShipment(List<ShipmentEventItem> shipmentEvents, int delayAllowableDays) {
         // Weekend Not Included.
-        ShipmentEvent event = new ShipmentEvent();
+        // ShipmentEvent event = new ShipmentEvent();
+        ShipmentEventItem event = new ShipmentEventItem();
         try {
             // 마지막 이벤트
             event = shipmentEvents.get(shipmentEvents.size() - 1);
@@ -548,7 +540,4 @@ public class DHLService {
         return (dow != DayOfWeek.SATURDAY && dow != DayOfWeek.SUNDAY);
     }
 
-    // Check the orders tracking no that are not solved.
-    public void checkUnresolvedOrders() {
-    }
 }

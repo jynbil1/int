@@ -11,12 +11,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Set;
+
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
+import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse;
 import hanpoom.internal_cron.utility.shipment.dhl.config.MyDHLClient;
 import hanpoom.internal_cron.utility.shipment.dhl.field.DHLAPIType;
 import hanpoom.internal_cron.utility.shipment.dhl.vo.request.DHLTrackingRequest;
@@ -30,7 +34,7 @@ import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.ShipmentEv
 import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.Shipper;
 import hanpoom.internal_cron.utility.shipment.dhl.vo.response.element.Status;
 
-@Service
+@Component
 public class DHLShipmentTrackingService implements DHLAPI {
 
     // • ALL_CHECKPOINTS, populates all the customer visible checkpoints available
@@ -135,6 +139,55 @@ public class DHLShipmentTrackingService implements DHLAPI {
             }
         }
         return new DHLTrackingResponseStorage(responses);
+    }
+
+    public List<DHLTrackResponse> trackMultipleShipments(Set<String> trackingNos) {
+        DHLTrackingRequest request = new DHLTrackingRequest(new ArrayList<>(trackingNos));
+        String requestJson = request.getValidatedJSONRequest().toString();
+        JSONObject jsonResponse = new JSONObject();
+        // JSONArray responseJsonArray = new JSONArray();
+
+        List<DHLTrackResponse> responses = new ArrayList<>();
+        if (trackingNos.size() == 1) {
+            return Arrays.asList(trackSingleShipment(trackingNos.iterator().next()));
+        } else if (trackingNos.size() < 1) {
+            return null;
+        } else {
+            try {
+                jsonResponse = callAPI(requestJson);
+                jsonResponse.optJSONArray("ArrayOfAWBInfoItem").forEach(item -> {
+                    responses.add(new Gson().fromJson(item.toString(), DHLTrackResponse.class));
+                });
+            } catch (Exception e) {
+                System.out.println("-------------------------");
+                System.out.println(e.getMessage());
+                System.out.println("ArrayOfAWBInfoItem 를 못찾는 건 발생: ");
+                System.out.println(jsonResponse.toString());
+                // jsone.printStackTrace();
+                System.out.println("-------------------------");
+                return null;
+            }
+            return responses;
+        }
+    }
+
+    public DHLTrackResponse trackSingleShipment(String trackingNo) {
+        DHLTrackingRequest request = new DHLTrackingRequest(trackingNo);
+        String requestJson = request.getValidatedJSONRequest().toString();
+
+        JSONObject responseJson = callAPI(requestJson);
+
+        try {
+            return new Gson().fromJson(responseJson.optJSONObject("ArrayOfAWBInfoItem").toString(), DHLTrackResponse.class);
+        } catch (Exception e) {
+            System.out.println("-------------------------");
+            System.out.println(e.getMessage());
+            System.out.println("ArrayOfAWBInfoItem 를 못찾는 건 발생: ");
+            System.out.println(responseJson.toString());
+            // jsone.printStackTrace();
+            System.out.println("-------------------------");
+            return null;
+        }
     }
 
     private DHLTrackingResponse deserializeJsonToPojo(JSONObject jsonObject) {

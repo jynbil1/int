@@ -1,73 +1,814 @@
 {
-    "Status": {
-        "ActionStatus": "Success"
-    },
-    "ShipmentInfo": {
-        "OriginServiceArea": {
-            "Description": "Incheon Outskirt Of Seoul-KR",
-            "ServiceAreaCode": "ICN"
+  "trackShipmentRequestResponse": {
+    "trackingResponse": {
+      "TrackingResponse": {
+        "Response": {
+          "ServiceHeader": {
+            "MessageTime": "2022-03-31T05:09:39",
+            "MessageReference": "2d7c271a93b346e1aaa7051c107738d0",
+            "LanguageCode": "eng",
+            "LanguageScriptCode": "Latn",
+            "ServiceInvocationID": "20220331050939_108e_5d3c549d-4173-4bbe-93bf-f65586100b52"
+          }
         },
-        "DestinationServiceArea": {
-            "Description": "South San Diego-United States Of America",
-            "ServiceAreaCode": "SDM",
-            "FacilityCode": "SDM"
-        },
-        "ShipperName": "HANPOOM (KRACCESS INC.)",
-        "ShipperReference": {
-            "ReferenceID": 642633
-        },
-        "WeightUnit": "K",
-        "Weight": 1,
-        "Consignee": {
-            "PostalCode": 92126,
-            "City": "SAN DIEGO",
-            "CountryCode": "US",
-            "StateOrProvinceCode": "CA"
-        },
-        "ShipmentEvent": {
-            "ArrayOfShipmentEventItem": {
-                "ServiceArea": {
-                    "Description": "Incheon Outskirt Of Seoul-KR",
-                    "ServiceAreaCode": "ICN"
-                },
-                "ServiceEvent": {
-                    "Description": "Customs status updated",
-                    "EventCode": "RR"
-                },
-                "Time": "18:32:08",
-                "Date": "2022-01-18"
-            }
-        },
-        "ConsigneeName": "TAE H CHUNG",
-        "ShipmentDescription": "Groceries",
-        "ShipmentDate": "2022-01-19T23:41:52",
-        "ServiceType": "P",
-        "Shipper": {
-            "Suburb": "1150-1 Gwan-ri",
-            "PostalCode": 17382,
-            "City": "ICHEON-SI",
-            "CountryCode": "KR",
-            "StateOrProvinceCode": "Gyeonggi-do"
-        },
-        "Pieces": 1
-    },
-    "AWBNumber": 5838144292,
-    "Pieces": {
-        "PieceInfo": {
-            "ArrayOfPieceInfoItem": {
-                "PieceDetails": {
-                    "LicensePlate": "JD014600009433446474",
-                    "PackageType": null,
+        "AWBInfo": {
+          "ArrayOfAWBInfoItem": {
+            "AWBNumber": 1100625562,
+            "Status": { "ActionStatus": "Success" },
+            "ShipmentInfo": {
+              "OriginServiceArea": {
+                "ServiceAreaCode": "ICN",
+                "Description": "Incheon Outskirt Of Seoul-KR"
+              },
+              "DestinationServiceArea": {
+                "ServiceAreaCode": "ZYP",
+                "Description": "New York-United States Of America",
+                "FacilityCode": "LIC"
+              },
+              "ShipperName": "HANPOOM (KRACCESS INC.)",
+              "ConsigneeName": "JOANNA CHAE",
+              "ShipmentDate": "2022-01-28T20:25:01",
+              "Pieces": 1,
+              "Weight": 2.1,
+              "WeightUnit": "K",
+              "ServiceType": "P",
+              "ShipmentDescription": "Groceries",
+              "Shipper": {
+                "City": "ICHEON-SI",
+                "Suburb": "1150-1 Gwan-ri",
+                "StateOrProvinceCode": "Gyeonggi-do",
+                "PostalCode": 17382,
+                "CountryCode": "KR"
+              },
+              "Consignee": {
+                "City": "NEW YORK",
+                "StateOrProvinceCode": "NY",
+                "PostalCode": 10027,
+                "CountryCode": "US"
+              },
+              "ShipmentEvent": {
+                "ArrayOfShipmentEventItem": [
+                  {
+                    "Date": "2022-01-27",
+                    "Time": "16:59:00",
+                    "ServiceEvent": {
+                      "EventCode": "PU",
+                      "Description": "Shipment picked up"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "ICN",
+                      "Description": "Incheon Outskirt Of Seoul-KR"
+                    }
+                  },
+                  {
+                    "Date": "2022-01-27",
+                    "Time": "17:30:00",
+                    "ServiceEvent": {
+                      "EventCode": "DF",
+                      "Description": "Departed Facility in  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "ICN",
+                      "Description": "Incheon Outskirt Of Seoul-KR"
+                    }
+                  },
+                  {
+                    "Date": "2022-01-27",
+                    "Time": "17:59:53",
+                    "ServiceEvent": {
+                      "EventCode": "RR",
+                      "Description": "Customs status updated"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "ICN",
+                      "Description": "Incheon Outskirt Of Seoul-KR"
+                    }
+                  },
+                  {
+                    "Date": "2022-01-27",
+                    "Time": "19:24:00",
+                    "ServiceEvent": {
+                      "EventCode": "AF",
+                      "Description": "Arrived at Sort Facility  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "ICN",
+                      "Description": "Incheon Outskirt Of Seoul-KR"
+                    }
+                  },
+                  {
+                    "Date": "2022-01-27",
+                    "Time": "19:47:00",
+                    "ServiceEvent": {
+                      "EventCode": "PL",
+                      "Description": "Processed at  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "ICN",
+                      "Description": "Incheon Outskirt Of Seoul-KR"
+                    }
+                  },
+                  {
+                    "Date": "2022-01-28",
+                    "Time": "20:14:00",
+                    "ServiceEvent": {
+                      "EventCode": "DF",
+                      "Description": "Departed Facility in  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "ICN",
+                      "Description": "Incheon Outskirt Of Seoul-KR"
+                    }
+                  },
+                  {
+                    "Date": "2022-01-28",
+                    "Time": "14:57:45",
+                    "ServiceEvent": {
+                      "EventCode": "RR",
+                      "Description": "Customs status updated"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "JFK",
+                      "Description": "New York City Gateway-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-01-30",
+                    "Time": "18:03:00",
+                    "ServiceEvent": {
+                      "EventCode": "IC",
+                      "Description": "Processed for clearance at CINCINNATI HUB,OH-UNITED STATES OF AMERICA"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-01-30",
+                    "Time": "18:03:00",
+                    "ServiceEvent": {
+                      "EventCode": "CD",
+                      "Description": "Clearance Delay"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-01-30",
+                    "Time": "18:03:02",
+                    "ServiceEvent": {
+                      "EventCode": "RR",
+                      "Description": "Customs status updated"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-01",
+                    "Time": "12:45:25",
+                    "ServiceEvent": {
+                      "EventCode": "RR",
+                      "Description": "Customs status updated"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-02",
+                    "Time": "05:36:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "DHL needs further information from the importer.",
+                      "NextSteps": "A DHL representative shall attempt to contact the importer or please contact DHL Customer Service for further assistance. Customer should contact DHL Customer Service if not reached by DHL"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-03",
+                    "Time": "04:37:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "DHL needs further information from the importer.",
+                      "NextSteps": "A DHL representative shall attempt to contact the importer or please contact DHL Customer Service for further assistance. Customer should contact DHL Customer Service if not reached by DHL"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-03",
+                    "Time": "10:08:21",
+                    "ServiceEvent": {
+                      "EventCode": "RR",
+                      "Description": "Customs status updated"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-04",
+                    "Time": "00:32:18",
+                    "ServiceEvent": {
+                      "EventCode": "RR",
+                      "Description": "Customs status updated"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-04",
+                    "Time": "03:37:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-08",
+                    "Time": "05:05:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-09",
+                    "Time": "04:57:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-12",
+                    "Time": "05:18:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-15",
+                    "Time": "02:48:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-18",
+                    "Time": "04:49:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-20",
+                    "Time": "15:33:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-23",
+                    "Time": "03:30:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-02-25",
+                    "Time": "05:24:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-03-01",
+                    "Time": "06:02:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-03-06",
+                    "Time": "21:10:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-03-17",
+                    "Time": "06:23:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "EventRemarks": {
+                      "FurtherDetails": "Due to the nature of the goods, specific authorization is required from a regulatory authority other than Customs for further clearance",
+                      "NextSteps": "Further processing will occur as instructed by the regulatory authority. A DHL representative shall attempt to contact the importer or shipper if further details are required"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-03-25",
+                    "Time": "09:46:40",
+                    "ServiceEvent": {
+                      "EventCode": "RR",
+                      "Description": "Customs status updated"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-03-27",
+                    "Time": "17:24:00",
+                    "ServiceEvent": {
+                      "EventCode": "UD",
+                      "Description": "Uncontrollable Clearance Delay"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  },
+                  {
+                    "Date": "2022-03-28",
+                    "Time": "07:06:00",
+                    "ServiceEvent": {
+                      "EventCode": "RT",
+                      "Description": "Returned to shipper"
+                    },
+                    "ServiceArea": {
+                      "ServiceAreaCode": "CVG",
+                      "Description": "Cincinnati Hub-United States Of America"
+                    }
+                  }
+                ]
+              },
+              "ShipperReference": { "ReferenceID": 665359 }
+            },
+            "Pieces": {
+              "PieceInfo": {
+                "ArrayOfPieceInfoItem": {
+                  "PieceDetails": {
+                    "AWBNumber": 1100625562,
+                    "LicensePlate": "JD014600009458486895",
                     "PieceNumber": 1,
-                    "WeightUnit": "K",
-                    "AWBNumber": 5838144292,
-                    "Height": 10,
-                    "Width": 10,
+                    "ActualDepth": 41.5,
+                    "ActualWidth": 31.5,
+                    "ActualHeight": 16.5,
+                    "ActualWeight": 2.1,
                     "Depth": 10,
-                    "Weight": 1
-                },
-                "PieceEvent": null
+                    "Width": 10,
+                    "Height": 10,
+                    "Weight": 1,
+                    "PackageType": null,
+                    "DimWeight": 4.314,
+                    "WeightUnit": "K"
+                  },
+                  "PieceEvent": {
+                    "ArrayOfPieceEventItem": [
+                      {
+                        "Date": "2022-01-27",
+                        "Time": "16:59:36",
+                        "ServiceEvent": {
+                          "EventCode": "PU",
+                          "Description": "Shipment picked up"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "ICN",
+                          "Description": "Incheon Outskirt Of Seoul-KR"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-01-27",
+                        "Time": "17:30:58",
+                        "ServiceEvent": {
+                          "EventCode": "DF",
+                          "Description": "Departed Facility in  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "ICN",
+                          "Description": "Incheon Outskirt Of Seoul-KR"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-01-27",
+                        "Time": "19:24:30",
+                        "ServiceEvent": {
+                          "EventCode": "AF",
+                          "Description": "Arrived at Sort Facility  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "ICN",
+                          "Description": "Incheon Outskirt Of Seoul-KR"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-01-27",
+                        "Time": "19:47:34",
+                        "ServiceEvent": {
+                          "EventCode": "PL",
+                          "Description": "Processed at  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "ICN",
+                          "Description": "Incheon Outskirt Of Seoul-KR"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-01-28",
+                        "Time": "20:14:58",
+                        "ServiceEvent": {
+                          "EventCode": "DF",
+                          "Description": "Departed Facility in  INCHEON OUTSKIRT OF SEOUL-KOREA, REPUBLIC OF (SOUTH K.)"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "ICN",
+                          "Description": "Incheon Outskirt Of Seoul-KR"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-01-30",
+                        "Time": "18:03:02",
+                        "ServiceEvent": {
+                          "EventCode": "CD",
+                          "Description": "Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-01-30",
+                        "Time": "18:03:02",
+                        "ServiceEvent": {
+                          "EventCode": "IC",
+                          "Description": "Processed for clearance at CINCINNATI HUB,OH-UNITED STATES OF AMERICA"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-02",
+                        "Time": "05:36:05",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-03",
+                        "Time": "04:37:49",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-04",
+                        "Time": "03:37:02",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-08",
+                        "Time": "05:05:19",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-09",
+                        "Time": "04:57:38",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-12",
+                        "Time": "05:18:24",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-15",
+                        "Time": "02:48:19",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-18",
+                        "Time": "04:49:25",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-20",
+                        "Time": "15:33:50",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-23",
+                        "Time": "03:30:05",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-02-25",
+                        "Time": "05:24:41",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-03-01",
+                        "Time": "06:02:32",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-03-06",
+                        "Time": "21:10:59",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-03-17",
+                        "Time": "06:23:15",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-03-27",
+                        "Time": "17:24:20",
+                        "ServiceEvent": {
+                          "EventCode": "UD",
+                          "Description": "Uncontrollable Clearance Delay"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-03-28",
+                        "Time": "07:06:51",
+                        "ServiceEvent": {
+                          "EventCode": "RT",
+                          "Description": "Returned to shipper"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      },
+                      {
+                        "Date": "2022-03-28",
+                        "Time": "21:27:16",
+                        "ServiceEvent": {
+                          "EventCode": "RT",
+                          "Description": "Returned to shipper"
+                        },
+                        "ServiceArea": {
+                          "ServiceAreaCode": "CVG",
+                          "Description": "Cincinnati Hub-United States Of America"
+                        },
+                        "ShipperReference": { "ReferenceID": 665359 }
+                      }
+                    ]
+                  }
+                }
+              }
             }
+          }
         }
+      }
     }
+  }
 }
