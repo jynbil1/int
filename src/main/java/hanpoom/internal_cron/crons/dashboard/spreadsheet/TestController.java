@@ -1,18 +1,10 @@
 package hanpoom.internal_cron.crons.dashboard.spreadsheet;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.GlobalDashboardService;
 import hanpoom.internal_cron.utility.calendar.service.CalendarService;
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
-import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 import lombok.AllArgsConstructor;
 
 @RestController

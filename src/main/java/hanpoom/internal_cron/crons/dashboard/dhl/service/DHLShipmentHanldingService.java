@@ -25,11 +25,11 @@ import net.gpedro.integrations.slack.SlackMessage;
 @Service
 public class DHLShipmentHanldingService {
     // Real
-    // private static final String SHIPMENT_REPORT_HOOK_URL =
-    // "https://hooks.slack.com/services/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";
+    private static final String SHIPMENT_REPORT_HOOK_URL = "https://hooks.slack.com/services/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";
 
     // Testing
-    private static final String SHIPMENT_REPORT_HOOK_URL = "https://hooks.slack.com/services/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";
+    // private static final String SHIPMENT_REPORT_HOOK_URL =
+    // "https://hooks.slack.com/services/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";
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";

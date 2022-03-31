@@ -26,8 +26,6 @@ import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingResult;
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO;
 import hanpoom.internal_cron.utility.shipment.dhl.config.DHLShipmentStatusCode;
 import hanpoom.internal_cron.utility.shipment.dhl.service.DHLShipmentTrackingService;
-import hanpoom.internal_cron.utility.shipment.dhl.vo.response.DHLTrackingResponse;
-import hanpoom.internal_cron.utility.shipment.dhl.vo.response.DHLTrackingResponseStorage;
 import lombok.Getter;
 
 @Service
