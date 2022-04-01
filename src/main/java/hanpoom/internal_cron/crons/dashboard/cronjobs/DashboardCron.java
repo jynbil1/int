@@ -1,4 +1,4 @@
-package hanpoom.internal_cron.crons.dashboard.slack.cron;
+package hanpoom.internal_cron.crons.dashboard.cronjobs;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package hanpoom.internal_cron.crons.dashboard.dhl.cron;
+package hanpoom.internal_cron.crons.dashboard.cronjobs;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

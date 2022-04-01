@@ -3,7 +3,7 @@ package hanpoom.internal_cron.api.token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import hanpoom.internal_cron.api.shipment.fedex.service.FedexOAuthTokenManager;
+import hanpoom.internal_cron.api.shipment.fedex.manager.FedexOAuthTokenManager;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 

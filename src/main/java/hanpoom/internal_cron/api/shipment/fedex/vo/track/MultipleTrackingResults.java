@@ -16,7 +16,7 @@ public class MultipleTrackingResults {
         @Data
         public static class CompleteTrackResult {
             private String trackingNumber;
-            private TrackingResult trackResults;
+            private FedexTrackResponse trackResults;
             
         }
     }

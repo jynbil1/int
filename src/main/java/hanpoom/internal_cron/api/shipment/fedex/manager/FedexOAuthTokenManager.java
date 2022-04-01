@@ -1,4 +1,4 @@
-package hanpoom.internal_cron.api.shipment.fedex.service;
+package hanpoom.internal_cron.api.shipment.fedex.manager;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class TrackingResult {
+public class FedexTrackResponse {
     private String trackingNumber;
     private List<TrackResult> trackResults;
 

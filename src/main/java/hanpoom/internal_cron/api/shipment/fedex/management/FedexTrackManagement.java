@@ -6,15 +6,15 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import hanpoom.internal_cron.api.shipment.fedex.vo.track.TrackingResult;
-import hanpoom.internal_cron.api.shipment.fedex.vo.track.TrackingResult.TrackResult;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
 
 public abstract class FedexTrackManagement {
-    public abstract TrackingResult trackShipment(String trackingNo, boolean isDetailed);
-    public abstract TrackingResult trackShipmentWDate(String trackingNo, boolean isDetailed,
+    public abstract FedexTrackResponse trackShipment(String trackingNo, boolean isDetailed);
+    public abstract FedexTrackResponse trackShipmentWDate(String trackingNo, boolean isDetailed,
         LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    public abstract List<TrackingResult> trackMultipleShipments(HashSet<String> trackingNos, boolean isDetailed);
+    public abstract List<FedexTrackResponse> trackMultipleShipments(HashSet<String> trackingNos, boolean isDetailed);
 
     public abstract void sendNotification();
 

@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 import hanpoom.internal_cron.api.client.HttpClient;
 import hanpoom.internal_cron.api.shipment.fedex.config.FedexAPIConfig;
 import hanpoom.internal_cron.api.shipment.fedex.management.FedexTrackManagement;
-import hanpoom.internal_cron.api.shipment.fedex.vo.track.TrackingResult;
-import hanpoom.internal_cron.api.shipment.fedex.vo.track.TrackingResult.DateAndTime;
-import hanpoom.internal_cron.api.shipment.fedex.vo.track.TrackingResult.TrackResult;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.DateAndTime;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingInfo;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingNumberInformation;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingRequest;
@@ -59,7 +59,7 @@ public class FedexTrackManager extends FedexTrackManagement {
     }
 
     @Override
-    public List<TrackingResult> trackMultipleShipments(HashSet<String> trackingNos, boolean includeDetailedScans) {
+    public List<FedexTrackResponse> trackMultipleShipments(HashSet<String> trackingNos, boolean includeDetailedScans) {
         // 한번에 30개만.
         if (trackingNos.size() > 30) {
             return null;
@@ -95,10 +95,10 @@ public class FedexTrackManager extends FedexTrackManagement {
                 JSONArray jsonArray = new JSONObject(responseBody)
                         .optJSONObject("output").optJSONArray("completeTrackResults");
 
-                List<TrackingResult> trackResults = new ArrayList<>();
+                List<FedexTrackResponse> trackResults = new ArrayList<>();
                 jsonArray.forEach(el -> {
                     // System.out.println(el.toString());
-                    trackResults.add(new Gson().fromJson(el.toString(), TrackingResult.class));
+                    trackResults.add(new Gson().fromJson(el.toString(), FedexTrackResponse.class));
                 });
                 return trackResults;
 
@@ -116,7 +116,7 @@ public class FedexTrackManager extends FedexTrackManagement {
     }
 
     @Override
-    public TrackingResult trackShipment(String trackingNo, boolean includeDetailedScans) {
+    public FedexTrackResponse trackShipment(String trackingNo, boolean includeDetailedScans) {
 
         FedexToken token = fedexConfig.getToken();
         TrackingRequest trackReq = TrackingRequest.builder()
@@ -137,7 +137,7 @@ public class FedexTrackManager extends FedexTrackManagement {
                 String json = new JSONObject(responseBody)
                         .optJSONObject("output").optJSONArray("completeTrackResults").optString(0);
                 System.out.println(json);
-                return new Gson().fromJson(json.toString(), TrackingResult.class);
+                return new Gson().fromJson(json.toString(), FedexTrackResponse.class);
             } else {
                 System.out.println(response.code());
                 System.out.println(response.message());
@@ -152,7 +152,7 @@ public class FedexTrackManager extends FedexTrackManagement {
     }
 
     @Override
-    public TrackingResult trackShipmentWDate(String trackingNo, boolean isDetailed, LocalDateTime startDateTime,
+    public FedexTrackResponse trackShipmentWDate(String trackingNo, boolean isDetailed, LocalDateTime startDateTime,
             LocalDateTime endDateTime) {
         return null;
     }
