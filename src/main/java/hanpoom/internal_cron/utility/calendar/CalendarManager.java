@@ -138,6 +138,9 @@ public class CalendarManager {
     }
 
     public static float getDayDifference(String startDateTimeStr, String endDateTimeStr) {
+        startDateTimeStr = startDateTimeStr.substring(0, 19);
+        endDateTimeStr = endDateTimeStr.substring(0, 19);
+
         LocalDateTime startDateTime = LocalDateTime.parse(startDateTimeStr,
                 DateTimeFormatter.ofPattern(CalendarFormatter.TZONE_DATETIME));
         LocalDateTime endDateTime = LocalDateTime.parse(endDateTimeStr,

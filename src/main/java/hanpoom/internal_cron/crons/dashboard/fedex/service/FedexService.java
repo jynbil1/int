@@ -59,23 +59,23 @@ public class FedexService {
                 .append(" ")
                 .append(String.valueOf(LocalDateTime.now().getHour()))
                 .append("시 Fedex 배송 현황***\n")
-                .append("---------------------------------------------------")
+                .append("---------------------------------------------------\n")
                 .append("배송 완료: ")
                 .append(workResult.get("delivered"))
-                .append("건\n\n 배송 지연: ")
+                .append(" 건\n\n 배송 지연: ")
                 .append(workResult.get("delayed"))
-                .append("건\n 조회 불가: ")
+                .append(" 건\n 조회 불가: ")
                 .append(workResult.get("untrackable"))
-                .append("건\n 이외 문제: ")
+                .append(" 건\n 이외 문제: ")
                 .append(workResult.get("others"))
 
-                .append("건\n\n 반송 완료: ")
+                .append(" 건\n\n 반송 완료: ")
                 .append(workResult.get("returned"))
 
-                .append("---------------------------------------------------")
+                .append(" 건\n---------------------------------------------------\n")
                 .append("배송중: ")
                 .append(workResult.get("inTransit"))
-                .append("건\n")
+                .append(" 건\n")
                 .append("<https://docs.google.com/spreadsheets/d/1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw/edit#gid=1386751274|문제 보러가기>");
 
         return sb.toString();

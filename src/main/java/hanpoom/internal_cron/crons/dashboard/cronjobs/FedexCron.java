@@ -21,7 +21,6 @@ import hanpoom.internal_cron.api.slack.SlackAPI;
 import hanpoom.internal_cron.crons.dashboard.fedex.service.FedexService;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
 import hanpoom.internal_cron.utility.group.Grouping;
-import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
 import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 
 @Component
@@ -37,8 +36,6 @@ public class FedexCron {
     private FedexTrackManager fedexTrackManager;
     @Autowired
     private SlackAPI slack;
-    @Autowired
-    private SpreadSheetAPI spreadSheet;
 
     @Scheduled(cron = "0 0 12 * * *", zone = "Asia/Seoul")
     public void cronFedexShipmentTrack() {

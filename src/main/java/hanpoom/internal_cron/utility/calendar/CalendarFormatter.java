@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
 public class CalendarFormatter {
     public static final String DATETIME = "yyyy-MM-dd HH:mm";
     public static final String DATE = "yyyy-MM-dd";
-    public static final String TZONE_DATETIME = "yyyy-MM-ddTHH:mm:ss";
-    private static final String DATETIME_REG = "";
-    private static final String DAET_REG = "";
+    public static final String TZONE_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";
 
     public static String toKoreanDate(String strDateFormat) {
         StringBuilder date = new StringBuilder();

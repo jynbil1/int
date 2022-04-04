@@ -186,6 +186,12 @@ public class FedexTrackManager extends FedexTrackManagement {
 
     @Override
     public boolean isProblematic(TrackResult shipment) {
+        for (DateAndTime event : shipment.getDateAndTimes()) {
+            if (event.getType().equals(FedexShipmentStatus.TENDER.getValue()) ||
+                    event.getType().equals(FedexShipmentStatus.EXPECT_TENDER.getValue())) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -234,12 +240,13 @@ public class FedexTrackManager extends FedexTrackManagement {
                     .findFirst()
                     .get()
                     .getDateTime();
+
+            strDateTime = strDateTime.substring(0, 19);
             return LocalDateTime.parse(strDateTime, DateTimeFormatter.ofPattern(CalendarFormatter.TZONE_DATETIME));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
         }
     }
-
 
 }

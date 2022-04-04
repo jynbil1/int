@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="hanpoom.internal_cron.crons.dashboard.fedex.mapper.FedexMapper">
 
-    <select id="getTrackableOrders" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
+    <select id="getOrderShipments" resultType="hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment">
         select
             orders.order_no as orderNo,
             orders.order_date as orderDate,
@@ -30,15 +30,16 @@
                     post_id as order_no,
                     case when meta_key = '_shipment_class' then meta_value end as shipment_class,
                     case when meta_key = '_aftership_tracking_number' then meta_value end as tracking_no,
-                    case when meta_key = '_service_type' then meta_value end as service_type
+                    case when meta_key = '_fedex_service_type' then meta_value end as service_type
                 from
                     wphpm_postmeta
                 where
-                    meta_key in ('_shipment_class', '_aftership_tracking_number', '_service_type') ) as a
+                    meta_key in ('_shipment_class', '_aftership_tracking_number', '_fedex_service_type') ) as a
             group by
                 a.order_no
             having 
-                length(tracking_no) <![CDATA[ < ]]> 11) as details
+                length(tracking_no) <![CDATA[ > ]]> 10 and
+                shipment_class = 'usdomestic') as details
         on
             orders.order_no = details.order_no
         left join
@@ -56,7 +57,7 @@
                 order_no,
                 tracking_no
             from
-                kr_a_wh_shipment_error
+                us_ca_a_wh_delivered
             ) as issue_orders
         on
             orders.order_no = issue_orders.order_no and
@@ -69,20 +70,20 @@
     </select>
 
     <insert id="insertDeliveredShipments" parameterType="java.util.List">
-        insert into kr_a_wh_delivered 
+        insert into us_ca_a_wh_delivered 
             (order_no, tracking_no, carrier, event, event_code, shipped_dtime, delivered_dtime)
         values
-        <foreach item="shipment" index="index" collection="deliveredShipments" separator="," close=";">
+        <foreach item="shipment" index="index" collection="orders" separator="," close=";">
             (#{shipment.orderNo}, #{shipment.trackingNo}, 'Fedex', #{shipment.event},
              #{shipment.eventCode}, #{shipment.shippedDate}, #{shipment.eventDate})
         </foreach>
     </insert>
 
     <insert id="insertErrorShipments" parameterType="java.util.List">
-        insert into kr_a_wh_shipment_error 
+        insert into us_ca_a_wh_shipment_error 
         (order_no, tracking_no, carrier, event, event_code, event_dtime)
     values
-        <foreach item="shipment" index="index" collection="erraneousShipments" separator="," close=";">
+        <foreach item="shipment" index="index" collection="orders" separator="," close=";">
         (#{shipment.orderNo}, #{shipment.trackingNo}, 'Fedex', #{shipment.event},
          #{shipment.eventCode}, #{shipment.eventDate})
     </foreach>

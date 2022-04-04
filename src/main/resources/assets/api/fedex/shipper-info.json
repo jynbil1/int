@@ -1,0 +1,31 @@
+{
+  "requestedShipment": {
+    "shipper": {
+      "contact": {
+        "personName": "HANPOOM",
+        "phoneNumber": 12135748312,
+        "companyName": "HANPOOM"
+      },
+      "address": {
+        "streetLines": ["6103 Obispo Ave"],
+        "city": "Long Beach",
+        "stateOrProvinceCode": "CA",
+        "postalCode": 90805,
+        "countryCode": "US"
+      }
+    },
+    "labelResponseOptions":"LABEL",
+    "pickupType": "USE_SCHEDULED_PICKUP",
+    "blockInsightVisibility": false,
+    "shippingChargesPayment": {
+      "paymentType": "SENDER"
+    },
+    "labelSpecification": {
+      "imageType": "PDF",
+      "labelStockType": "PAPER_85X11_TOP_HALF_LABEL"
+    }
+  },
+  "accountNumber": {
+    "value": "692713800"
+  }
+}
