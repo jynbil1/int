@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipmentStatus;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
 
@@ -33,4 +34,11 @@ public abstract class FedexTrackManagement {
     public abstract boolean isNotFound(TrackResult shipment);
     public abstract boolean isInTransit(TrackResult shipment);
 
+    // public abstract LocalDateTime getDeliveredDatetime(TrackResult shipment);
+    // public abstract LocalDateTime getPickedupDatetime(TrackResult shipment);
+    // public abstract LocalDateTime getProblemDatetime(TrackResult shipment);
+    // public abstract LocalDateTime getReturnedDatetime(TrackResult shipment);
+    // public abstract float getDelayedDurationInHour(TrackResult shipment);
+
+    public abstract LocalDateTime getEventDateTime(TrackResult shipment, FedexShipmentStatus shipmentStatus);
 }

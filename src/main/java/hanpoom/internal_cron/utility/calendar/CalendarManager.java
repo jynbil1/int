@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -136,9 +137,16 @@ public class CalendarManager {
         return resultDatetime;
     }
 
-    // public static void main(String[] args) {
-    //     System.out.println(new CalendarManager().getPreviousWeekMonday(true));
-    //     System.out.println(new CalendarManager().getPreviousWeekSunday(true));
-        
-    // }
+    public static float getDayDifference(String startDateTimeStr, String endDateTimeStr) {
+        LocalDateTime startDateTime = LocalDateTime.parse(startDateTimeStr,
+                DateTimeFormatter.ofPattern(CalendarFormatter.TZONE_DATETIME));
+        LocalDateTime endDateTime = LocalDateTime.parse(endDateTimeStr,
+                DateTimeFormatter.ofPattern(CalendarFormatter.TZONE_DATETIME));
+
+        long minutes = Math.abs(ChronoUnit.MINUTES.between(startDateTime, endDateTime));
+        float days = minutes / 60 / 24;
+
+        return Math.round((days * 100) / 100);
+
+    }
 }

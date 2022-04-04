@@ -18,6 +18,8 @@ import hanpoom.internal_cron.api.slack.SlackAPI;
 import hanpoom.internal_cron.crons.dashboard.fedex.service.FedexService;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
 import hanpoom.internal_cron.utility.group.Grouping;
+import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
+import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 
 @Component
 public class FedexCron {
@@ -34,6 +36,9 @@ public class FedexCron {
     @Autowired
     private SlackAPI slack;
 
+    @Autowired
+    private SpreadSheetAPI spreadSheet;
+
     @Scheduled(cron = "0 0 12 * * *", zone = "Asia/Seoul")
     public void cronFedexShipmentTrack() {
 
@@ -46,7 +51,7 @@ public class FedexCron {
         List<FedexTrackResponse> otherIssueOrders = new ArrayList<>();
         int inTransitOrders = 0;
 
-        // 1. 발송된 데이터 추출.
+        // 1. 발송된 데이터 추출. -->
         List<OrderShipment> orderShipments = fedexService.getShippedFedexOrders();
 
         // 1.5. 한번에 요청할 수 있는 수가 있으니 30개씩만 요청할 것.
@@ -66,26 +71,45 @@ public class FedexCron {
                 trackingNos = new HashSet<>();
 
                 // 2.1 문제 여부 파악
+                String issueType = "";
                 for (FedexTrackResponse response : responses) {
                     TrackResult result = response.getTrackResults().get(0);
                     if (fedexTrackManager.isDelivered(result)) {
                         deliveredOrders.add(response);
-                    } else if (fedexTrackManager.isDelayed(result)) {
-                        delayedOrders.add(response);
-                    } else if (fedexTrackManager.isProblematic(result)) {
-                        issueOrders.add(response);
-                    } else if (fedexTrackManager.isReturned(result)) {
-                        returnedOrders.add(response);
-                    } else if (fedexTrackManager.isNotFound(result)) {
-                        untrackableOrders.add(response);
                     } else if (fedexTrackManager.isInTransit(result)) {
                         ++inTransitOrders;
                     } else {
-                        // 알수 없음.
-                        System.out.println("====================================");
-                        System.out.println(response.getTrackingNumber());
-                        System.out.println("알수 없는 건을 조회했습니다.");
+                        if (fedexTrackManager.isDelayed(result)) {
+                            issueType = "지연";
+                            delayedOrders.add(response);
+                        } else if (fedexTrackManager.isProblematic(result)) {
+                            issueType = "문제";
+                            issueOrders.add(response);
+                        } else if (fedexTrackManager.isReturned(result)) {
+                            issueType = "반송";
+                            returnedOrders.add(response);
+                        } else if (fedexTrackManager.isNotFound(result)) {
+                            issueType = "찾을 수 없음";
+                            untrackableOrders.add(response);
+                        } else {
+                            // 알수 없음.
+                            System.out.println("====================================");
+                            System.out.println(response.getTrackingNumber());
+                            System.out.println("알수 없는 건을 조회했습니다.");
+                        }
+
+                        OrderShipment selectedOrder = orderShipments
+                                .stream()
+                                .filter(key -> response.getTrackingNumber().equals(key.getTrackingNo()))
+                                .findFirst()
+                                .get();
+
+                        
+                        selectedOrder.setShippedDate(fedexTrackManager.
+                        selectedOrder.setIssueType(issueType);
+
                     }
+
                 }
             }
         } catch (Exception e) {
@@ -93,6 +117,7 @@ public class FedexCron {
         }
 
         // 3. 문제건 시트 기재
+        // UpdateSheetVO updateResult = fedexService.insertIntoFedexSheet();
 
         // 4. 배송 완료/미완료 건 DB 저장
 

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import hanpoom.internal_cron.api.client.HttpClient;
 import hanpoom.internal_cron.api.shipment.fedex.config.FedexAPIConfig;
+import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipmentStatus;
 import hanpoom.internal_cron.api.shipment.fedex.management.FedexTrackManagement;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.DateAndTime;
@@ -199,7 +200,25 @@ public class FedexTrackManager extends FedexTrackManagement {
 
     @Override
     public boolean isInTransit(TrackResult shipment) {
-        // TODO Auto-generated method stub
+
         return false;
     }
+
+    @Override
+    public LocalDateTime getEventDateTime(TrackResult shipment, FedexShipmentStatus shipmentStatus) {
+        String deliveredDateTime = shipment
+                .getDateAndTimes()
+                .stream()
+                .filter(obj -> obj.getType().equals(FedexShipmentStatus.DELIVERED))
+                .findFirst()
+                .get()
+                .getDateTime();
+        
+        try {
+            
+        } catch (Exception e) {
+           System.out.println(e.getMessage());
+        }
+    }
+
 }
