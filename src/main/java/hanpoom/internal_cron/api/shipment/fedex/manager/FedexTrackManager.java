@@ -178,12 +178,28 @@ public class FedexTrackManager extends FedexTrackManagement {
     }
 
     @Override
-    public boolean occurredProblem(TrackResult shipment) {
+    public boolean isProblematic(TrackResult shipment) {
         return false;
     }
 
     @Override
     public boolean isDelayed(TrackResult shipment) {
+        return false;
+    }
+
+    @Override
+    public boolean isReturned(TrackResult shipment) {
+        return false;
+    }
+
+    @Override
+    public boolean isNotFound(TrackResult shipment) {
+        return false;
+    }
+
+    @Override
+    public boolean isInTransit(TrackResult shipment) {
+        // TODO Auto-generated method stub
         return false;
     }
 }

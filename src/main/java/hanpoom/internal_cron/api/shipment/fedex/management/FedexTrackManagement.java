@@ -27,7 +27,10 @@ public abstract class FedexTrackManagement {
     // -------------------
     public abstract boolean isDelivered(TrackResult shipment);
     public abstract boolean isPickedUp(TrackResult shipment);
-    public abstract boolean occurredProblem(TrackResult shipment);
+    public abstract boolean isProblematic(TrackResult shipment);
     public abstract boolean isDelayed(TrackResult shipment);
+    public abstract boolean isReturned(TrackResult shipment);
+    public abstract boolean isNotFound(TrackResult shipment);
+    public abstract boolean isInTransit(TrackResult shipment);
 
 }

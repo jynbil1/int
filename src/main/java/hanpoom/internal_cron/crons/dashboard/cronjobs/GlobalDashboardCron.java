@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.GlobalDashboardService;
-import hanpoom.internal_cron.utility.calendar.service.CalendarService;
+import hanpoom.internal_cron.utility.calendar.CalendarManager;
 import hanpoom.internal_cron.utility.slack.service.SlackService;
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
 import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 public class GlobalDashboardCron {
 
     private GlobalDashboardService dashboard;
-    private CalendarService calendar;
+    private CalendarManager calendar;
     private SpreadSheetAPI sheetApi;
 
     private final static String SPREADSHEET_ID = "114n3w9q8ytp0z5zFoiOo1xg_cP2nt3yspYKQJvT1KuU";
@@ -41,7 +41,7 @@ public class GlobalDashboardCron {
     // @Scheduled(cron = "1 * * * * *", zone = "Asia/Seoul")
     @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
     public void cronJobGloabalWeeklyDashboard() {
-        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarService.DATE_TIME_FORMAT_PATTERN));
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarManager.DATE_TIME_FORMAT_PATTERN));
         System.out.println(now + " 에 작업을 수행함");
 
         // 데이터를 가져온다.

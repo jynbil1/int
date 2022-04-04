@@ -1,14 +1,14 @@
-package hanpoom.internal_cron.utility.calendar.service;
+package hanpoom.internal_cron.utility.calendar;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class CalendarService {
+@Component
+public class CalendarManager {
 
     public static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd";
     public static final String DATE_TIME_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
@@ -137,8 +137,8 @@ public class CalendarService {
     }
 
     // public static void main(String[] args) {
-    //     System.out.println(new CalendarService().getPreviousWeekMonday(true));
-    //     System.out.println(new CalendarService().getPreviousWeekSunday(true));
+    //     System.out.println(new CalendarManager().getPreviousWeekMonday(true));
+    //     System.out.println(new CalendarManager().getPreviousWeekSunday(true));
         
     // }
 }
