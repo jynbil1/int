@@ -17,6 +17,8 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import hanpoom.internal_cron.api.shipment.dhl.config.DHLShipmentStatusCode;
+import hanpoom.internal_cron.api.shipment.dhl.service.DHLShipmentTrackingService;
 import hanpoom.internal_cron.crons.dashboard.dhl.mapper.DHLMapper;
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse;
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse.EventRemark;
@@ -24,8 +26,6 @@ import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse.ServiceEven
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse.ShipmentEventItem;
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingResult;
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO;
-import hanpoom.internal_cron.utility.shipment.dhl.config.DHLShipmentStatusCode;
-import hanpoom.internal_cron.utility.shipment.dhl.service.DHLShipmentTrackingService;
 import lombok.Getter;
 
 @Service

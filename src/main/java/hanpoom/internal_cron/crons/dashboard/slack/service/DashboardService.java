@@ -7,15 +7,15 @@ import org.springframework.stereotype.Service;
 import hanpoom.internal_cron.crons.dashboard.common.mapper.CommonMapper;
 import hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO;
 import hanpoom.internal_cron.crons.dashboard.slack.mapper.DashboardMapper;
-import hanpoom.internal_cron.utility.calendar.service.CalendarService;
+import hanpoom.internal_cron.utility.calendar.CalendarManager;
 
 @Service
 public class DashboardService {
     private DashboardMapper dashboardMapper;
     private CommonMapper commonMapper;
-    private CalendarService calendar;
+    private CalendarManager calendar;
 
-    public DashboardService(DashboardMapper dashboardMapper, CommonMapper commonMapper, CalendarService calendar) {
+    public DashboardService(DashboardMapper dashboardMapper, CommonMapper commonMapper, CalendarManager calendar) {
         this.dashboardMapper = dashboardMapper;
         this.commonMapper = commonMapper;
         this.calendar = calendar;

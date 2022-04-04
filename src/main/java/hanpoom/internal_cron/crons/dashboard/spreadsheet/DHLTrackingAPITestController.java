@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import hanpoom.internal_cron.api.shipment.dhl.service.DHLShipmentTrackingService;
 import hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackResponse;
-import hanpoom.internal_cron.utility.shipment.dhl.service.DHLShipmentTrackingService;
 
 @RestController
 public class DHLTrackingAPITestController {

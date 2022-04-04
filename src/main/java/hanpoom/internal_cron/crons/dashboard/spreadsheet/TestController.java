@@ -3,7 +3,7 @@ package hanpoom.internal_cron.crons.dashboard.spreadsheet;
 import org.springframework.web.bind.annotation.RestController;
 
 import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.GlobalDashboardService;
-import hanpoom.internal_cron.utility.calendar.service.CalendarService;
+import hanpoom.internal_cron.utility.calendar.CalendarManager;
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
 import lombok.AllArgsConstructor;
 
@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class TestController {
     private GlobalDashboardService dashboard;
-    private CalendarService calendar;
+    private CalendarManager calendar;
     private SpreadSheetAPI sheetApi;
 
     private final static String SPREADSHEET_ID = "114n3w9q8ytp0z5zFoiOo1xg_cP2nt3yspYKQJvT1KuU";
@@ -30,7 +30,7 @@ public class TestController {
     // 매주 월요일 자정이 되면 수행.
     // @GetMapping("/new-spread-get")
     // public void cronJobGloabalWeeklyDashboard() {
-    //     String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarService.DATE_TIME_FORMAT_PATTERN));
+    //     String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarManager.DATE_TIME_FORMAT_PATTERN));
     //     System.out.println(now + " 에 작업을 수행함");
 
     //     // 데이터를 가져온다.

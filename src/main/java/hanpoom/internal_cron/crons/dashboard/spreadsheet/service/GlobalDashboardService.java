@@ -4,14 +4,14 @@ import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.crons.dashboard.common.mapper.CommonMapper;
 import hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO;
-import hanpoom.internal_cron.utility.calendar.service.CalendarService;
+import hanpoom.internal_cron.utility.calendar.CalendarManager;
 
 @Service
 public class GlobalDashboardService {
     private CommonMapper commonMapper;
-    private CalendarService calendar;
+    private CalendarManager calendar;
 
-    public GlobalDashboardService(CommonMapper commonMapper, CalendarService calendar) {
+    public GlobalDashboardService(CommonMapper commonMapper, CalendarManager calendar) {
         this.commonMapper = commonMapper;
         this.calendar = calendar;
     }
