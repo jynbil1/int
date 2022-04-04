@@ -32,7 +32,6 @@ public abstract class FedexTrackManagement {
     public abstract boolean isProblematic(TrackResult shipment);
     public abstract boolean isReturned(TrackResult shipment);
     public abstract boolean isNotFound(TrackResult shipment);
-    public abstract boolean isInTransit(TrackResult shipment);
 
     // public abstract LocalDateTime getDeliveredDatetime(TrackResult shipment);
     // public abstract LocalDateTime getPickedupDatetime(TrackResult shipment);

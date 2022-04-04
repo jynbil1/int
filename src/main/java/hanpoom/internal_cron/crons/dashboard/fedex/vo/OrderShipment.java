@@ -24,13 +24,16 @@ public class OrderShipment {
 
     private String orderDate;
     private LocalDateTime shippedDate;
-    private LocalDateTime deliveredDate;
+    private LocalDateTime eventDate;
     // private float shippingDuration;
 
     private String serviceType;
     private String issueType;
     private String remark;
     private String detail;
+
+    private String event;
+    private String eventCode;
 
     public String getToday() {
         return LocalDate.now().format(DateTimeFormatter.ofPattern(CalendarFormatter.DATE));
@@ -39,10 +42,10 @@ public class OrderShipment {
     public float getShippingDuration() {
         // shippedDate -> pickedup datetime
         // deliveredDate -> delivered datetime
-        if (shippedDate == null || deliveredDate == null) {
+        if (shippedDate == null || eventDate == null) {
             return 0;
         } else {
-            return CalendarManager.getDayDifference(shippedDate, deliveredDate);
+            return CalendarManager.getDayDifference(shippedDate, eventDate);
         }
 
     }

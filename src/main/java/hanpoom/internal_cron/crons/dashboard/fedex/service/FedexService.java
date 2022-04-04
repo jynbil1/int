@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import hanpoom.internal_cron.crons.dashboard.fedex.mapper.FedexMapper;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
 import hanpoom.internal_cron.utility.calendar.CalendarFormatter;
-import hanpoom.internal_cron.utility.calendar.CalendarManager;
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
 import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 
@@ -26,8 +25,6 @@ public class FedexService {
     private FedexMapper fedexMapper;
     @Autowired
     private SpreadSheetAPI spreadSheet;
-    @Autowired
-    private CalendarManager calendar;
 
     public List<OrderShipment> getShippedFedexOrders() {
         try {
@@ -38,17 +35,17 @@ public class FedexService {
         }
     }
 
-    public void insertDeliveredShipments() {
+    public void insertDeliveredShipments(List<OrderShipment> orders) {
         try {
-
+            fedexMapper.insertDeliveredShipments(orders);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public void insertErrorShipments() {
+    public void insertErrorShipments(List<OrderShipment> orders) {
         try {
-
+            fedexMapper.insertErrorShipments(orders);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

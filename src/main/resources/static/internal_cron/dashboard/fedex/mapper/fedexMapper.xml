@@ -4,10 +4,11 @@
 
     <select id="getTrackableOrders" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
         select
-            orders.order_no,
-            orders.order_date,
-            ifnull(details.shipment_class, 'regular') as shipment_class,
-            details.tracking_no
+            orders.order_no as orderNo,
+            orders.order_date as orderDate,
+            ifnull(details.shipment_class, 'regular') as shipmentClass,
+            details.tracking_no as trackingNo,
+            details.service_type as serviceType
         from
             (select
                 id as order_no,
@@ -22,16 +23,18 @@
             (select
                 a.order_no,
                 group_concat(a.shipment_class) as shipment_class,
-                group_concat(a.tracking_no) as tracking_no
+                group_concat(a.tracking_no) as tracking_no,
+                group_concat(a.service_type) as service_type
             from
                 (select
                     post_id as order_no,
                     case when meta_key = '_shipment_class' then meta_value end as shipment_class,
-                    case when meta_key = '_aftership_tracking_number' then meta_value end as tracking_no
+                    case when meta_key = '_aftership_tracking_number' then meta_value end as tracking_no,
+                    case when meta_key = '_service_type' then meta_value end as service_type
                 from
                     wphpm_postmeta
                 where
-                    meta_key in ('_shipment_class', '_aftership_tracking_number') ) as a
+                    meta_key in ('_shipment_class', '_aftership_tracking_number', '_service_type') ) as a
             group by
                 a.order_no
             having 
@@ -67,21 +70,21 @@
 
     <insert id="insertDeliveredShipments" parameterType="java.util.List">
         insert into kr_a_wh_delivered 
-            (order_no, tracking_no, event, event_code, shipped_dtime, delivered_dtime)
+            (order_no, tracking_no, carrier, event, event_code, shipped_dtime, delivered_dtime)
         values
         <foreach item="shipment" index="index" collection="deliveredShipments" separator="," close=";">
-            (#{shipment.order_no}, #{shipment.tracking_no}, #{shipment.event},
-             #{shipment.event_code}, #{shipment.shipped_dtime}, #{shipment.event_dtime})
+            (#{shipment.orderNo}, #{shipment.trackingNo}, 'Fedex', #{shipment.event},
+             #{shipment.eventCode}, #{shipment.shippedDate}, #{shipment.eventDate})
         </foreach>
     </insert>
 
     <insert id="insertErrorShipments" parameterType="java.util.List">
         insert into kr_a_wh_shipment_error 
-        (order_no, tracking_no, event, event_code, event_dtime)
+        (order_no, tracking_no, carrier, event, event_code, event_dtime)
     values
         <foreach item="shipment" index="index" collection="erraneousShipments" separator="," close=";">
-        (#{shipment.order_no}, #{shipment.tracking_no}, #{shipment.event},
-         #{shipment.event_code}, #{shipment.event_dtime})
+        (#{shipment.orderNo}, #{shipment.trackingNo}, 'Fedex', #{shipment.event},
+         #{shipment.eventCode}, #{shipment.eventDate})
     </foreach>
     </insert>
 
