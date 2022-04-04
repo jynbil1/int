@@ -26,9 +26,10 @@ import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 @Component
 public class FedexCron {
 
+    // Live Slack URL
+    private static final String FEDEX_SLACK_ALARM_URL = "https://hooks.slack.com/services/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";
     // private static final String FEDEX_SLACK_ALARM_URL =
-    // "https://hooks.slack.com/services/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";
-    private static final String FEDEX_SLACK_ALARM_URL = "https://hooks.slack.com/services/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";
+    // "https://hooks.slack.com/services/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";
 
     @Autowired
     private FedexService fedexService;
@@ -51,6 +52,11 @@ public class FedexCron {
 
         // 1. 발송된 데이터 추출. -->
         List<OrderShipment> orderShipments = fedexService.getShippedFedexOrders();
+
+        if (orderShipments.isEmpty()) {
+            return;
+        }
+
         List<OrderShipment> errorShipments = new ArrayList<>();
         List<OrderShipment> deliveredShipments = new ArrayList<>();
 
@@ -77,15 +83,17 @@ public class FedexCron {
                     TrackResult result = response.getTrackResults().get(0);
 
                     OrderShipment selectedOrder = orderShipments
-                    .stream()
-                    .filter(key -> response.getTrackingNumber().equals(key.getTrackingNo()))
-                    .findFirst()
-                    .get();
+                            .stream()
+                            .filter(key -> response.getTrackingNumber().equals(key.getTrackingNo()))
+                            .findFirst()
+                            .get();
 
                     if (fedexTrackManager.isDelivered(result)) {
                         ++deliveredOrders;
-                        selectedOrder.setShippedDate(fedexTrackManager.getEventDateTime(result, FedexShipmentStatus.SHIPPED));
-                        selectedOrder.setEventDate(fedexTrackManager.getEventDateTime(result, FedexShipmentStatus.DELIVERED));
+                        selectedOrder.setShippedDate(
+                                fedexTrackManager.getEventDateTime(result, FedexShipmentStatus.SHIPPED));
+                        selectedOrder.setEventDate(
+                                fedexTrackManager.getEventDateTime(result, FedexShipmentStatus.DELIVERED));
                         selectedOrder.setEvent("배송완료");
                         selectedOrder.setEventCode("OK");
                         deliveredShipments.add(selectedOrder);
@@ -122,12 +130,17 @@ public class FedexCron {
             e.printStackTrace();
         }
 
-        // 3. 문제건 시트 기재
-        UpdateSheetVO updateResult = fedexService.insertIntoFedexSheet(errorShipments);
+        // 3. 배송 완료/미완료 건 DB 저장
+        if (!deliveredShipments.isEmpty()) {
+            fedexService.insertDeliveredShipments(deliveredShipments);
+        }
 
-        // 4. 배송 완료/미완료 건 DB 저장
-        fedexService.insertDeliveredShipments(deliveredShipments);
-        fedexService.insertErrorShipments(errorShipments);
+        // 4. 문제건 처리
+        if (!errorShipments.isEmpty()) {
+            UpdateSheetVO updateResult = fedexService.insertIntoFedexSheet(errorShipments);
+            fedexService.insertErrorShipments(errorShipments);
+
+        }
 
         // 5. 슬랙 알림.
         Map<String, String> workResult = Map.of(
@@ -139,7 +152,9 @@ public class FedexCron {
                 "inTransit", NumberFormat.getInstance().format(inTransitOrders));
 
         try {
-            slack.sendMessage(fedexService.getTrackReportMsg(workResult), FEDEX_SLACK_ALARM_URL);
+            if (!orderShipments.isEmpty()) {
+                slack.sendMessage(fedexService.getTrackReportMsg(workResult), FEDEX_SLACK_ALARM_URL);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

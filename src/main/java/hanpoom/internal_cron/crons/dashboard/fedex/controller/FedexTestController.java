@@ -38,7 +38,7 @@ public class FedexTestController {
     @Autowired
     private SlackAPI slack;
 
-    @GetMapping(value = "/api/fedex/test")
+    // @GetMapping(value = "/api/fedex/test")
     public void cronFedexShipmentTrack() {
 
         // 값 유형별로 처리할 것.
