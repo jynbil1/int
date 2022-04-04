@@ -2,10 +2,13 @@ package hanpoom.internal_cron.api.shipment.fedex.manager;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import hanpoom.internal_cron.api.client.HttpClient;
 import hanpoom.internal_cron.api.shipment.fedex.config.FedexAPIConfig;
+import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipDuration;
 import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipmentStatus;
 import hanpoom.internal_cron.api.shipment.fedex.management.FedexTrackManagement;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
@@ -25,6 +29,8 @@ import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingInfo;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingNumberInformation;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingRequest;
 import hanpoom.internal_cron.api.token.FedexToken;
+import hanpoom.internal_cron.utility.calendar.CalendarFormatter;
+import hanpoom.internal_cron.utility.calendar.CalendarManager;
 import okhttp3.Response;
 
 @Component
@@ -161,7 +167,7 @@ public class FedexTrackManager extends FedexTrackManagement {
     @Override
     public boolean isDelivered(TrackResult shipment) {
         for (DateAndTime event : shipment.getDateAndTimes()) {
-            if (event.getType().equals("ACTUAL_DELIVERY")) {
+            if (event.getType().equals(FedexShipmentStatus.DELIVERED.getValue())) {
                 return true;
             }
         }
@@ -171,7 +177,7 @@ public class FedexTrackManager extends FedexTrackManagement {
     @Override
     public boolean isPickedUp(TrackResult shipment) {
         for (DateAndTime event : shipment.getDateAndTimes()) {
-            if (event.getType().equals("ACTUAL_PICKUP")) {
+            if (event.getType().equals(FedexShipmentStatus.SHIPPED.getValue())) {
                 return true;
             }
         }
@@ -184,8 +190,24 @@ public class FedexTrackManager extends FedexTrackManagement {
     }
 
     @Override
-    public boolean isDelayed(TrackResult shipment) {
-        return false;
+    public boolean isDelayed(TrackResult shipment, FedexShipDuration shipDuration) {
+        if (shipment.getDateAndTimes().size() < 2) {
+            return false;
+        }
+
+        List<DateAndTime> dateAndTimes = shipment
+                .getDateAndTimes()
+                .stream()
+                .sorted(Comparator.comparing(DateAndTime::getDateTime))
+                .collect(Collectors.toList());
+
+        float dayDiff = CalendarManager.getDayDifference(dateAndTimes.get(0).getDateTime(),
+                dateAndTimes.get(dateAndTimes.size() - 1).getDateTime());
+        if (dayDiff >= shipDuration.getValue()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -195,29 +217,27 @@ public class FedexTrackManager extends FedexTrackManagement {
 
     @Override
     public boolean isNotFound(TrackResult shipment) {
-        return false;
-    }
-
-    @Override
-    public boolean isInTransit(TrackResult shipment) {
-
-        return false;
+        if (shipment == null || shipment.getDateAndTimes().isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public LocalDateTime getEventDateTime(TrackResult shipment, FedexShipmentStatus shipmentStatus) {
-        String deliveredDateTime = shipment
-                .getDateAndTimes()
-                .stream()
-                .filter(obj -> obj.getType().equals(FedexShipmentStatus.DELIVERED))
-                .findFirst()
-                .get()
-                .getDateTime();
-        
         try {
-            
+            String strDateTime = shipment
+                    .getDateAndTimes()
+                    .stream()
+                    .filter(obj -> obj.getType().equals(shipmentStatus.getValue()))
+                    .findFirst()
+                    .get()
+                    .getDateTime();
+            return LocalDateTime.parse(strDateTime, DateTimeFormatter.ofPattern(CalendarFormatter.TZONE_DATETIME));
         } catch (Exception e) {
-           System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
+            return null;
         }
     }
 

@@ -14,7 +14,7 @@ public enum FedexShipmentStatus {
     ESTIMATED_RETURN_TO_STATION("ESTIMATED_RETURN_TO_STATION"),
     SHIP("SHIP"),
     SHIPMENT_DATA_RECEIVED("SHIPMENT_DATA_RECEIVED");
-
+    
     private final String value;
 
     private FedexShipmentStatus(String value) {

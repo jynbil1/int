@@ -1,7 +1,9 @@
 package hanpoom.internal_cron.crons.dashboard.cronjobs;
 
 import java.text.NumberFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipDuration;
+import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipmentStatus;
 import hanpoom.internal_cron.api.shipment.fedex.manager.FedexTrackManager;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
 import hanpoom.internal_cron.api.slack.SlackAPI;
 import hanpoom.internal_cron.crons.dashboard.fedex.service.FedexService;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
+import hanpoom.internal_cron.utility.calendar.CalendarFormatter;
 import hanpoom.internal_cron.utility.group.Grouping;
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
 import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
@@ -76,10 +81,16 @@ public class FedexCron {
                     TrackResult result = response.getTrackResults().get(0);
                     if (fedexTrackManager.isDelivered(result)) {
                         deliveredOrders.add(response);
-                    } else if (fedexTrackManager.isInTransit(result)) {
-                        ++inTransitOrders;
                     } else {
-                        if (fedexTrackManager.isDelayed(result)) {
+
+                        OrderShipment selectedOrder = orderShipments
+                                .stream()
+                                .filter(key -> response.getTrackingNumber().equals(key.getTrackingNo()))
+                                .findFirst()
+                                .get();
+
+                        if (fedexTrackManager.isDelayed(result,
+                                FedexShipDuration.findByServiceType(selectedOrder.getServiceType()))) {
                             issueType = "지연";
                             delayedOrders.add(response);
                         } else if (fedexTrackManager.isProblematic(result)) {
@@ -92,24 +103,14 @@ public class FedexCron {
                             issueType = "찾을 수 없음";
                             untrackableOrders.add(response);
                         } else {
-                            // 알수 없음.
-                            System.out.println("====================================");
-                            System.out.println(response.getTrackingNumber());
-                            System.out.println("알수 없는 건을 조회했습니다.");
+                            ++inTransitOrders;
                         }
 
-                        OrderShipment selectedOrder = orderShipments
-                                .stream()
-                                .filter(key -> response.getTrackingNumber().equals(key.getTrackingNo()))
-                                .findFirst()
-                                .get();
-
-                        
-                        selectedOrder.setShippedDate(fedexTrackManager.
+                        selectedOrder.setShippedDate(
+                                fedexTrackManager.getEventDateTime(result, FedexShipmentStatus.SHIPPED));
                         selectedOrder.setIssueType(issueType);
 
                     }
-
                 }
             }
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package hanpoom.internal_cron.crons.dashboard.fedex.vo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import hanpoom.internal_cron.utility.calendar.CalendarFormatter;
@@ -22,8 +23,8 @@ public class OrderShipment {
     private String trackingNo;
 
     private String orderDate;
-    private String shippedDate;
-    private String deliveredDate;
+    private LocalDateTime shippedDate;
+    private LocalDateTime deliveredDate;
     // private float shippingDuration;
 
     private String serviceType;
@@ -39,8 +40,6 @@ public class OrderShipment {
         // shippedDate -> pickedup datetime
         // deliveredDate -> delivered datetime
         if (shippedDate == null || deliveredDate == null) {
-            return 0;
-        } else if (shippedDate == "" || deliveredDate == null) {
             return 0;
         } else {
             return CalendarManager.getDayDifference(shippedDate, deliveredDate);

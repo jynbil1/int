@@ -149,4 +149,15 @@ public class CalendarManager {
         return Math.round((days * 100) / 100);
 
     }
+
+
+    public static float getDayDifference(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+      
+        long minutes = Math.abs(ChronoUnit.MINUTES.between(startDateTime, endDateTime));
+        float days = minutes / 60 / 24;
+
+        return Math.round((days * 100) / 100);
+
+    }
+
 }
