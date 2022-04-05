@@ -40,12 +40,10 @@ public abstract class SpreadSheetAPITools {
     }
 
     abstract List<List<Object>> readSheetData(String parameter);
-
+    abstract List<List<String>> read(String range);
     abstract UpdateSheetVO insertRows(JSONArray rows);
-
     abstract UpdateSheetVO updateRow(JSONArray rows, String range);
     abstract UpdateSheetVO updateRows(JSONArray rows);
-
     abstract UpdateSheetVO deleteRows(JSONArray rows);
 
     abstract String tokenValidator();

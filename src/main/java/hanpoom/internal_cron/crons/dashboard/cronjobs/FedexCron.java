@@ -18,6 +18,7 @@ import hanpoom.internal_cron.api.shipment.fedex.manager.FedexTrackManager;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
 import hanpoom.internal_cron.api.slack.SlackAPI;
+import hanpoom.internal_cron.crons.dashboard.fedex.service.FedexSpreadSheet;
 import hanpoom.internal_cron.crons.dashboard.fedex.service.FedexService;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
 import hanpoom.internal_cron.utility.group.Grouping;
@@ -31,14 +32,18 @@ public class FedexCron {
     // private static final String FEDEX_SLACK_ALARM_URL =
     // "https://hooks.slack.com/services/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";
 
+    private static final String TZ_KOREA = "Asia/Seoul";
+
     @Autowired
     private FedexService fedexService;
+    @Autowired
+    private FedexSpreadSheet fedexSpreadSheet;
     @Autowired
     private FedexTrackManager fedexTrackManager;
     @Autowired
     private SlackAPI slack;
 
-    @Scheduled(cron = "0 0 12 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 12 * * *", zone = TZ_KOREA)
     public void cronFedexShipmentTrack() {
 
         // 값 유형별로 처리할 것.
@@ -137,22 +142,20 @@ public class FedexCron {
 
         // 4. 문제건 처리
         if (!errorShipments.isEmpty()) {
-            UpdateSheetVO updateResult = fedexService.insertIntoFedexSheet(errorShipments);
+            UpdateSheetVO updateResult = fedexSpreadSheet.insertIntoFedexSheet(errorShipments);
             fedexService.insertErrorShipments(errorShipments);
-
         }
 
-        // 5. 슬랙 알림.
-        Map<String, String> workResult = Map.of(
-                "delivered", NumberFormat.getInstance().format(deliveredOrders),
-                "delayed", NumberFormat.getInstance().format(delayedOrders),
-                "untrackable", NumberFormat.getInstance().format(untrackableOrders),
-                "others", NumberFormat.getInstance().format(otherIssueOrders),
-                "returned", NumberFormat.getInstance().format(returnedOrders),
-                "inTransit", NumberFormat.getInstance().format(inTransitOrders));
-
         try {
-            if (!orderShipments.isEmpty()) {
+            if (!orderShipments.isEmpty() && orderShipments.size() > 0) {
+                // 5. 슬랙 알림.
+                Map<String, String> workResult = Map.of(
+                        "delivered", NumberFormat.getInstance().format(deliveredOrders),
+                        "delayed", NumberFormat.getInstance().format(delayedOrders),
+                        "untrackable", NumberFormat.getInstance().format(untrackableOrders),
+                        "others", NumberFormat.getInstance().format(otherIssueOrders),
+                        "returned", NumberFormat.getInstance().format(returnedOrders),
+                        "inTransit", NumberFormat.getInstance().format(inTransitOrders));
                 slack.sendMessage(fedexService.getTrackReportMsg(workResult), FEDEX_SLACK_ALARM_URL);
             }
         } catch (Exception e) {
@@ -160,4 +163,16 @@ public class FedexCron {
         }
 
     }
+
+    // @Scheduled(cron = "", zone = TZ_KOREA)
+    // public void monitorFedexErrorShipment(){
+        // 1. 통합 시트_CX - Fedex 에 있는 미처리 값을 불러온다.
+        // 2. 해당 값들이 현재 DB 에 저장된 값들과 동일한 값들인지 확인한다.
+        // 3. 동일하지 않을 경우, DB 값을 해당 엑셀 시트에 갱신한다.
+        // 4. 갱신된 값들을 기준으로 Fedex 운송장 조회를 한다.
+        // 5. 완료된 값들은 
+            // 5.1. 스프레드시트에서 완료 처리를 하고,
+            // 5.2. us_ca_a_wh_delivered 에 값을 기입한다.
+
+    // }
 }

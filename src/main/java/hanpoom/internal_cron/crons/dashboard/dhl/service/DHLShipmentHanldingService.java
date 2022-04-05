@@ -87,39 +87,21 @@ public class DHLShipmentHanldingService {
             System.out.println(vo.toString());
         }
         System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() &&
-        // spreadSheetInserted.getUpdatedCells() > 0) {
-        // return 1;
-        // }
-        // return 0;
+    
     }
 
     // 기타 문제 건.
     public void processOtherIssueOrders(List<DHLTrackingVO> trackingVoList) {
         int dbInserted = insertErrorShipments(trackingVoList);
         UpdateSheetVO spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        // System.out.println("기타 문제 건");
-        // System.out.println(trackingVoList.toString());
-        // System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() &&
-        // spreadSheetInserted.getUpdatedCells() > 0) {
-        // return 1;
-        // }
-        // return 0;
+
     }
 
     // 지연되고 있는 건.
     public void processDelayedOrders(List<DHLTrackingVO> trackingVoList) {
         int dbInserted = insertErrorShipments(trackingVoList);
         UpdateSheetVO spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        // System.out.println("배송 지연되고 있는 건 처리");
-        // System.out.println(trackingVoList.toString());
-        // System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() &&
-        // spreadSheetInserted.getUpdatedCells() > 0) {
-        // return 1;
-        // }
-        // return 0;
+     
     }
 
     // 기간이 지나 검색결과가 조회되지 않는 건.
@@ -127,14 +109,6 @@ public class DHLShipmentHanldingService {
         // 조회되지 않는 건들은 insert 하고 슬랙으로 집계알림과 다르게 따로 안내 나갈것.
         int dbInserted = insertErrorShipments(trackingVoList);
         UpdateSheetVO spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        // System.out.println("조회가 불가한 건");
-        // System.out.println(trackingVoList.toString());
-        // System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() &&
-        // spreadSheetInserted.getUpdatedCells() > 0) {
-        // return 1;
-        // }
-        // return 0;
     }
 
     // 반송된 건
@@ -142,14 +116,7 @@ public class DHLShipmentHanldingService {
         // 조회되지 않는 건들은 insert 하고 슬랙으로 집계알림과 다르게 따로 안내 나갈것.
         int dbInserted = insertErrorShipments(trackingVoList);
         UpdateSheetVO spreadSheetInserted = insertIntoSpreadSheet(trackingVoList);
-        // System.out.println("반송된 건");
-        // System.out.println(trackingVoList.toString());
-        // System.out.println("====================================");
-        // if (dbInserted == trackingVoList.size() &&
-        // spreadSheetInserted.getUpdatedCells() > 0) {
-        // return 1;
-        // }
-        // return 0;
+
     }
 
     // 슬랙 메시지 보내는 부분.

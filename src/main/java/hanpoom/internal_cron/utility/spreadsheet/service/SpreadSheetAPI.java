@@ -16,13 +16,12 @@ import lombok.ToString;
 @AllArgsConstructor
 @Service
 public class SpreadSheetAPI extends SpreadSheetAPITools {
-
+    private static final String SPREADSHEET_URL = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s!%s";
     private SpreadSheetAPIValidation api;
 
     @Override
     public List<List<Object>> readSheetData(String range) {
-        String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s!%s";
-        url = String.format(url, this.spreadSheetID, this.sheetName, range);
+        String url = String.format(SPREADSHEET_URL, this.spreadSheetID, this.sheetName, range);
 
         SpreadSheetHttpService httpService = new SpreadSheetHttpService();
 
@@ -42,14 +41,12 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
             data.add(row);
         }
         return data;
-
     }
 
     // 몇개 넣든 무조건 2차원 JSONArray.
     @Override
     public UpdateSheetVO insertRows(JSONArray rows) {
-        String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s:append";
-        url = String.format(url, this.spreadSheetID, this.sheetName);
+        String url = String.format(SPREADSHEET_URL, this.spreadSheetID, this.sheetName);
 
         StringBuilder sb = new StringBuilder();
         sb.append("valueInputOption=" + "USER_ENTERED");
@@ -78,9 +75,7 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
 
     @Override
     public UpdateSheetVO updateRow(JSONArray row, String range) {
-        String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s!%s";
-
-        url = String.format(url, this.spreadSheetID, this.sheetName, range);
+        String url = String.format(SPREADSHEET_URL, this.spreadSheetID, this.sheetName, range);
 
         StringBuilder sb = new StringBuilder();
         sb.append("includeValuesInResponse=" + false);
@@ -156,6 +151,30 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
             this.token = api.validateTokenOpt(this.token);
             return this.token;
         }
+    }
+
+    @Override
+    public List<List<String>> read(String range) {
+        String url = String.format(SPREADSHEET_URL, this.spreadSheetID, this.sheetName, range);
+
+        SpreadSheetHttpService httpService = new SpreadSheetHttpService();
+
+        httpService.setContentType("json");
+        httpService.setUrl(url);
+        tokenValidator();
+        httpService.setToken(this.token);
+
+        JSONArray jsonArray = httpService.get().optJSONArray("values");
+
+        List<List<String>> data = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length() - 0; ++i) {
+            List<String> row = new ArrayList<>();
+            for (int j = 0; j < jsonArray.optJSONArray(i).length() - 0; ++j) {
+                row.add(jsonArray.optJSONArray(i).getString(j));
+            }
+            data.add(row);
+        }
+        return data;
     }
 
 }

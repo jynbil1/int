@@ -12,6 +12,7 @@ import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
 public interface FedexMapper {
     
     public List<OrderShipment> getOrderShipments();
+    public List<OrderShipment> getShipments(List<Integer> orderNos);
     public Integer insertDeliveredShipments(List<OrderShipment> orders);
     public Integer insertErrorShipments(List<OrderShipment> orders);
     

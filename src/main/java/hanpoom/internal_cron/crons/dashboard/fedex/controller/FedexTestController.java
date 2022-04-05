@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
 import hanpoom.internal_cron.api.slack.SlackAPI;
 import hanpoom.internal_cron.crons.dashboard.fedex.service.FedexService;
+import hanpoom.internal_cron.crons.dashboard.fedex.service.FedexSpreadSheet;
+import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
 import hanpoom.internal_cron.utility.group.Grouping;
 import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
@@ -33,6 +36,8 @@ public class FedexTestController {
 
     @Autowired
     private FedexService fedexService;
+    @Autowired
+    private FedexSpreadSheet fedexSpreadSheet;
     @Autowired
     private FedexTrackManager fedexTrackManager;
     @Autowired
@@ -132,7 +137,7 @@ public class FedexTestController {
 
         // 4. 문제건 처리
         if (!errorShipments.isEmpty()) {
-            UpdateSheetVO updateResult = fedexService.insertIntoFedexSheet(errorShipments);
+            UpdateSheetVO updateResult = fedexSpreadSheet.insertIntoFedexSheet(errorShipments);
             fedexService.insertErrorShipments(errorShipments);
 
         }
@@ -154,5 +159,86 @@ public class FedexTestController {
             e.printStackTrace();
         }
 
+    }
+
+    @GetMapping(value = "/api/fedex/excel")
+    public void monitorFedexErrorShipment() {
+        // 1. 통합 시트_CX - Fedex 에 있는 미처리 값을 불러온다.
+        List<FedexExcelRow> rows = fedexSpreadSheet.readUnresolvedShipmentExcel();
+
+        // 2. 해당 값들이 현재 DB 에 저장된 값들과 동일한 값들인지 확인한다.
+        List<OrderShipment> orderShipments = fedexService.getShipments(
+                rows.stream()
+                        .map(key -> key.getOrderNo().getValue())
+                        .collect(Collectors.toList()));
+
+        // 운송장 번호가 변경된 값으로, 다시 업데이트를 해야하는 건들을 필터링.
+        List<FedexExcelRow> updatableRows = new ArrayList<>();
+        for (FedexExcelRow row : rows) {
+            // 운송장 번호는 다른데, 주문번호가 같은게 있으면 true
+            try {
+                OrderShipment shipment = orderShipments.stream()
+                        .filter(obj -> !obj.getTrackingNo().equals(row.getTrackingNo().getValue()) &&
+                                obj.getOrderNo() == row.getOrderNo().getValue())
+                        .findFirst().get();
+
+                row.getTrackingNo().setValue(shipment.getTrackingNo());
+                updatableRows.add(row);
+            } catch (NoSuchElementException nee) {
+                continue;
+            }
+        }
+
+        // 3. 동일하지 않을 경우, DB 값을 해당 엑셀 시트에 갱신한다.
+        if (!updatableRows.isEmpty()) {
+            fedexSpreadSheet.insertNewTrackingNumbers(updatableRows);
+        }
+
+        // 4. 갱신된 값들을 기준으로 Fedex 운송장 조회를 한다.
+        List<OrderShipment> deliveredShipments = new ArrayList<>();
+        if (!orderShipments.isEmpty() && orderShipments.size() > 0) {
+            List<List<OrderShipment>> shipmentsSet = new Grouping<OrderShipment>().groupByNumberSet(orderShipments, 30);
+
+            for (List<OrderShipment> shipments : shipmentsSet) {
+                // shipments 가 가진 값의 운송장 번호를 리스트로 만들어서 매개 변수로 넣는다.
+                List<FedexTrackResponse> responses = fedexTrackManager.trackMultipleShipments(new HashSet<String>(
+                        shipments
+                                .stream()
+                                .map(obj -> obj.getTrackingNo())
+                                .collect(Collectors.toList())),
+                        false);
+
+                for (FedexTrackResponse response : responses) {
+                    if (fedexTrackManager.isDelivered(response.getTrackResults().get(0))) {
+                        // 5. 완료된 값들은
+                        // 5.1. 스프레드시트에서 완료 처리를 하고,
+                        try {
+                            FedexExcelRow selectedRow = rows
+                                    .stream()
+                                    .filter(object -> object.getTrackingNo().getValue()
+                                            .equals(response.getTrackingNumber()))
+                                    .findFirst()
+                                    .get();
+
+                            fedexSpreadSheet.checkNRecordShipment(selectedRow);
+                            deliveredShipments.add(
+                                    shipments
+                                            .stream()
+                                            .filter(obj -> obj.getTrackingNo().equals(response.getTrackingNumber()))
+                                            .findFirst()
+                                            .get());
+                        } catch (NoSuchElementException nee) {
+                            continue;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        // 5.2. us_ca_a_wh_delivered 에 값을 기입한다.
+        if (!deliveredShipments.isEmpty() && deliveredShipments.size() > 0) {
+            fedexSpreadSheet.insertIntoFedexSheet(deliveredShipments);
+        }
     }
 }

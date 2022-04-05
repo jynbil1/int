@@ -2,6 +2,7 @@ package hanpoom.internal_cron.crons.dashboard.fedex.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hanpoom.internal_cron.crons.dashboard.fedex.mapper.FedexMapper;
+import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow;
+import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow.BooleanRow;
+import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow.FloatRow;
+import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow.IntRow;
+import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow.StringRow;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
 import hanpoom.internal_cron.utility.calendar.CalendarFormatter;
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
@@ -18,19 +24,25 @@ import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 
 @Service
 public class FedexService {
-    private final static String SHEET_ID = "1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw";
-    private final static String SHEET = "Fedex";
+    
 
     @Autowired
     private FedexMapper fedexMapper;
-    @Autowired
-    private SpreadSheetAPI spreadSheet;
 
     public List<OrderShipment> getShippedFedexOrders() {
         try {
             return fedexMapper.getOrderShipments();
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public List<OrderShipment> getShipments(List<Integer> orderNos) {
+        try {
+            return fedexMapper.getShipments(orderNos);
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -81,29 +93,5 @@ public class FedexService {
         return sb.toString();
     }
 
-    public UpdateSheetVO insertIntoFedexSheet(List<OrderShipment> shipments) {
-        JSONArray rows = new JSONArray();
-        try {
-            spreadSheet.setSheetName(SHEET);
-            spreadSheet.setSpreadSheetID(SHEET_ID);
 
-            for (OrderShipment shipment : shipments) {
-
-                rows.put(
-                        new JSONArray().put(
-                                Arrays.asList(
-                                        "FALSE", shipment.getToday(), shipment.getShipmentClass(),
-                                        shipment.getOrderNo(), shipment.getShipmentNo(), shipment.getTrackingNo(),
-                                        shipment.getOrderDate(), shipment.getShippedDate(), "",
-                                        "", shipment.getServiceType(),
-                                        shipment.getIssueType(),
-                                        shipment.getDetail())));
-
-            }
-            return spreadSheet.insertRows(rows);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }
