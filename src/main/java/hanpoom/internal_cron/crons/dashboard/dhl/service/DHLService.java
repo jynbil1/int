@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,15 +46,18 @@ public class DHLService {
     private DHLMapper mapper;
     private DHLShipmentTrackingService dHLShipmentTrackingService;
     private DHLShipmentStatusCode shipmentStatusCode;
+    private DHLShipmentHanldingService dHLShipmentHanldingService;
 
     public DHLService(DHLMapper mapper, DHLShipmentTrackingService dHLShipmentTrackingService,
-            DHLShipmentStatusCode shipmentStatusCode) {
+            DHLShipmentStatusCode shipmentStatusCode,
+            DHLShipmentHanldingService dHLShipmentHanldingService) {
         this.mapper = mapper;
         this.dHLShipmentTrackingService = dHLShipmentTrackingService;
         this.shipmentStatusCode = shipmentStatusCode;
+        this.dHLShipmentHanldingService = dHLShipmentHanldingService;
     }
 
-    public DHLTrackingVO filterShipment(DHLTrackingVO searchVo) {
+    private DHLTrackingVO filterShipment(DHLTrackingVO searchVo) {
         // Tracking No 를 조회해서 값이 하나 이상이 나올 수 있기 때문에 대비해야 함.
 
         DHLTrackingVO trackingVo = getOrderDetailByTrackingNo(searchVo);
@@ -175,7 +179,7 @@ public class DHLService {
         return null;
     }
 
-    public DHLTrackingResult filterShipments() {
+    private DHLTrackingResult filterShipments() {
 
         List<DHLTrackingVO> orderTrackingList = getTrackableOrders();
         List<List<String>> trackingSets = new ArrayList<>();
@@ -538,4 +542,85 @@ public class DHLService {
         return (dow != DayOfWeek.SATURDAY && dow != DayOfWeek.SUNDAY);
     }
 
+    
+    // Excuter Methods Below:
+    public void monitorNReportDHLShipments(){
+        LocalDateTime now = LocalDateTime.now();
+        String executeTime = now.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
+        System.out.println(executeTime + " 에 작업이 시작되었습니다.");
+
+        DHLTrackingResult result = filterShipments();
+
+        // // 통관 문제
+        // System.out.println(dHLService.getCustomsIssueOrders().toString());
+        // // 기타 문제
+        // System.out.println(dHLService.getOtherIssueOrders().toString());
+        // // 배송 완료
+        // System.out.println(dHLService.getDeliveredOrders().toString());
+        // System.out.println(dHLService.getUntrackableOrders().toString());
+        // System.out.println(dHLService.getDelayedOrders().toString());
+
+        if (!getDeliveredOrders().isEmpty()) {
+            dHLShipmentHanldingService.insertDeliveredShipments(getDeliveredOrders());
+        }
+
+        if (!getCustomsIssueOrders().isEmpty()) {
+            dHLShipmentHanldingService.processCustomsIssueOrders(getCustomsIssueOrders());
+        }
+
+        if (!getOtherIssueOrders().isEmpty()) {
+            dHLShipmentHanldingService.processOtherIssueOrders(getOtherIssueOrders());
+
+        }
+        if (!getDelayedOrders().isEmpty()) {
+            dHLShipmentHanldingService.processDelayedOrders(getDelayedOrders());
+
+        }
+        if (!getUntrackableOrders().isEmpty()) {
+            dHLShipmentHanldingService.processUntrackableOrders(getUntrackableOrders());
+
+        }
+        if (!getReturnedOrders().isEmpty()) {
+            dHLShipmentHanldingService.processReturnedOrders(getReturnedOrders());
+
+        }
+
+
+        String executeMessage = now.format(DateTimeFormatter.ofPattern(DATE_PATTERN + " HH"));
+        String messageText = "%s시 발송 모니터링 현황\n"
+                + "---------------------------------------------------\n"
+                + "배송 완료: %s 건\n" + "배송 지연: %s 건\n"
+                + "통관 문제: %s 건\n\n" + "조회 불가: %s 건\n"
+                + "이외 문제: %s 건\n" + "반송 완료: %s 건\n"
+                + "---------------------------------------------------\n"
+                + "배송중: %s 건\n" 
+                + "<https://docs.google.com/spreadsheets/d/1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw/edit#gid=448567097|문제 보러가기>";
+
+        boolean isSent = dHLShipmentHanldingService.sendSlackMessage(
+                String.format(messageText,
+                        executeMessage,
+
+                        result.getTotalDeliveries(),
+                        result.getTotalDelays(),
+                        result.getTotalCustomsIssues(),
+
+                        result.getTotalUntrackables(),
+                        result.getTotalOtherIssues(),
+                        result.getTotalReturned(),
+
+                        result.getTotalInTransit()));
+        if (!isSent) {
+            System.out.println("현황 결과를 출력하지 못했습니다.");
+        } else {
+            System.out.println("현황 데이터를 성공적으로 출력했습니다.");
+        }
+
+        LocalDateTime then = LocalDateTime.now();
+        String endTime = then.format(DateTimeFormatter.ofPattern(DATETIME_PATTERN));
+        long timeSpent = LocalDateTime.from(now).until(then, ChronoUnit.SECONDS);
+        System.out.println(endTime + " 에 작업이 끝마쳤습니다.");
+        System.out.println(String.format("소요시간: %s 분 %s 초",
+                String.valueOf(timeSpent / 60),
+                String.valueOf(timeSpent % 60)));
+    }
 }
