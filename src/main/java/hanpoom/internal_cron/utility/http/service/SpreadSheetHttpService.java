@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import lombok.Setter;
@@ -42,6 +43,10 @@ public class SpreadSheetHttpService {
             con.setRequestMethod("POST");
             con.setDoOutput(true);
             return new JSONObject(getResponse(con, "POST"));
+        } catch (JSONException je) {
+            System.out.println("response 가 JSON 형식이 아니므로 확인해 볼 것.");
+            je.printStackTrace();
+
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -73,7 +78,6 @@ public class SpreadSheetHttpService {
         return con;
     }
 
-  
     private String getResponse(HttpURLConnection con, String requestMethod) {
         String readLine;
         StringBuilder builder = new StringBuilder();

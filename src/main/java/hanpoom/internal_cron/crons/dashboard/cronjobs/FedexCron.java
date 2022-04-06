@@ -31,7 +31,7 @@ public class FedexCron {
 
     }
 
-    @Scheduled(cron = "0 30 12 * * *", zone = TZ_KOREA)
+    // @Scheduled(cron = "0 30 12 * * *", zone = TZ_KOREA)
     public void fedexErrorShipmentRemonitorCron() {
         fedexService.reMonitorFedexIssueShipments();
     }

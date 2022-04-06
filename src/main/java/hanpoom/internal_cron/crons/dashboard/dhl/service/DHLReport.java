@@ -55,6 +55,7 @@ public class DHLReport {
         for (List<DHLTrackingVO> trackingVo : reportSets) {
             if (!trackingVo.isEmpty()) {
                 dhlService.processIssueShipments(trackingVo);
+                dhlService.insertIntoSpreadSheet(trackingVo);
             }
         }
 

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections4.Put;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,6 @@ import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow.FloatRow;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow.IntRow;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow.StringRow;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
-import hanpoom.internal_cron.utility.calendar.CalendarManager;
 import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
 import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 
@@ -36,17 +34,18 @@ public class FedexSpreadSheet {
             spreadSheet.setSpreadSheetID(SHEET_ID);
 
             for (OrderShipment shipment : shipments) {
+                JSONArray subArray = new JSONArray();
 
-                rows.put(
-                        new JSONArray().put(
-                                Arrays.asList(
-                                        "FALSE", shipment.getToday(), shipment.getShipmentClass(),
-                                        shipment.getOrderNo(), shipment.getShipmentNo(), shipment.getTrackingNo(),
-                                        shipment.getOrderDate(), shipment.getShippedDate(), "",
-                                        "", shipment.getServiceType(),
-                                        shipment.getIssueType(),
-                                        shipment.getDetail())));
-
+                for (Object obj : Arrays.asList(
+                        "FALSE", shipment.getToday(), shipment.getOrderNo(), shipment.getShipmentNo(),
+                        shipment.getTrackingNo(), "", shipment.getShipmentClass(),
+                        shipment.getOrderDate(), shipment.getShippedDate(), "",
+                        "", shipment.getServiceType(),
+                        shipment.getIssueType(),
+                        shipment.getDetail())) {
+                    subArray.put(obj);
+                }
+                rows.put(subArray);
             }
             return spreadSheet.insertRows(rows);
         } catch (Exception e) {
@@ -123,8 +122,8 @@ public class FedexSpreadSheet {
     public void checkNRecordShipment(FedexExcelRow row) {
         spreadSheet.setSheetName(SHEET);
         spreadSheet.setSpreadSheetID(SHEET_ID);
-        JSONArray array = new JSONArray(row.toString()); 
-                
+        JSONArray array = new JSONArray(row.toString());
+
         String cellAt = new StringBuilder()
                 .append("A")
                 .append(String.valueOf(row.getIsCompleted().getRow()))

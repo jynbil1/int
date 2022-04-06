@@ -79,7 +79,7 @@ public class FedexExcelRow {
     @Override
     public String toString() {
         String jsonListStr = new StringBuilder()
-                .append("[")
+                .append("{[")
                 .append(String.valueOf(this.getIsCompleted().isValue()))
                 .append(",")
                 .append(this.getCreatedAt().getValue())
@@ -112,7 +112,7 @@ public class FedexExcelRow {
                 .append(this.getRemark().getValue())
                 .append(",")
                 .append(this.getDetail().getValue())
-                .append("]")
+                .append("]}")
                 .toString();
 
         return jsonListStr;

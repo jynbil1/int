@@ -19,8 +19,8 @@ public enum FedexShipDuration {
     public static FedexShipDuration findByServiceType(String serviceType) {
         switch (serviceType.toUpperCase()) {
             case "PRIORITY_OVERNIGHT":
-                return OVERNIGHT;
             case "OVERNIGHT":
+            case "STANDARD_OVERNIGHT":
                 return OVERNIGHT;
             case "GROUND":
                 return GROUND;

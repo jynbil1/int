@@ -19,11 +19,13 @@ import org.springframework.stereotype.Component;
 
 import hanpoom.internal_cron.api.client.HttpClient;
 import hanpoom.internal_cron.api.shipment.fedex.config.FedexAPIConfig;
+import hanpoom.internal_cron.api.shipment.fedex.config.FedexShipStatusCode;
 import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipDuration;
 import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipmentStatus;
 import hanpoom.internal_cron.api.shipment.fedex.management.FedexTrackManagement;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.DateAndTime;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.ScanEvent;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingInfo;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingNumberInformation;
@@ -44,6 +46,8 @@ public class FedexTrackManager extends FedexTrackManagement {
 
     @Autowired
     private FedexAPIConfig fedexConfig;
+    @Autowired
+    private FedexShipStatusCode statusCode;
 
     @Override
     public void sendNotification() {
@@ -196,23 +200,34 @@ public class FedexTrackManager extends FedexTrackManagement {
     }
 
     @Override
-    public boolean isDelayed(TrackResult shipment, FedexShipDuration shipDuration) {
-        if (shipment.getDateAndTimes().size() < 2) {
+    public boolean isDelayed(TrackResult shipment) {
+        if (isDelivered(shipment)) {
             return false;
-        }
-
-        List<DateAndTime> dateAndTimes = shipment
-                .getDateAndTimes()
+        } else if (shipment
+                .getScanEvents()
                 .stream()
-                .sorted(Comparator.comparing(DateAndTime::getDateTime))
-                .collect(Collectors.toList());
-
-        float dayDiff = CalendarManager.getDayDifference(dateAndTimes.get(0).getDateTime(),
-                dateAndTimes.get(dateAndTimes.size() - 1).getDateTime());
-        if (dayDiff >= shipDuration.getValue()) {
+                .map(obj -> obj.getEventType().equals("DY"))
+                .findFirst()
+                .get()) {
             return true;
-        } else {
+        } else if (shipment.getDateAndTimes().size() < 2) {
             return false;
+        } else {
+
+            FedexShipDuration shipDuration = FedexShipDuration.findByServiceType(shipment.getServiceDetail().getType());
+            List<DateAndTime> dateAndTimes = shipment
+                    .getDateAndTimes()
+                    .stream()
+                    .sorted(Comparator.comparing(DateAndTime::getDateTime))
+                    .collect(Collectors.toList());
+
+            float dayDiff = CalendarManager.getDayDifference(dateAndTimes.get(0).getDateTime(),
+                    dateAndTimes.get(dateAndTimes.size() - 1).getDateTime());
+            if (dayDiff >= shipDuration.getValue()) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -247,6 +262,14 @@ public class FedexTrackManager extends FedexTrackManagement {
             System.out.println(e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public ScanEvent getRecentEvent(List<ScanEvent> events) {
+        return events.stream()
+                .sorted(Comparator.comparing(ScanEvent::getDate).reversed())
+                .findFirst()
+                .get();
     }
 
 }

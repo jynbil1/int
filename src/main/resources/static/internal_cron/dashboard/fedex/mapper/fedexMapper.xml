@@ -47,7 +47,7 @@
                 order_no,
                 tracking_no
             from
-                kr_a_wh_delivered
+                us_ca_a_wh_delivered
             ) as delivered_orders
         on
             orders.order_no = delivered_orders.order_no and
@@ -57,7 +57,7 @@
                 order_no,
                 tracking_no
             from
-                us_ca_a_wh_delivered
+                us_ca_a_wh_shipment_error
             ) as issue_orders
         on
             orders.order_no = issue_orders.order_no and

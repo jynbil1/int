@@ -7,19 +7,17 @@ import java.time.format.DateTimeFormatter;
 import hanpoom.internal_cron.utility.calendar.CalendarFormatter;
 import hanpoom.internal_cron.utility.calendar.CalendarManager;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class OrderShipment {
     // private String today;
     private String shipmentClass;
     private int orderNo;
-    private String shipmentNo;
+    private String shipmentNo = "N/A";
     private String trackingNo;
 
     private String orderDate;
@@ -29,8 +27,8 @@ public class OrderShipment {
 
     private String serviceType;
     private String issueType;
-    private String remark;
-    private String detail;
+    private String remark = "";
+    private String detail = "";
 
     private String event;
     private String eventCode;

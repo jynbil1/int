@@ -25,11 +25,11 @@ import net.gpedro.integrations.slack.SlackMessage;
 @Service
 public class DHLService {
     // Real
-    // private static final String SHIPMENT_REPORT_HOOK_URL =
-    // "https://hooks.slack.com/services/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";
+    private static final String SHIPMENT_REPORT_HOOK_URL = "https://hooks.slack.com/services/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";
 
     // Testing
-    private static final String SHIPMENT_REPORT_HOOK_URL = "https://hooks.slack.com/services/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";
+    // private static final String SHIPMENT_REPORT_HOOK_URL =
+    // "https://hooks.slack.com/services/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";
 
     private final static String SPREADSHEET_ID = "1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw";
     private final static String SHEET = "배송상황";

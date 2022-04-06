@@ -46,7 +46,8 @@ public class SpreadSheetAPI extends SpreadSheetAPITools {
     // 몇개 넣든 무조건 2차원 JSONArray.
     @Override
     public UpdateSheetVO insertRows(JSONArray rows) {
-        String url = String.format(SPREADSHEET_URL, this.spreadSheetID, this.sheetName, this.cellAt);
+        String url = "https://sheets.googleapis.com/v4/spreadsheets/%s/values/%s:append";
+        url = String.format(url, this.spreadSheetID, this.sheetName);
 
         StringBuilder sb = new StringBuilder();
         sb.append("valueInputOption=" + "USER_ENTERED");

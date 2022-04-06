@@ -17,6 +17,7 @@ import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipDuration;
 import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipmentStatus;
 import hanpoom.internal_cron.api.shipment.fedex.manager.FedexTrackManager;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.ScanEvent;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
 import hanpoom.internal_cron.api.slack.SlackAPI;
 import hanpoom.internal_cron.crons.dashboard.fedex.mapper.FedexMapper;
@@ -24,7 +25,6 @@ import hanpoom.internal_cron.crons.dashboard.fedex.vo.FedexExcelRow;
 import hanpoom.internal_cron.crons.dashboard.fedex.vo.OrderShipment;
 import hanpoom.internal_cron.utility.calendar.CalendarFormatter;
 import hanpoom.internal_cron.utility.group.Grouping;
-import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 
 @Service
 public class FedexService {
@@ -94,11 +94,11 @@ public class FedexService {
                 .append(workResult.get("delayed"))
                 .append(" 건\n 조회 불가: ")
                 .append(workResult.get("untrackable"))
-                .append(" 건\n 이외 문제: ")
-                .append(workResult.get("others"))
+                // .append(" 건\n 이외 문제: ")
+                // .append(workResult.get("others"))
 
-                .append(" 건\n\n 반송 완료: ")
-                .append(workResult.get("returned"))
+                // .append(" 건\n\n 반송 완료: ")
+                // .append(workResult.get("returned"))
 
                 .append(" 건\n---------------------------------------------------\n")
                 .append("배송중: ")
@@ -144,12 +144,16 @@ public class FedexService {
                 // tss 객체에서 운송장 번호만 가져와서 List<String> 으로 구현함.
                 trackingNos = new HashSet<>(tss.stream().map(obj -> obj.getTrackingNo()).collect(Collectors.toList()));
 
-                List<FedexTrackResponse> responses = fedexTrackManager.trackMultipleShipments(trackingNos, false);
+                List<FedexTrackResponse> responses = fedexTrackManager.trackMultipleShipments(trackingNos, true);
                 trackingNos = new HashSet<>();
 
                 // 2.1 문제 여부 파악
-                String issueType = "";
+
                 for (FedexTrackResponse response : responses) {
+                    String issueType = "";
+                    String event = "";
+                    String eventCode = "";
+
                     LocalDateTime eventDate = LocalDateTime.now();
                     TrackResult result = response.getTrackResults().get(0);
 
@@ -165,29 +169,43 @@ public class FedexService {
                                 fedexTrackManager.getEventDateTime(result, FedexShipmentStatus.SHIPPED));
                         selectedOrder.setEventDate(
                                 fedexTrackManager.getEventDateTime(result, FedexShipmentStatus.DELIVERED));
+
                         selectedOrder.setEvent("배송완료");
                         selectedOrder.setEventCode("OK");
                         areShipmentsMonitored = true;
                         deliveredShipments.add(selectedOrder);
                     } else {
-                        if (fedexTrackManager.isDelayed(result,
-                                FedexShipDuration.findByServiceType(selectedOrder.getServiceType()))) {
+                        if (fedexTrackManager.isDelayed(result)) {
+                            ScanEvent curEvent = fedexTrackManager.getRecentEvent(result.getScanEvents());
                             issueType = "지연";
+                            eventCode = curEvent.getEventType();
+                            event = curEvent.getEventDescription();
+
                             ++delayedOrders;
                             areShipmentsMonitored = true;
 
-                        } else if (fedexTrackManager.isProblematic(result)) {
-                            issueType = "문제";
-                            areShipmentsMonitored = true;
-                            ++issueOrders;
+                        // } else if (fedexTrackManager.isProblematic(result)) {
+                        //     issueType = "문제";
+                        //     eventCode = "PRB";
+                        //     // event =
+                        //     // result.getDateAndTimes().stream().sorted(Comparator.comparing(DateAndTime::getDateTime).reversed()).findFirst().get().get;
+
+                        //     areShipmentsMonitored = true;
+                        //     ++issueOrders;
                             // eventDate = fedexTrackManager.getEventDateTime(result, FedexShipmentStatus.);
 
-                        } else if (fedexTrackManager.isReturned(result)) {
-                            issueType = "반송";
-                            areShipmentsMonitored = true;
-                            ++returnedOrders;
+                        // } else if (fedexTrackManager.isReturned(result)) {
+                        //     issueType = "반송";
+                        //     eventCode = "DLY";
+                        //     event = "Shipment is delayed than expected.";
+
+                        //     areShipmentsMonitored = true;
+                        //     ++returnedOrders;
                         } else if (fedexTrackManager.isNotFound(result)) {
                             issueType = "찾을 수 없음";
+                            eventCode = "NF";
+                            event = "Tracking Number is not Found.";
+
                             areShipmentsMonitored = true;
                             ++untrackableOrders;
                         } else {
@@ -197,6 +215,8 @@ public class FedexService {
 
                         selectedOrder.setShippedDate(
                                 fedexTrackManager.getEventDateTime(result, FedexShipmentStatus.SHIPPED));
+                        selectedOrder.setEvent(event);
+                        selectedOrder.setEventCode(eventCode);
                         selectedOrder.setIssueType(issueType);
                         selectedOrder.setEventDate(eventDate);
                         errorShipments.add(selectedOrder);
@@ -214,7 +234,7 @@ public class FedexService {
 
         // 4. 문제건 처리
         if (!errorShipments.isEmpty()) {
-            UpdateSheetVO updateResult = fedexSpreadSheet.insertIntoFedexSheet(errorShipments);
+            fedexSpreadSheet.insertIntoFedexSheet(errorShipments);
             insertErrorShipments(errorShipments);
         }
 
@@ -223,8 +243,8 @@ public class FedexService {
                 "delivered", NumberFormat.getInstance().format(deliveredOrders),
                 "delayed", NumberFormat.getInstance().format(delayedOrders),
                 "untrackable", NumberFormat.getInstance().format(untrackableOrders),
-                "others", NumberFormat.getInstance().format(otherIssueOrders),
-                "returned", NumberFormat.getInstance().format(returnedOrders),
+                // "others", NumberFormat.getInstance().format(otherIssueOrders),
+                // "returned", NumberFormat.getInstance().format(returnedOrders),
                 "inTransit", NumberFormat.getInstance().format(inTransitOrders));
 
         try {

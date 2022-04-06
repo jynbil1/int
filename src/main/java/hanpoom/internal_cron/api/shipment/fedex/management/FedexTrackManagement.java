@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipDuration;
 import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipmentStatus;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.ScanEvent;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
 
 public abstract class FedexTrackManagement {
@@ -38,6 +39,9 @@ public abstract class FedexTrackManagement {
     // public abstract LocalDateTime getProblemDatetime(TrackResult shipment);
     // public abstract LocalDateTime getReturnedDatetime(TrackResult shipment);
     // public abstract float getDelayedDurationInHour(TrackResult shipment);
-    public abstract boolean isDelayed(TrackResult shipment, FedexShipDuration shipDuration);
+    public abstract boolean isDelayed(TrackResult shipment);
+    // public abstract ScanEvent 
     public abstract LocalDateTime getEventDateTime(TrackResult shipment, FedexShipmentStatus shipmentStatus);
+    public abstract ScanEvent getRecentEvent(List<ScanEvent> events);
+
 }
