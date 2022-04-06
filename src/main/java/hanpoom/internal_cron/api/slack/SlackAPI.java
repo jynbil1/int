@@ -9,13 +9,12 @@ import net.gpedro.integrations.slack.SlackMessage;
 @Component
 @Data
 public class SlackAPI {
-     // Real
-    // private static final String SHIPMENT_REPORT_HOOK_URL =
-    // "https://hooks.slack.com/services/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";
+    // Real
+    private static final String SHIPMENT_REPORT_HOOK_URL = "https://hooks.slack.com/services/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";
 
     // Testing
-    private final String SHIPMENT_REPORT_HOOK_URL = "https://hooks.slack.com/services/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";
-
+    // private final String SHIPMENT_REPORT_HOOK_URL =
+    // "https://hooks.slack.com/services/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";
 
     public void sendMessageToChannel(String message, String channel) {
     }

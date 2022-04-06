@@ -23,8 +23,11 @@ public enum FedexShipDuration {
             case "STANDARD_OVERNIGHT":
                 return OVERNIGHT;
             case "GROUND":
+            case "FEDEX_GROUND":
+            case "GROUND_HOME_DELIVERY":
                 return GROUND;
             case "2DAY":
+            case "FEDEX_2_DAY":
                 return DAY2;
             default:
                 return null;

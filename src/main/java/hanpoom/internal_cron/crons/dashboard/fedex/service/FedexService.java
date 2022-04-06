@@ -29,11 +29,11 @@ import hanpoom.internal_cron.utility.group.Grouping;
 @Service
 public class FedexService {
     // Live Slack URL
-    // private static final String FEDEX_SLACK_ALARM_URL =
-    // "https://hooks.slack.com/services/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";
+    private static final String FEDEX_SLACK_ALARM_URL =
+    "https://hooks.slack.com/services/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";
 
     // Test Slack URL
-    private static final String FEDEX_SLACK_ALARM_URL = "https://hooks.slack.com/services/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";
+    // private static final String FEDEX_SLACK_ALARM_URL = "https://hooks.slack.com/services/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";
 
     @Autowired
     private FedexSpreadSheet fedexSpreadSheet;
