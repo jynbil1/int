@@ -3,23 +3,17 @@ package hanpoom.internal_cron.crons.dashboard.cronjobs;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import hanpoom.internal_cron.crons.dashboard.dhl.service.DHLService;
-import hanpoom.internal_cron.crons.dashboard.dhl.service.DHLShipmentHanldingService;
+import hanpoom.internal_cron.crons.dashboard.dhl.service.DHLReport;
 
 @Component
 public class DHLCron {
 
-    private DHLService dHLService;
-    private DHLShipmentHanldingService dHLShipmentHanldingService;
-
-    public DHLCron(DHLService dHLService,
-            DHLShipmentHanldingService dHLShipmentHanldingService) {
-        this.dHLService = dHLService;
-        this.dHLShipmentHanldingService = dHLShipmentHanldingService;
-    }
+    @Autowired
+    private DHLReport dhlReport;
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
@@ -30,7 +24,7 @@ public class DHLCron {
     // @Scheduled(cron = "0 0 11 * * TUE-SAT", zone = "Asia/Seoul")
     @Scheduled(cron = "0 0 11 * * *", zone = "Asia/Seoul")
     public void dhlShipmentMonitorCron() {
-        dHLService.monitorNReportDHLShipments();
+        dhlReport.monitorShipments();
     }
 
     // 기존에 문제가 되어 스프레드 시트에 올라온 건들 중, 완료되지 않은 건들을 파악한다.
@@ -46,7 +40,7 @@ public class DHLCron {
         // 2. order no 로 wphpm_postmeta 데이터 찾기
         // 3. DB 데이터랑 엑셀 데이터 비교
         // 4. 다른거 갱신
-        dHLShipmentHanldingService.updateSheetRowToNewTrackingNo();
+        dhlReport.updateSheetRowToNewTrackingNo();
 
     }
 
@@ -61,7 +55,7 @@ public class DHLCron {
         // 2. 운송장 번호로 현황 조회하기
         // 3. 완료 되었으면, 완료 일자, 완료일자 - 발송일자 => 소요기간
         // 4. 3번 값 갱신하고 완료여부에 체크하기.
-        dHLShipmentHanldingService.checkNUpdateCompleteShipments();
+        dhlReport.checkNUpdateCompleteShipments();
 
     }
 

@@ -1,35 +1,30 @@
 package hanpoom.internal_cron.crons.dashboard.dhl.vo;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
 
-@Setter
-@Getter
-@ToString
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class DHLTrackingResult {
-    private String totalDeliveries;
-    private String totalCustomsIssues;
-    private String totalOtherIssues;
-    private String totalDelays;
-    private String totalUntrackables;
-    private String totalReturned;
+    private List<DHLTrackingVO> deliveredOrders;
+    private List<DHLTrackingVO> customIssueOrders;
+    private List<DHLTrackingVO> otherIssueOrders;
+
+    private List<DHLTrackingVO> delayedOrders;
+    private List<DHLTrackingVO> untrackableOrders;
+    private List<DHLTrackingVO> returnedOrders;
+
     private String totalInTransit;
 
-    public DHLTrackingResult(String totalDeliveries,
-            String totalCustomsIssues,
-            String totalOtherIssues,
-            String totalDelays,
-            String totalUntrackables,
-            String totalReturned,
-            String totalInTransit) {
-
-        this.totalDeliveries = totalDeliveries;
-        this.totalCustomsIssues = totalCustomsIssues;
-        this.totalOtherIssues = totalOtherIssues;
-        this.totalDelays = totalDelays;
-        this.totalUntrackables = totalUntrackables;
-        this.totalReturned = totalReturned;
-        this.totalInTransit = totalInTransit;
+    public static String getMoneyFormat(int number) {
+        return NumberFormat.getNumberInstance(Locale.US).format(number);
     }
 }

@@ -9,7 +9,6 @@ import hanpoom.internal_cron.crons.dashboard.fedex.service.FedexService;
 @Component
 public class FedexCron {
 
-    
     private static final String TZ_KOREA = "Asia/Seoul";
 
     @Autowired
@@ -28,8 +27,13 @@ public class FedexCron {
         // 5.2. us_ca_a_wh_delivered 에 값을 기입한다.
 
         // }
-        fedexService.monitorNReportFedexShipment();
+        fedexService.monitorNReportFedexShipments();
 
+    }
+
+    @Scheduled(cron = "0 30 12 * * *", zone = TZ_KOREA)
+    public void fedexErrorShipmentRemonitorCron() {
+        fedexService.reMonitorFedexIssueShipments();
     }
 
 }
