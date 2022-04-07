@@ -40,9 +40,8 @@ public class FedexSpreadSheet {
                         "FALSE", shipment.getToday(), shipment.getOrderNo(), shipment.getShipmentNo(),
                         shipment.getTrackingNo(), "", shipment.getShipmentClass(),
                         shipment.getOrderDate(), shipment.getShippedDate(), "",
-                        "", shipment.getServiceType(),
-                        shipment.getIssueType(),
-                        shipment.getDetail())) {
+                        "", shipment.getServiceType(), shipment.getIssueType(),
+                        shipment.getRemark(), shipment.getDetail())) {
                     subArray.put(obj);
                 }
                 rows.put(subArray);
@@ -62,8 +61,7 @@ public class FedexSpreadSheet {
 
         try {
             List<List<String>> contents = spreadSheet.read("A:N");
-            List<String> columns = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
-                    "O");
+            List<String> columns = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N");
 
             boolean isFirstLine = true;
             int rowNo = 0;
@@ -90,9 +88,9 @@ public class FedexSpreadSheet {
                                     .deliveredAt(new StringRow(columns.get(9), rowNo, content.get(9)))
                                     .shipDuration(new FloatRow(columns.get(10), rowNo,
                                             Float.parseFloat(content.get(10).isEmpty() ? "0" : "")))
-                                    .shipIssueType(new StringRow(columns.get(11), rowNo, content.get(11)))
-                                    .remark(new StringRow(columns.get(12), rowNo, content.get(12)))
-                                    .detail(new StringRow(columns.get(13), rowNo, content.get(13)))
+                                    .shipServiceType(new StringRow(columns.get(11), rowNo, content.get(11)))
+                                    .shipIssueType(new StringRow(columns.get(12), rowNo, content.get(12)))
+                                    .remark(new StringRow(columns.get(13), rowNo, content.get(13)))
                                     .build());
                 }
             }

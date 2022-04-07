@@ -138,24 +138,48 @@ public class CalendarManager {
     }
 
     public static float getDayDifference(String startDateTimeStr, String endDateTimeStr) {
-        startDateTimeStr = startDateTimeStr.substring(0, 19);
-        endDateTimeStr = endDateTimeStr.substring(0, 19);
+        if (startDateTimeStr.length() < 4 || endDateTimeStr.length() < 4) {
+            return 0;
+        }
+        
+        LocalDateTime startDateTime = LocalDateTime.now();
+        LocalDateTime endDateTime = LocalDateTime.now();
 
-        LocalDateTime startDateTime = LocalDateTime.parse(startDateTimeStr,
-                DateTimeFormatter.ofPattern(CalendarFormatter.TZONE_DATETIME));
-        LocalDateTime endDateTime = LocalDateTime.parse(endDateTimeStr,
-                DateTimeFormatter.ofPattern(CalendarFormatter.TZONE_DATETIME));
+        if (startDateTimeStr.length() > 19) {
+            startDateTimeStr = startDateTimeStr.substring(0, 19);
+        } else if (startDateTimeStr.length() == 16) {
+            startDateTime = LocalDateTime.parse(startDateTimeStr,
+                    DateTimeFormatter.ofPattern(CalendarFormatter.DATETIME));
+        } else if (!startDateTimeStr.contains("T")) {
+            startDateTime = LocalDateTime.parse(startDateTimeStr,
+                    DateTimeFormatter.ofPattern(CalendarFormatter.DATETIMEwS));
+        } else {
+            startDateTime = LocalDateTime.parse(startDateTimeStr,
+                    DateTimeFormatter.ofPattern(CalendarFormatter.TZONE_DATETIME));
+        }
+
+        if (endDateTimeStr.length() > 19) {
+            endDateTimeStr = endDateTimeStr.substring(0, 19);
+        } else if (endDateTimeStr.length() == 16) {
+            endDateTime = LocalDateTime.parse(endDateTimeStr,
+                    DateTimeFormatter.ofPattern(CalendarFormatter.DATETIME));
+        } else if (!endDateTimeStr.contains("T")) {
+            endDateTime = LocalDateTime.parse(endDateTimeStr,
+                    DateTimeFormatter.ofPattern(CalendarFormatter.DATETIMEwS));
+        } else {
+            endDateTime = LocalDateTime.parse(endDateTimeStr,
+                    DateTimeFormatter.ofPattern(CalendarFormatter.TZONE_DATETIME));
+        }
 
         long minutes = Math.abs(ChronoUnit.MINUTES.between(startDateTime, endDateTime));
-        float days = minutes / 60 / 24;
+        float days = (float) minutes / 60f / 24f;
 
-        return Math.round((days * 100) / 100);
+        return (float) Math.round((days * 100f) / 100f);
 
     }
 
-
     public static float getDayDifference(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-      
+
         long minutes = Math.abs(ChronoUnit.MINUTES.between(startDateTime, endDateTime));
         float days = minutes / 60 / 24;
 

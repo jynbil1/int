@@ -17,7 +17,7 @@ public class OrderShipment {
     // private String today;
     private String shipmentClass;
     private int orderNo;
-    private String shipmentNo = "N/A";
+    private String shipmentNo = "0";
     private String trackingNo;
 
     private String orderDate;

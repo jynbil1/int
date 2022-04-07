@@ -25,8 +25,9 @@ import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipmentStatus;
 import hanpoom.internal_cron.api.shipment.fedex.management.FedexTrackManagement;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.DateAndTime;
-import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.ScanEvent;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.LatestStatusDetail;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.WeightAndDimensions;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingInfo;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingNumberInformation;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.request.TrackingRequest;
@@ -207,7 +208,7 @@ public class FedexTrackManager extends FedexTrackManagement {
                 .getScanEvents()
                 .stream()
                 .map(obj -> obj.getEventType().equals("DY"))
-                .findFirst()
+                .findAny()
                 .get()) {
             return true;
         } else if (shipment.getDateAndTimes().size() < 2) {
@@ -265,11 +266,28 @@ public class FedexTrackManager extends FedexTrackManagement {
     }
 
     @Override
-    public ScanEvent getRecentEvent(List<ScanEvent> events) {
-        return events.stream()
-                .sorted(Comparator.comparing(ScanEvent::getDate).reversed())
-                .findFirst()
-                .get();
+    public LatestStatusDetail getRecentEvent(TrackResult shipment) {
+        if (shipment.getLatestStatusDetail() != null) {
+            return shipment.getLatestStatusDetail();
+        } else {
+            return null;
+        }
     }
 
+    @Override
+    public boolean isBeforePickUp(TrackResult shipment) {
+        LatestStatusDetail event = getRecentEvent(shipment);
+        if (event.getCode().equals("OC")) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public WeightAndDimensions getWeghtAndDimensions(TrackResult shipment) {
+        if (shipment.getPackageDetails() != null) {
+            return shipment.getPackageDetails().getWeightAndDimensions();
+        }
+        return null;
+    }
 }

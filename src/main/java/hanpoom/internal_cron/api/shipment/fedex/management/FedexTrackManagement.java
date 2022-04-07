@@ -9,8 +9,10 @@ import org.json.JSONObject;
 import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipDuration;
 import hanpoom.internal_cron.api.shipment.fedex.enumerate.FedexShipmentStatus;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.LatestStatusDetail;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.ScanEvent;
 import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.TrackResult;
+import hanpoom.internal_cron.api.shipment.fedex.vo.track.FedexTrackResponse.WeightAndDimensions;
 
 public abstract class FedexTrackManagement {
     public abstract FedexTrackResponse trackShipment(String trackingNo, boolean isDetailed);
@@ -28,6 +30,7 @@ public abstract class FedexTrackManagement {
     public abstract JSONObject trackByDocument();
 
     // -------------------
+    public abstract boolean isBeforePickUp(TrackResult shipment);
     public abstract boolean isDelivered(TrackResult shipment);
     public abstract boolean isPickedUp(TrackResult shipment);
     public abstract boolean isProblematic(TrackResult shipment);
@@ -42,6 +45,6 @@ public abstract class FedexTrackManagement {
     public abstract boolean isDelayed(TrackResult shipment);
     // public abstract ScanEvent 
     public abstract LocalDateTime getEventDateTime(TrackResult shipment, FedexShipmentStatus shipmentStatus);
-    public abstract ScanEvent getRecentEvent(List<ScanEvent> events);
-
+    public abstract LatestStatusDetail getRecentEvent(TrackResult shipment);
+    public abstract WeightAndDimensions getWeghtAndDimensions(TrackResult shipment);
 }

@@ -1,5 +1,7 @@
 package hanpoom.internal_cron.crons.dashboard.cronjobs;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,8 @@ public class FedexCron {
 
     @Scheduled(cron = "0 0 12 * * *", zone = TZ_KOREA)
     public void fedexShipmentMonitorCron() {
+        System.out.println(LocalDateTime.now().toString());
+        System.out.println("페덱스 모니터링 작업을 시작합니다.");
         // @Scheduled(cron = "", zone = TZ_KOREA)
         // public void monitorFedexErrorShipment(){
         // 1. 통합 시트_CX - Fedex 에 있는 미처리 값을 불러온다.
@@ -31,7 +35,7 @@ public class FedexCron {
 
     }
 
-    // @Scheduled(cron = "0 30 12 * * *", zone = TZ_KOREA)
+    @Scheduled(cron = "0 30 12 * * *", zone = TZ_KOREA)
     public void fedexErrorShipmentRemonitorCron() {
         fedexService.reMonitorFedexIssueShipments();
     }

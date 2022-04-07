@@ -110,6 +110,19 @@ public class FedexTrackResponse {
     }
 
     @Data
+    public static class ScanEvent {
+        private String date;
+        private String derivedStatus;
+        private ScanLocation scanLocation;
+        private String exceptionDescription;
+        private String eventDescription;
+        private String eventType;
+        private String derivedStatusCode;
+        private String exceptionCode;
+        private DelayDetail delayDetail;
+    }
+
+    @Data
     public static class ServiceCommitMessage {
         private String message;
         private String type;
@@ -156,18 +169,7 @@ public class FedexTrackResponse {
         private List<DeliveryOptionEligibilityDetail> deliveryOptionEligibilityDetails;
     }
 
-    @Data
-    public static class ScanEvent {
-        private String date;
-        private String derivedStatus;
-        private ScanLocation scanLocation;
-        private String exceptionDescription;
-        private String eventDescription;
-        private String eventType;
-        private String derivedStatusCode;
-        private String exceptionCode;
-        private DelayDetail delayDetail;
-    }
+    
 
     @Data
     public static class DateAndTime {

@@ -39,31 +39,28 @@ public class FedexExcelRow {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Builder
     public static class StringRow {
         private String column;
         private int row;
-        private String value;
+        private String value = "";
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Builder
     public static class IntRow {
         private String column;
         private int row;
-        private int value;
+        private int value = 0;
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Builder
     public static class FloatRow {
         private String column;
         private int row;
-        private float value;
+        private float value = 0f;
     }
 
     @Data
@@ -79,40 +76,38 @@ public class FedexExcelRow {
     @Override
     public String toString() {
         String jsonListStr = new StringBuilder()
-                .append("{[")
+                .append("[")
                 .append(String.valueOf(this.getIsCompleted().isValue()))
-                .append(",")
+                .append(",\"")
                 .append(this.getCreatedAt().getValue())
-                .append(",")
+                .append("\",\"")
                 .append(this.getOrderNo().getValue())
-                .append(",")
+                .append("\",\"")
                 .append(this.getShipmentNo().getValue())
-                .append(",")
+                .append("\",\"")
                 .append(this.getTrackingNo().getValue())
-                .append(",")
+                .append("\",\"")
 
                 .append(this.getNewTrackingNo().getValue())
-                .append(",")
+                .append("\",\"")
                 .append(this.getShipmentClass().getValue())
-                .append(",")
+                .append("\",\"")
                 .append(this.getOrderedAt().getValue())
-                .append(",")
+                .append("\",\"")
                 .append(this.getShippedAt().getValue())
-                .append(",")
+                .append("\",\"")
                 .append(this.getDeliveredAt().getValue())
-                .append(",")
+                .append("\",\"")
 
                 .append(String.valueOf(CalendarManager.getDayDifference(this.getShippedAt().getValue(),
                         this.getDeliveredAt().getValue())))
-                .append(",")
+                .append("\",\"")
                 .append(this.getShipServiceType().getValue())
-                .append(",")
+                .append("\",\"")
                 .append(this.getShipIssueType().getValue())
-                .append(",")
+                .append("\",\"")
                 .append(this.getRemark().getValue())
-                .append(",")
-                .append(this.getDetail().getValue())
-                .append("]}")
+                .append("\"]")
                 .toString();
 
         return jsonListStr;
