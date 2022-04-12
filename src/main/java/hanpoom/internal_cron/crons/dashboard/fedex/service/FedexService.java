@@ -265,7 +265,18 @@ public class FedexService {
 
     public void reMonitorFedexIssueShipments() {
         // 1. 통합 시트_CX - Fedex 에 있는 미처리 값을 불러온다.
-        List<FedexExcelRow> rows = fedexSpreadSheet.readUnresolvedShipmentExcel();
+        List<FedexExcelRow> rows = new ArrayList<>();
+        try {
+            rows = fedexSpreadSheet.readUnresolvedShipmentExcel();
+            if (rows.isEmpty() || rows.size() < 1) {
+                System.out.println("처리할 건이 없습니다.");
+                return;
+            }
+        } catch (NullPointerException npe) {
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // 2. 해당 값들이 현재 DB 에 저장된 값들과 동일한 값들인지 확인한다.
         List<OrderShipment> orderShipments = getShipments(
@@ -328,23 +339,23 @@ public class FedexService {
                                                     DateTimeFormatter.ofPattern(CalendarFormatter.DATETIME))));
                             fedexSpreadSheet.checkNRecordShipment(selectedRow);
 
-                            for (OrderShipment shipment: shipments){
-                                if (response.getTrackingNumber().equals(shipment.getTrackingNo())){
+                            for (OrderShipment shipment : shipments) {
+                                if (response.getTrackingNumber().equals(shipment.getTrackingNo())) {
 
                                     TrackResult shipResponse = response.getTrackResults().get(0);
                                     shipment.setEvent("배송완료");
                                     shipment.setEventCode("OK");
 
                                     shipment.setShippedDate(
-                                        fedexTrackManager.getEventDateTime(shipResponse, FedexShipmentStatus.SHIPPED)
-                                    );
+                                            fedexTrackManager.getEventDateTime(shipResponse,
+                                                    FedexShipmentStatus.SHIPPED));
                                     shipment.setEventDate(
-                                        fedexTrackManager.getEventDateTime(shipResponse, FedexShipmentStatus.DELIVERED)
-                                    );
+                                            fedexTrackManager.getEventDateTime(shipResponse,
+                                                    FedexShipmentStatus.DELIVERED));
                                     deliveredShipments.add(shipment);
                                 }
                             }
-                           
+
                         } catch (NoSuchElementException nee) {
                             continue;
                         }
