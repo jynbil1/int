@@ -16,7 +16,7 @@ public class FedexCron {
     @Autowired
     private FedexService fedexService;
 
-    @Scheduled(cron = "0 0 12 * * *", zone = TZ_KOREA)
+    @Scheduled(cron = "0 15 12 * * *", zone = TZ_KOREA)
     public void fedexShipmentMonitorCron() {
         System.out.println(LocalDateTime.now().toString());
         System.out.println("페덱스 모니터링 작업을 시작합니다.");
