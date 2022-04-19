@@ -1,15 +1,15 @@
 package hanpoom.internal_cron.crons.dashboard.cronjobs;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.GlobalDashboardService;
-import lombok.AllArgsConstructor;
 
 @Component
-@AllArgsConstructors
 public class GlobalDashboardCron {
 
+    @Autowired
     private GlobalDashboardService dashboard;
 
     // "0 0 * * * *" = the top of every hour of every day.
