@@ -1,23 +1,13 @@
 package hanpoom.internal_cron.crons.dashboard.cronjobs;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-
-import org.json.JSONArray;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import hanpoom.internal_cron.crons.dashboard.spreadsheet.service.GlobalDashboardService;
-import hanpoom.internal_cron.utility.calendar.CalendarManager;
-import hanpoom.internal_cron.utility.slack.service.SlackService;
-import hanpoom.internal_cron.utility.spreadsheet.service.SpreadSheetAPI;
-import hanpoom.internal_cron.utility.spreadsheet.vo.UpdateSheetVO;
 import lombok.AllArgsConstructor;
 
 @Component
-@AllArgsConstructor
+@AllArgsConstructors
 public class GlobalDashboardCron {
 
     private GlobalDashboardService dashboard;
@@ -37,5 +27,6 @@ public class GlobalDashboardCron {
     @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
     public void cronJobGloabalWeeklyDashboard() {
         dashboard.reportWeeklyGobalDashboard();
+
     }
 }
