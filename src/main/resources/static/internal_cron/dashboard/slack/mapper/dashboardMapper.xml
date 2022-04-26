@@ -56,6 +56,18 @@
                     details.customer_id = users.customer_id) ) as a;
     </select>
 
+    <select id="getDailyTrueNewCustomers" resultType="java.lang.String">
+        select 
+                format(count(id), 0)
+            from
+                wphpm_users
+            where
+                user_registered 
+                    between 
+                        date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 00:00:00'), interval 1 day) and
+                        date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 23:59:59'), interval 1 day) 
+    </select>
+
     <select id="getTotalCustomers" resultType="java.lang.String">
         select
             format(count(users.id),0)
@@ -80,6 +92,17 @@
                 meta_value not in (9, 10) ) as details
         on
             users.id = details.user_id;
+    </select>
+ 
+    <select id="getNewUsers" parameterType="java.lang.String" resultType="java.lang.String">
+        select 
+            format(count(id), 0)
+        from
+            wphpm_users
+        where
+            user_registered 
+                between 
+                    #{start_dtime} and #{end_dtime}
     </select>
 
 </mapper>

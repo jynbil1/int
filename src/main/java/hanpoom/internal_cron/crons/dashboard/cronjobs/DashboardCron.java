@@ -20,4 +20,14 @@ public class DashboardCron {
         dashboardService.reportRevenueDashboard();
     }
 
+    // @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
+    public void newUserDashboardCron() {
+        dashboardService.reportNewUsersDashboard();
+    }
+
+    // @Scheduled(cron = "0 0 0 1 * *", zone = "Asia/Seoul")
+    public void lastMonthNewUserAchievements(){
+        dashboardService.reportLastMonthNewUserAchievement();
+    }
+
 }
