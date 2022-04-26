@@ -14,7 +14,7 @@ public class DashboardCron {
         this.dashboardService = dashboardService;
     }
 
-    @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
+    // @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
     // @Scheduled(cron = "1 * * * * *", zone = "Asia/Seoul")
     public void revenueDashboardCron() {
         dashboardService.reportRevenueDashboard();
