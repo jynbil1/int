@@ -1,14 +1,11 @@
 package hanpoom.internal_cron.crons.dashboard.slack.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
-
-import com.itextpdf.text.log.SysoCounter;
 
 import org.springframework.stereotype.Service;
 
@@ -19,7 +16,6 @@ import hanpoom.internal_cron.crons.dashboard.slack.enumerate.CustomerEvaluation;
 import hanpoom.internal_cron.crons.dashboard.slack.mapper.DashboardMapper;
 import hanpoom.internal_cron.utility.calendar.CalendarManager;
 import hanpoom.internal_cron.utility.slack.enumerate.SlackBot;
-import hanpoom.internal_cron.utility.slack.service.SlackService;
 
 @Service
 public class DashboardService {
@@ -128,8 +124,14 @@ public class DashboardService {
 
         String dailyNewCustomers = dashboardMapper.getDailyTrueNewCustomers();
         String monthlyNewCustomers = dashboardMapper.getNewUsers(startOfTheMonth, now);
-        String percentile = String.valueOf((Double.valueOf(monthlyNewCustomers.replace(",", ""))
-                / CustomerEvaluation.getGoal(nowDT.getMonthValue())) * 100.00 / 1.00);
+
+        String percentile = String.valueOf(
+            new BigDecimal(
+                Double.valueOf(monthlyNewCustomers.replace(",", ""))/
+                Double.valueOf(CustomerEvaluation.getGoal(nowDT.getMonthValue())) * 100
+            ).setScale(2, RoundingMode.UP)
+        );
+    
 
         String message = "";
         StringBuilder sb = new StringBuilder();
@@ -150,7 +152,6 @@ public class DashboardService {
             System.out.println("결국 실패했습니다.");
         }
     }
-
     public void reportLastMonthNewUserAchievement() {
         LocalDateTime now = LocalDateTime.now();
         String thisMonth = String.valueOf(now.getMonthValue());
@@ -163,8 +164,12 @@ public class DashboardService {
 
         String lastMonthNewUsers = dashboardMapper.getNewUsers(startDateTime, endDateTime);
 
-        String percentile = String.valueOf(Double.valueOf(lastMonthNewUsers.replace(",", ""))
-                / CustomerEvaluation.getGoal(now.getMonthValue()) * 100.00 / 1.00);
+        String percentile = String.valueOf(
+            new BigDecimal(
+                Double.valueOf(lastMonthNewUsers.replace(",", ""))/
+                Double.valueOf(CustomerEvaluation.getGoal(now.getMonthValue())) * 100
+            ).setScale(2, RoundingMode.UP)
+        );
 
         String message = "";
         StringBuilder sb = new StringBuilder();

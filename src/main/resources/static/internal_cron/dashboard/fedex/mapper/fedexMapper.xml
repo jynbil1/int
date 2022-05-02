@@ -39,7 +39,7 @@
                 a.order_no
             having 
                 length(tracking_no) <![CDATA[ > ]]> 10 and
-                shipment_class = 'usdomestic') as details
+                shipment_class in ('usdomestic', 'usmoomooo')) as details
         on
             orders.order_no = details.order_no
         left join

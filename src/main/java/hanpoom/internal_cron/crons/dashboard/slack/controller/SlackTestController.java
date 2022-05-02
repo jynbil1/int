@@ -45,16 +45,16 @@ public class SlackTestController {
     // }
     // }
     // @GetMapping("/slack/one")
-    // public void one() {
-    //     dashboardService.reportRevenueDashboard();
-    // }
+    public void one() {
+        dashboardService.reportRevenueDashboard();
+    }
 
-    @GetMapping("slack/two")
+    // @GetMapping("slack/two")
     public void two() {
         dashboardService.reportNewUsersDashboard();
     }
 
-    @GetMapping("slack/three")
+    // @GetMapping("slack/three")
     public void three() {
         dashboardService.reportLastMonthNewUserAchievement();
     }
