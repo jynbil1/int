@@ -16,6 +16,7 @@ public class FedexCron {
     @Autowired
     private FedexService fedexService;
 
+    // 매일 12시 15분
     @Scheduled(cron = "0 15 12 * * *", zone = TZ_KOREA)
     public void fedexShipmentMonitorCron() {
         System.out.println(LocalDateTime.now().toString());
@@ -35,6 +36,7 @@ public class FedexCron {
 
     }
 
+    // 매일 12시 30분
     @Scheduled(cron = "0 30 12 * * *", zone = TZ_KOREA)
     public void fedexErrorShipmentRemonitorCron() {
         fedexService.reMonitorFedexIssueShipments();

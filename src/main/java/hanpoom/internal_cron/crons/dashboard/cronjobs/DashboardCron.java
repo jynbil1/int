@@ -14,18 +14,20 @@ public class DashboardCron {
         this.dashboardService = dashboardService;
     }
 
-    // @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
-    // @Scheduled(cron = "1 * * * * *", zone = "Asia/Seoul")
+    // 매일 10시
+    @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
     public void revenueDashboardCron() {
         dashboardService.reportRevenueDashboard();
     }
 
-    // @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
+    // 매일 10시
+    @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
     public void newUserDashboardCron() {
         dashboardService.reportNewUsersDashboard();
     }
 
-    // @Scheduled(cron = "0 0 0 1 * *", zone = "Asia/Seoul")
+    // 매달 1일
+    @Scheduled(cron = "0 0 0 1 * *", zone = "Asia/Seoul")
     public void lastMonthNewUserAchievements(){
         dashboardService.reportLastMonthNewUserAchievement();
     }

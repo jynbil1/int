@@ -22,8 +22,7 @@ public class GlobalDashboardCron {
     // "0 0 9-17 * * MON-FRI" = 오전 9시부터 오후 5시까지 주중(월~금)에 실행한다.
     // "0 0 0 25 12 ?" = every Christmas Day at midnight
 
-    // 매주 월요일 자정이 되면 수행.
-    // @Scheduled(cron = "1 * * * * *", zone = "Asia/Seoul")
+    // 매일 월요일일때만 -> 매주 월요일 자정이 되면 수행.
     @Scheduled(cron = "0 0 0 * * MON", zone = "Asia/Seoul")
     public void cronJobGloabalWeeklyDashboard() {
         dashboard.reportWeeklyGobalDashboard();
