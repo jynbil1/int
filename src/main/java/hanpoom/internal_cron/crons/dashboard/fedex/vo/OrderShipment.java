@@ -21,6 +21,7 @@ public class OrderShipment {
     private String trackingNo;
 
     private String orderDate;
+    private String orderStatus;
     private LocalDateTime shippedDate;
     private LocalDateTime eventDate;
     // private float shippingDuration;
@@ -47,4 +48,6 @@ public class OrderShipment {
         }
 
     }
+
+
 }

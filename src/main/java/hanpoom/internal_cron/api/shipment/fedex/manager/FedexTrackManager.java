@@ -216,6 +216,7 @@ public class FedexTrackManager extends FedexTrackManagement {
         } else {
 
             FedexShipDuration shipDuration = FedexShipDuration.findByServiceType(shipment.getServiceDetail().getType());
+
             List<DateAndTime> dateAndTimes = shipment
                     .getDateAndTimes()
                     .stream()

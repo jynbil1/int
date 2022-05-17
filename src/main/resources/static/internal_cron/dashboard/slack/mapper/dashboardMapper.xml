@@ -27,7 +27,8 @@
                         wphpm_posts
                     where
                         post_type = 'shop_order' 
-                        and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable')
+                        and post_status not in ('wc-cancelled','wc-failed','wc-on-hold','wc-refunded', 'wc-unshippable',
+                                                'wc-cbe-refunded', 'wc-cbe-refunded', 'wc-cold-refunded', 'wc-reg-refunded')
                         and post_date
                             between 
                                 date_sub(date_format(date_add(now(), interval 14 hour), '%Y-%m-%d 00:00:00'), interval 1 day) and

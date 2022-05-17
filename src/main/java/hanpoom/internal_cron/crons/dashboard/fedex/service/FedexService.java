@@ -158,6 +158,9 @@ public class FedexService {
                     LocalDateTime eventDate = LocalDateTime.now();
                     TrackResult result = response.getTrackResults().get(0);
 
+//                     fixMe: if orderStatus is not valid in the future test / production.
+//                    String orderStatus = tss.stream().filter(el -> el.getTrackingNo().equals(response.getTrackingNumber())).findFirst().get().getOrderStatus();
+
                     OrderShipment selectedOrder = orderShipments
                             .stream()
                             .filter(key -> response.getTrackingNumber().equals(key.getTrackingNo()))
