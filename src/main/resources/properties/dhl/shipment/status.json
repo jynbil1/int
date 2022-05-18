@@ -1,0 +1,308 @@
+{
+    "status": {
+        "PDR": {
+            "eventGroup": "Piece Data Received",
+            "engDesc": "Piece Data Received",
+            "korDesc": "운송 상품 정보를 수신했습니다.",
+            "hpGroup": "shipment-ready"
+        },
+        "SDR": {
+            "eventGroup": "Shipment Data Received",
+            "engDesc": "Shipment Data Received",
+            "korDesc": "운송물 정보를 수신했습니다.",
+            "hpGroup": "shipment-ready"
+        },
+        "SA": {
+            "eventGroup": "Shipment Data Received",
+            "engDesc": "Shipment Accepted",
+            "korDesc": "운송물을 수취했습니다.",
+            "hpGroup": "shipment-ready"
+        },
+        "PU": {
+            "eventGroup": "Picked up",
+            "engDesc": "Shipment picked up",
+            "korDesc": "발송물의 집하를 완료했습니다.",
+            "hpGroup": "shipment-start"
+        },
+        "TR": {
+            "eventGroup": "In transit",
+            "engDesc": "Transferred through Facility",
+            "korDesc": "허브 시설을 통해 이송되었습니다.",
+            "hpGroup": "shipment-start"
+        },
+        "CC": {
+            "eventGroup": "In transit",
+            "engDesc": "Awaiting collection by recipient as requested",
+            "korDesc": "수취자의 요청에 따라 대기상태로 전환되었습니다.",
+            "hpGroup": "shipment-start"
+        },
+        "AR": {
+            "eventGroup": "In transit",
+            "engDesc": "Arrived at Delivery Facility",
+            "korDesc": "최종 배송 시작 허브에 도착했습니다.",
+            "hpGroup": "in-transit"
+        },
+        "AF": {
+            "eventGroup": "In transit",
+            "engDesc": "Arrived at Sort Facility",
+            "korDesc": "분류 허브에 도착했습니다.",
+            "hpGroup": "in-transit"
+        },
+        "PO": {
+            "eventGroup": "In transit",
+            "engDesc": "In transit",
+            "korDesc": "배송중 입니다.",
+            "hpGroup": "in-transit"
+        },
+        "ITH": {
+            "eventGroup": "In transit",
+            "engDesc": "In transit - DHL on hold",
+            "korDesc": "배송중 이나, 현제 DHL 에서 보관중입니다.",
+            "hpGroup": "in-transit"
+        },
+        "SM": {
+            "eventGroup": "In transit",
+            "engDesc": "Scheduled to move",
+            "korDesc": "배송 예정 일정이 재설정되었습니다.",
+            "hpGroup": "in-transit"
+        },
+        "PL": {
+            "eventGroup": "In transit",
+            "engDesc": "Processed at DHL Location",
+            "korDesc": "DHL 구역에서 처리되었습니다.",
+            "hpGroup": "in-transit"
+        },
+        "RW": {
+            "eventGroup": "In transit",
+            "engDesc": "In transit",
+            "korDesc": "배송중 입니다.",
+            "hpGroup": "in-transit"
+        },
+        "DF": {
+            "eventGroup": "In transit",
+            "engDesc": "Departed Facility",
+            "korDesc": "배송물이 시설에서 출발했습니다.",
+            "hpGroup": "delivery-soon"
+        },
+        "RR": {
+            "eventGroup": "Clearance delay",
+            "engDesc": "Customs status updated",
+            "korDesc": "세관 정보가 업데이트 되었습니다.",
+            "hpGroup": "urgency-customs"
+        },
+        "UD": {
+            "eventGroup": "Clearance delay",
+            "engDesc": "Uncontrollable Clearance delay",
+            "korDesc": "세관 검사가 지연되고 있습니다.(주의)",
+            "hpGroup": "urgency-customs"
+        },
+        "CD": {
+            "eventGroup": "Clearance delay",
+            "engDesc": "Clearance delay",
+            "korDesc": "세관 검사가 지연되고 있습니다.",
+            "hpGroup": "clearance-delay"
+        },
+        "ES": {
+            "eventGroup": "Customs clearance",
+            "engDesc": "Customs entry submitted",
+            "korDesc": "세관 정보가 제출되었습니다.",
+            "hpGroup": "clearance-process"
+        },
+        "IC": {
+            "eventGroup": "Customs clearance",
+            "engDesc": "Processed for clearance",
+            "korDesc": "세관 검사를 진행중입니다.",
+            "hpGroup": "clearance-process"
+        },
+        "BN": {
+            "eventGroup": "Customs clearance",
+            "engDesc": "Broker notified to arrange for clearance",
+            "korDesc": "세관 검사가 진행될 예정입니다.",
+            "hpGroup": "clearance-process"
+        },
+        "CUS": {
+            "eventGroup": "Customs Status Updated Soon",
+            "engDesc": "Custom status has been updated.",
+            "korDesc": "세관 검사가 진행될 예정입니다.",
+            "hpGroup": "clearance-process"
+        },
+        "CR": {
+            "eventGroup": "Customs clearance",
+            "engDesc": "Clearance processing complete",
+            "korDesc": "세관 검사를 마쳤습니다.",
+            "hpGroup": "clearance-process"
+        },
+        "RD": {
+            "eventGroup": "Exception",
+            "engDesc": "Recipient refused delivery",
+            "korDesc": "수취인께서 수령을 거부하셨습니다.",
+            "hpGroup": "refuse"
+        },
+        "MD": {
+            "eventGroup": "Exception",
+            "engDesc": "Scheduled for delivery",
+            "korDesc": "배송지 배송 예정입니다.",
+            "hpGroup": "delivery-soon"
+        },
+        "SS": {
+            "eventGroup": "Exception",
+            "engDesc": "Please contact DHL Customer Service",
+            "korDesc": "DHL 고객센터에 문의해 주십시오.",
+            "hpGroup": "urgency-customs"
+        },
+        "NH": {
+            "eventGroup": "Exception",
+            "engDesc": "Delivery attempted. Recipient not home",
+            "korDesc": "수취인의 부재로 물건을 전달하지 못했습니다.",
+            "hpGroup": "delivery-delay"
+        },
+        "MS": {
+            "eventGroup": "Exception",
+            "engDesc": "Shipment arrived at incorrect facility. Sent to correct destination",
+            "korDesc": "배송물이 의도치 않은 분류 시설로 도착했습니다. 목적지로 재 이관되었습니다.",
+            "hpGroup": "delivery-delay"
+        },
+        "MC": {
+            "eventGroup": "Exception",
+            "engDesc": "Shipment arrived at incorrect facility. Sent to correct destination",
+            "korDesc": "배송물이 의도치 않은 분류 시설로 도착했습니다. 목적지로 재 이관되었습니다.",
+            "hpGroup": "delivery-delay"
+        },
+        "DS": {
+            "eventGroup": "Exception",
+            "engDesc": "Shipper contacted",
+            "korDesc": "발송자와 연락이 되었습니다.",
+            "hpGroup": "exception"
+        },
+        "CM": {
+            "eventGroup": "Exception",
+            "engDesc": "Recipient moved",
+            "korDesc": "수취인이 이사를 갔습니다.",
+            "hpGroup": "exception"
+        },
+        "CA": {
+            "eventGroup": "Exception",
+            "engDesc": "Delivery attempted - consignee premises closed",
+            "korDesc": "배송을 시도했으나, 수취인의 수령지에 접근할 수 없었습니다.",
+            "hpGroup": "delivery-delay"
+        },
+        "BA": {
+            "eventGroup": "Exception",
+            "engDesc": "Address information needed, contact DHL",
+            "korDesc": "배송 주소가 배송을 하기에 올바르지 않습니다. DHL 에 연락주십시오.",
+            "hpGroup": "urgency-customs"
+        },
+        "RT": {
+            "eventGroup": "Exception",
+            "engDesc": "Returned to shipper",
+            "korDesc": "발송자에게 반송되었습니다.",
+            "hpGroup": "returned"
+        },
+        "OH": {
+            "eventGroup": "Exception",
+            "engDesc": "Shipment on hold",
+            "korDesc": "DHL 에 보관되어 있습니다.",
+            "hpGroup": "urgency-customs"
+        },
+        "CS(for commented text purposes": {
+            "eventGroup": "Exception",
+            "engDesc": "Closed Shipment",
+            "korDesc": "닫힌 배송물입니다.",
+            "hpGroup": "closed"
+        },
+        "CS": {
+            "eventGroup": "Exception",
+            "engDesc": "Please Contact DHL.",
+            "korDesc": "DHL 에 연락주십시오.",
+            "hpGroup": "urgency-customs"
+        },
+        "SC": {
+            "eventGroup": "Exception",
+            "engDesc": "The requested service for your shipment has been changed; for assistance please contact DHL",
+            "korDesc": "배송 유형이 변경되었습니다. DHL 에 문의바랍니다.",
+            "hpGroup": "urgency-shipment"
+        },
+        "AD": {
+            "eventGroup": "Out for delivery",
+            "engDesc": "Scheduled for delivery as agreed",
+            "korDesc": "동의에 따라 배송 일정이 예정되어 있습니다.",
+            "hpGroup": "delivery-soon"
+        },
+        "FD": {
+            "eventGroup": "Out for delivery",
+            "engDesc": "Forwarded for delivery - details expected",
+            "korDesc": "타 배송사를 통해 배송 예정입니다.",
+            "hpGroup": "delivery-soon"
+        },
+        "ND": {
+            "eventGroup": "Out for delivery",
+            "engDesc": "Scheduled for delivery",
+            "korDesc": "배송 예정입니다.",
+            "hpGroup": "delivery-soon"
+        },
+        "WC": {
+            "eventGroup": "Out for delivery",
+            "engDesc": "With delivery courier",
+            "korDesc": "타 배송사를 통해 배송 예정입니다.",
+            "hpGroup": "delivery-soon"
+        },
+        "HP": {
+            "eventGroup": "Out for delivery",
+            "engDesc": "Shipment held - Available upon receipt of payment",
+            "korDesc": "배송비 지불 영수증을 하시기 바랍니다.",
+            "hpGroup": "delivery-soon"
+        },
+        "BR": {
+            "eventGroup": "Delivered",
+            "engDesc": "Delivered to broker as requested",
+            "korDesc": "요청에 따라 브로커에게 배송 완료되었습니다.",
+            "hpGroup": "delivered"
+        },
+        "DL": {
+            "eventGroup": "Delivered",
+            "engDesc": "Shipment delivered",
+            "korDesc": "배송 완료.",
+            "hpGroup": "delivered"
+        },
+        "TP": {
+            "eventGroup": "Delivered",
+            "engDesc": "Delivery arranged, no details expected",
+            "korDesc": "배송 예정일정이 조정되었습니다. 추가 정보 없음.",
+            "hpGroup": "delivery-soon"
+        },
+        "DD": {
+            "eventGroup": "Delivered",
+            "engDesc": "Shipment delivered",
+            "korDesc": "배송 완료.",
+            "hpGroup": "delivered"
+        },
+        "PD": {
+            "eventGroup": "Delivered",
+            "engDesc": "Partial delivery",
+            "korDesc": "부분 배송 완료.",
+            "hpGroup": "delivered"
+        },
+        "OK": {
+            "eventGroup": "Delivered",
+            "engDesc": "Shipment delivered",
+            "korDesc": "배송 완료.",
+            "hpGroup": "delivered"
+        }
+    },
+    "priorityLevel": {
+        "delivered": 1,
+        "returned": 2,
+        "closed": 3,
+        "urgency-customs": 4,
+        "urgency-shipment": 5,
+        "refuse": 6,
+        "exception": 7,
+        "clearance-delay": 8,
+        "delivery-delay": 9,
+        "clearance-process": 10,
+        "delivery-soon": 11,
+        "in-transit": 12,
+        "shipment-start": 13,
+        "shipment-ready": 14
+    }
+}
