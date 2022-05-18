@@ -23,7 +23,7 @@
                                      'wc-reg-processing', 'wc-reg-preparing' , 'wc-reg-shipped',
                                          'wc-cold-refunded', 'wc-cold-processing',
                                      'wc-cold-preparing', 'wc-cold-shipped',
-                                         'wc-cbe-refunded', 'wc-cbe-shipped',
+                                         'wc-cbe-refunded', 'wc-shipped',
                                          'wc-cbe-processing', 'wc-cbe-preparing')) as childOrders
                 inner join
             (select

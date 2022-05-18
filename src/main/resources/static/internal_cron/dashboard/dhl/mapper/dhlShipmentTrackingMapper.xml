@@ -16,7 +16,7 @@
                 wphpm_posts
             where
                 post_type = 'shop_order' and 
-                post_status = 'wc-cbe-shipped'
+                post_status = 'wc-shipped'
                 ) as orders
         inner join
             (select
