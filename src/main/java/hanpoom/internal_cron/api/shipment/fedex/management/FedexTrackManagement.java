@@ -42,6 +42,8 @@ public abstract class FedexTrackManagement {
     // public abstract LocalDateTime getProblemDatetime(TrackResult shipment);
     // public abstract LocalDateTime getReturnedDatetime(TrackResult shipment);
     // public abstract float getDelayedDurationInHour(TrackResult shipment);
+
+//    public abstract boolean isDelayed(TrackResult shipment, String orderStatus);
     public abstract boolean isDelayed(TrackResult shipment);
     // public abstract ScanEvent 
     public abstract LocalDateTime getEventDateTime(TrackResult shipment, FedexShipmentStatus shipmentStatus);
