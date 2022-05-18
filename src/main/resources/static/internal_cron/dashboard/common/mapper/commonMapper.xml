@@ -274,7 +274,8 @@
                 wphpm_posts
             where
                 post_type = 'shop_order' and 
-                post_status not in ('wc-refunded', 'wc-cancelled', 'wc-unshippable', 'wc-on-hold') and
+                post_status not in ('wc-refunded', 'wc-cancelled', 'wc-unshippable', 'wc-on-hold',
+                                    'wc-reg-refunded', 'wc-cold-refunded', 'wc-cbe-refunded') and
                 post_date between #{start_date} and #{end_date})
         union distinct 
             (select
@@ -288,7 +289,8 @@
                     wphpm_posts
                 where
                     post_type = 'shop_order' and 
-                    post_status not in ('wc-refunded', 'wc-cancelled', 'wc-unshippable', 'wc-on-hold') and
+                    post_status not in ('wc-refunded', 'wc-cancelled', 'wc-unshippable', 'wc-on-hold',
+                'wc-reg-refunded', 'wc-cold-refunded', 'wc-cbe-refunded') and
                     post_date between #{start_date} and #{end_date}) as orders
             inner join
                 (select
@@ -298,7 +300,8 @@
                     wphpm_posts
                 where
                     post_type = 'shop_order_refund' and 
-                    post_status not in ('wc-refunded', 'wc-cancelled', 'wc-unshippable', 'wc-on-hold')
+                    post_status not in ('wc-refunded', 'wc-cancelled', 'wc-unshippable', 'wc-on-hold',
+             'wc-reg-refunded', 'wc-cold-refunded', 'wc-cbe-refunded')
                     ) as child_orders
             on
                 orders.order_no = child_orders.parent_order_no

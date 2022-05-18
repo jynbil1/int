@@ -3,7 +3,7 @@ package hanpoom.internal_cron.api.shipment.fedex.enumerate;
 public enum FedexShipDuration {
     PRIORITY_OVERNIGHT(2),
     OVERNIGHT(2),
-    GROUND(10),
+    GROUND(7),
     DAY2(3);
 
     private final int value;

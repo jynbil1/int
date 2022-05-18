@@ -16,7 +16,7 @@
                 wphpm_posts
             where
                 post_type = 'shop_order' and 
-                post_status = 'wc-shipped'
+                post_status = 'wc-cbe-shipped'
                 ) as orders
         inner join
             (select
@@ -63,11 +63,6 @@
             delivered_orders.tracking_no is null and
             issue_orders.order_no is null and 
             issue_orders.tracking_no is null;
-    </select>
-
-    <select id="getDelivered"></select>
-    <select id="getError">
-        select count(id) f
     </select>
 
     <select id="getOrderDetailByTrackingNo" parameterType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO" resultType="hanpoom.internal_cron.crons.dashboard.dhl.vo.DHLTrackingVO">
