@@ -6,15 +6,13 @@
         select
             orders.order_no as orderNo,
             orders.order_date as orderDate,
-            orders.order_status as orderStatus,
             ifnull(details.shipment_class, 'regular') as shipmentClass,
             details.tracking_no as trackingNo,
             details.service_type as serviceType
         from
             (select
                 id as order_no,
-                post_date as order_date,
-                post_status as order_status
+                post_date as order_date
             from
                 wphpm_posts
             where
@@ -41,7 +39,7 @@
                 a.order_no
             having 
                 length(tracking_no) <![CDATA[ > ]]> 10 and
-                shipment_class in ('us-cold', 'us-reg')) as details
+                shipment_class in ('us-cold', 'us-regular')) as details
         on
             orders.order_no = details.order_no
         left join
