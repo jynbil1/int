@@ -110,6 +110,7 @@ public class GlobalDashboardService {
         return totalMargins;
     }
 
+    // 주간 데이터 추출.
     public void reportWeeklyGobalDashboard(){
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(CalendarManager.DATE_TIME_FORMAT_PATTERN));
         System.out.println(now + " 에 작업을 수행함");

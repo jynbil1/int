@@ -17,7 +17,7 @@
                 wphpm_posts
             where
                 post_type = 'shop_order' and 
-                post_status = 'wc-shipped'
+                post_status in ('wc-reg-shipped', 'wc-cold-shipped')
                 ) as orders
         inner join
             (select
@@ -39,7 +39,7 @@
                 a.order_no
             having 
                 length(tracking_no) <![CDATA[ > ]]> 10 and
-                shipment_class in ('usdomestic', 'usmoomooo')) as details
+                shipment_class in ('us-cold', 'us-regular')) as details
         on
             orders.order_no = details.order_no
         left join
