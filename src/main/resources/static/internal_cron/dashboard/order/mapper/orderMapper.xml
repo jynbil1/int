@@ -24,7 +24,7 @@
                                          'wc-cold-refunded', 'wc-cold-processing',
                                      'wc-cold-preparing', 'wc-cold-shipped',
                                          'wc-cbe-refunded', 'wc-shipped',
-                                         'wc-cbe-processing', 'wc-cbe-preparing')) as childOrders
+                                         'wc-cbe-processing', 'wc-preparing')) as childOrders
                 inner join
             (select
                  post_id as orderNo,

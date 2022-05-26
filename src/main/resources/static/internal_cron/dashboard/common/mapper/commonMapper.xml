@@ -15,7 +15,7 @@
                     wphpm_posts
                 where
                     post_type = 'shop_order' and
-                    post_status in ('wc-reg-processing', 'wc-preparing', 'wc-shipped',
+                    post_status in ('wc-cbe-processing', 'wc-preparing', 'wc-shipped',
                                     'wc-cold-processing', 'wc-cold-preparing', 'wc-cold-shipped',
                                     'wc-reg-processing', 'wc-reg-preparing', 'wc-reg-shipped',
                                     'wc-completed')
@@ -36,7 +36,7 @@
                          wphpm_posts
                      where
                          post_type = 'shop_order' and
-                         post_status in ('wc-reg-processing', 'wc-preparing', 'wc-shipped',
+                         post_status in ('wc-cbe-processing', 'wc-preparing', 'wc-shipped',
                                   'wc-cold-processing', 'wc-cold-preparing', 'wc-cold-shipped',
                                   'wc-reg-processing', 'wc-reg-preparing', 'wc-reg-shipped',
                                   'wc-completed')
@@ -173,7 +173,7 @@
                       wphpm_posts
                   where
                       post_date between #{start_date} and #{end_date} and
-                      post_status in ('wc-reg-processing', 'wc-preparing', 'wc-shipped',
+                      post_status in ('wc-cbe-processing', 'wc-preparing', 'wc-shipped',
                                       'wc-cold-processing', 'wc-cold-preparing', 'wc-cold-shipped',
                                       'wc-reg-processing', 'wc-reg-preparing', 'wc-reg-shipped',
                                       'wc-completed')
@@ -246,7 +246,7 @@
                            wphpm_posts
                        where
                            post_date between #{start_date} and #{end_date} and
-                               post_status in ('wc-reg-processing', 'wc-preparing', 'wc-shipped',
+                               post_status in ('wc-cbe-processing', 'wc-preparing', 'wc-shipped',
                                                'wc-cold-processing', 'wc-cold-preparing', 'wc-cold-shipped',
                                                'wc-reg-processing', 'wc-reg-preparing', 'wc-reg-shipped',
                                                'wc-completed')
@@ -280,7 +280,7 @@
             post_type = 'shop_order' and
             post_date
                 between #{start_date} and #{end_date} and
-                post_status in ('wc-reg-processing', 'wc-preparing', 'wc-shipped',
+                post_status in ('wc-cbe-processing', 'wc-preparing', 'wc-shipped',
                                 'wc-cold-processing', 'wc-cold-preparing', 'wc-cold-shipped',
                                 'wc-reg-processing', 'wc-reg-preparing', 'wc-reg-shipped',
                                 'wc-completed');
@@ -300,7 +300,7 @@
                   wphpm_posts
               where
                   post_type = 'shop_order' and
-                  post_status in ('wc-reg-processing', 'wc-preparing', 'wc-shipped',
+                  post_status in ('wc-cbe-processing', 'wc-preparing', 'wc-shipped',
                                   'wc-cold-processing', 'wc-cold-preparing', 'wc-cold-shipped',
                                   'wc-reg-processing', 'wc-reg-preparing', 'wc-reg-shipped',
                                   'wc-completed')
@@ -318,7 +318,7 @@
                  wphpm_posts
                  where
                  post_type = 'shop_order' and
-                 post_status in ('wc-reg-processing', 'wc-preparing', 'wc-shipped',
+                 post_status in ('wc-cbe-processing', 'wc-preparing', 'wc-shipped',
                  'wc-cold-processing', 'wc-cold-preparing', 'wc-cold-shipped',
                  'wc-reg-processing', 'wc-reg-preparing', 'wc-reg-shipped',
                  'wc-completed')
@@ -332,7 +332,7 @@
                  wphpm_posts
                  where
                  post_type = 'shop_order_refund' and
-                 post_status in ('wc-reg-processing', 'wc-preparing', 'wc-shipped',
+                 post_status in ('wc-cbe-processing', 'wc-preparing', 'wc-shipped',
                  'wc-cold-processing', 'wc-cold-preparing', 'wc-cold-shipped',
                  'wc-reg-processing', 'wc-reg-preparing', 'wc-reg-shipped',
                  'wc-completed')
