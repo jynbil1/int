@@ -30,7 +30,10 @@ public class OrderService {
         // 2. 가져온 값들 중 자식의 값 모두가 completed 나 refunded 면 해당 parent 값의 상태를 바꾼다.
         List<Integer> orderNos = filteredOrders.stream().map(Order::getOrderNo).collect(Collectors.toList());
         try {
-            orderMapper.updateCompletOrders(orderNos);
+            if (orderNos.isEmpty() || orderNos.size() <= 1) {
+                return 0;
+            }
+            orderMapper.updateCompleteOrders(orderNos);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

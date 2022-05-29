@@ -50,7 +50,7 @@
         order by 1;
     </select>
 
-    <update id="updateCompletOrders">
+    <update id="updateCompleteOrders">
         update
             wphpm_posts
         set

@@ -259,7 +259,10 @@ public class DHLShipmentHandler {
                     selectedEvent = analyzeShipmentHistory(response, shipmentEventCode);
                 } catch (NullPointerException npe) {
                     System.out.println("------------------------");
-                    String orderNo = response.getShipmentInfo().getShipperReference().getReferenceId();
+                    String orderNo = "N/A";
+                    if (response.getShipmentInfo().getShipperReference() != null) {
+                        orderNo = response.getShipmentInfo().getShipperReference().getReferenceId();
+                    }
                     String trackingNo = response.getTrackingNumber();
 
                     String message = new StringBuilder()
