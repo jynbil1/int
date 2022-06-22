@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hanpoom.internal_cron.crons.dashboard.slack.mapper.ExpirationMapper">
+    <select id="getYesterdayLoss" parameterType="java.lang.String" resultType="java.lang.String">
+        select sum(wh_loss_qty) from wh_loss where wh_loss_reason='유통기한 만료' and wh_loss_date = #{yesterday_date};
+    </select>
+
+    <select id="getYesterdayLossSum" resultType="java.lang.String">
+        select
+            round(sum(result.unit_price *  wh_loss_qty)/1000) as total
+        from (select
+                  MD_ORDER.seq,
+                  MD.id,
+                  LOSS.wh_loss_qty,
+                  wh_loss_date,
+                  CASE
+                      WHEN MD_ORDER.seq is null
+                          THEN MD.unit_price
+                      ELSE (MD_ORDER.qty / MD_ORDER.wh_arrival_qty * (MD_ORDER.supply_price + MD_ORDER.vat))
+                      END as unit_price
+              from (select
+                        wh_loss_seq,
+                        wh_move_seq,
+                        wh_loss_qty,
+                        wh_loss_reason,
+                        use_flag,
+                        wh_loss_date,
+                        wh_loss_productid
+                    from wh_loss
+                    where wh_loss_date = #{yesterday_date}
+                      and use_flag = 1
+                      and wh_loss_reason = '유통기한 만료')
+                       as LOSS
+                       inner join
+                   (select
+                        unit_price,
+                        id
+                    from md_product)
+                       as MD
+                   on LOSS.wh_loss_productid = MD.id
+                       inner join
+                   (select
+                        wh_move_seq,
+                        wh_in_seq
+                    from wh_move)
+                       as MOVE
+                   on LOSS.wh_move_seq = MOVE.wh_move_seq
+                       inner join
+                   (select
+                        wh_in_seq,
+                        wh_arrival_seq
+                    from wh_in)
+                       as ENTER
+                   on MOVE.wh_in_seq = ENTER.wh_in_seq
+                       inner join
+                   (select
+                        wh_arrival_seq,
+                        md_order_detail_seq
+                    from wh_arrival)
+                       as ARRIVAL
+                   on ENTER.wh_arrival_seq = ARRIVAL.wh_arrival_seq
+                       left join
+                   (select
+                        seq,
+                        qty,
+                        wh_arrival_qty,
+                        supply_price,
+                        vat
+                    from md_order_detail)
+                       AS MD_ORDER
+                   on ARRIVAL.md_order_detail_seq = MD_ORDER.seq) result;
+    </select>
+
+    <select id="getYesterdayMonthLossSum" parameterType="java.lang.String" resultType="java.lang.String">
+        select
+            round(sum(result.unit_price *  wh_loss_qty)/1000) as total
+        from (select
+                  MD_ORDER.seq,
+                  MD.id,
+                  LOSS.wh_loss_qty,
+                  wh_loss_date,
+                  CASE
+                      WHEN MD_ORDER.seq is null
+                          THEN MD.unit_price
+                      ELSE (MD_ORDER.qty / MD_ORDER.wh_arrival_qty * (MD_ORDER.supply_price + MD_ORDER.vat))
+                      END as unit_price
+              from (select
+                        wh_loss_seq,
+                        wh_move_seq,
+                        wh_loss_qty,
+                        wh_loss_reason,
+                        use_flag,
+                        wh_loss_date,
+                        wh_loss_productid
+                    from wh_loss
+                    where wh_loss_date between #{start_dtime} and #{end_dtime}
+                      and use_flag = 1
+                      and wh_loss_reason = '유통기한 만료')
+                       as LOSS
+                       inner join
+                   (select
+                        unit_price,
+                        id
+                    from md_product)
+                       as MD
+                   on LOSS.wh_loss_productid = MD.id
+                       inner join
+                   (select
+                        wh_move_seq,
+                        wh_in_seq
+                    from wh_move)
+                       as MOVE
+                   on LOSS.wh_move_seq = MOVE.wh_move_seq
+                       inner join
+                   (select
+                        wh_in_seq,
+                        wh_arrival_seq
+                    from wh_in)
+                       as ENTER
+                   on MOVE.wh_in_seq = ENTER.wh_in_seq
+                       inner join
+                   (select
+                        wh_arrival_seq,
+                        md_order_detail_seq
+                    from wh_arrival)
+                       as ARRIVAL
+                   on ENTER.wh_arrival_seq = ARRIVAL.wh_arrival_seq
+                       left join
+                   (select
+                        seq,
+                        qty,
+                        wh_arrival_qty,
+                        supply_price,
+                        vat
+                    from md_order_detail)
+                       AS MD_ORDER
+                   on ARRIVAL.md_order_detail_seq = MD_ORDER.seq) result;
+    </select>
+
+    <select id="operationExpiration" parameterType="java.lang.String" resultType="hanpoom.internal_cron.crons.dashboard.slack.vo.ExpirationVO">
+        SELECT
+            SUB_RESULT.product_id,
+            SUB_RESULT.product_name,
+            SUB_RESULT.warehouse,
+            SUB_RESULT.location,
+            SUB_RESULT.expiration_date,
+            SUB_RESULT.available_qty,
+            SUB_RESULT.ex_level as level
+        FROM (
+        SELECT
+            move.wh_in_productid as product_id,
+            site_product.post_title as product_name,
+            '운영동' as warehouse,
+            move.wh_pick_location as location,
+            move.wh_move_expdate as expiration_date,
+            move.wh_move_qty - ifnull(insp.wh_insp_qty,0) - ifnull(loss.wh_loss_qty,0) as available_qty,
+            CASE WHEN imminent_standard=0 THEN NULL
+                ELSE datediff(wh_move_expdate,date_add(now(),interval 14 hour)) / imminent_standard
+            END as ex_level,
+            wms_product.order_rem_status,
+            wms_product.is_special
+        from wh_move move
+            inner join md_product wms_product
+            on move.wh_in_productid = wms_product.id
+        left join (
+        select
+            id,
+            post_title,
+            b.meta_value as md_product_id
+        from wphpm_posts a
+            inner join (
+        select
+            post_id,
+            meta_value
+        from wphpm_postmeta
+        where meta_key="_md_product_id"
+        ) b
+            on a.id = b.post_id
+            WHERE (POST_TYPE = 'product'
+            OR POST_TYPE = 'product_variation')
+        ) site_product
+            on move.wh_in_productid = site_product.ID
+            left join (
+        select
+            wh_move_seq
+            , sum(qty) as wh_insp_qty
+        from kr_a_wh_insp_detail
+        group by wh_move_seq
+        ) insp
+            on move.wh_move_seq = insp.wh_move_seq
+            left join (
+        select
+            wh_move_seq
+            , sum(wh_loss_qty) as wh_loss_qty
+        from wh_loss
+            where use_flag=1
+            group by wh_move_seq
+        ) loss
+            on move.wh_move_seq = loss.wh_move_seq
+            left join wms_toddler
+            on move.wh_in_productid = wms_toddler.id
+        ) SUB_RESULT
+        where product_id in (
+            <foreach collection="products" item="product" separator=",">
+                #{product}
+            </foreach>
+        )
+        and available_qty <![CDATA[<>]]> 0;
+    </select>
+
+    <select id="stockingExpiration" parameterType="java.lang.String" resultType="hanpoom.internal_cron.crons.dashboard.slack.vo.ExpirationVO">
+        SELECT
+            SUB_RESULT.product_id,
+            SUB_RESULT.product_name,
+            SUB_RESULT.warehouse,
+            SUB_RESULT.location,
+            SUB_RESULT.expiration_date,
+            SUB_RESULT.available_qty,
+            SUB_RESULT.ex_level as level
+        FROM (
+            SELECT
+                enter.wh_in_productid as product_id,
+                site_product.post_title as product_name,
+                '보관동' as warehouse,
+                enter.wh_in_location as location,
+                enter.wh_in_expdate as expiration_date,
+                enter.wh_in_qty - ifnull(move.wh_move_qty,0) as available_qty,
+                    CASE WHEN imminent_standard=0 THEN NULL ELSE datediff(wh_in_expdate,date_add(now(),interval 14 hour)) / imminent_standard END as ex_level,
+                wms_product.order_rem_status,
+                wms_product.is_special
+            from wh_in enter
+            inner join md_product wms_product
+            on enter.wh_in_productid = wms_product.id
+            left join (
+                select wh_in_seq, sum(wh_move_qty) as wh_move_qty
+                from wh_move
+                group by wh_in_seq ) move
+            on enter.wh_in_seq = move.wh_in_seq
+            left join (
+                select
+                    id,
+                    post_title,
+                    b.meta_value as md_product_id
+                    from wphpm_posts a
+                inner join (
+                    select
+                        post_id,
+                        meta_value
+                    from wphpm_postmeta
+                    where meta_key="_md_product_id"
+                ) b
+                on a.id = b.post_id
+                WHERE (POST_TYPE = 'product'
+                OR POST_TYPE = 'product_variation')
+            ) site_product
+            on enter.wh_in_productid = site_product.ID
+        )SUB_RESULT
+        where product_id in (
+            <foreach collection="products" item="product" separator=",">
+                #{product}
+            </foreach>
+        )
+        and available_qty <![CDATA[<>]]> 0;
+    </select>
+
+    <select id="operationExpirationProduct" resultType="java.lang.String">
+        SELECT
+            SUB_RESULT.product_id
+        FROM (
+                 SELECT
+                     move.wh_in_productid as product_id,
+                     site_product.post_title as product_name,
+                     '운영동' as warehouse,
+                     move.wh_pick_location as location,
+                     move.wh_move_expdate as expiration_date,
+                     move.wh_move_qty - ifnull(insp.wh_insp_qty,0) - ifnull(loss.wh_loss_qty,0) as available_qty,
+                     CASE WHEN imminent_standard=0 THEN NULL
+                          ELSE datediff(wh_move_expdate,date_add(now(),interval 14 hour)) / imminent_standard
+                         END as ex_level,
+                     wms_product.order_rem_status,
+                     wms_product.is_special
+                 from wh_move move
+                          inner join md_product wms_product
+                                     on move.wh_in_productid = wms_product.id
+                          left join (
+                     select
+                         id,
+                         post_title,
+                         b.meta_value as md_product_id
+                     from wphpm_posts a
+                              inner join (
+                         select
+                             post_id,
+                             meta_value
+                         from wphpm_postmeta
+                         where meta_key="_md_product_id"
+                     ) b
+                                         on a.id = b.post_id
+                     WHERE (POST_TYPE = 'product'
+                         OR POST_TYPE = 'product_variation')
+                 ) site_product
+                                    on move.wh_in_productid = site_product.ID
+                          left join (
+                     select
+                         wh_move_seq
+                          , sum(qty) as wh_insp_qty
+                     from kr_a_wh_insp_detail
+                     group by wh_move_seq
+                 ) insp
+                                    on move.wh_move_seq = insp.wh_move_seq
+                          left join (
+                     select
+                         wh_move_seq
+                          , sum(wh_loss_qty) as wh_loss_qty
+                     from wh_loss
+                     where use_flag=1
+                     group by wh_move_seq
+                 ) loss
+                                    on move.wh_move_seq = loss.wh_move_seq
+                          left join wms_toddler
+                                    on move.wh_in_productid = wms_toddler.id
+             ) SUB_RESULT
+        where available_qty <![CDATA[<>]]> 0 and ex_level = 1 and is_special = 0 and order_rem_status != 9;
+    </select>
+
+    <select id="stockingExpirationProduct" resultType="java.lang.String">
+        SELECT
+            SUB_RESULT.product_id
+        FROM (
+                 SELECT
+                     enter.wh_in_productid as product_id,
+                     site_product.post_title as product_name,
+                     '보관동' as warehouse,
+                     enter.wh_in_location as location,
+                     enter.wh_in_expdate as expiration_date,
+                     enter.wh_in_qty - ifnull(move.wh_move_qty,0) as available_qty,
+                     CASE WHEN imminent_standard=0 THEN NULL ELSE datediff(wh_in_expdate,date_add(now(),interval 14 hour)) / imminent_standard END as ex_level,
+                     wms_product.order_rem_status,
+                     wms_product.is_special
+                 from wh_in enter
+                          inner join md_product wms_product
+                                     on enter.wh_in_productid = wms_product.id
+                          left join (
+                     select wh_in_seq, sum(wh_move_qty) as wh_move_qty
+                     from wh_move
+                     group by wh_in_seq ) move
+                                    on enter.wh_in_seq = move.wh_in_seq
+                          left join (
+                     select
+                         id,
+                         post_title,
+                         b.meta_value as md_product_id
+                     from wphpm_posts a
+                              inner join (
+                         select
+                             post_id,
+                             meta_value
+                         from wphpm_postmeta
+                         where meta_key="_md_product_id"
+                     ) b
+                                         on a.id = b.post_id
+                     WHERE (POST_TYPE = 'product'
+                         OR POST_TYPE = 'product_variation')
+                 ) site_product
+                                    on enter.wh_in_productid = site_product.ID
+             )SUB_RESULT
+        where available_qty <![CDATA[<>]]> 0 and ex_level = 1 and is_special = 0 and order_rem_status != 9;
+    </select>
+    
+    <update id="orderStatusUpdate">
+        UPDATE md_product
+            SET
+                order_rem_status = CASE
+                    <foreach collection="products" item="product">
+                        WHEN id = #{product} THEN 9
+                    </foreach>
+                    ELSE 0
+                END
+        WHERE
+            id IN
+            (
+            <foreach collection="products" item="product" separator=",">
+                #{product}
+            </foreach>
+            )
+    </update>
+
+    <update id="adminPrivateUpdate">
+        update wphpm_posts
+        set post_status="private"
+        where id in (
+            <foreach collection="products" item="product" separator=",">
+                 #{product}
+            </foreach>
+        )
+    </update>
+
+</mapper>
