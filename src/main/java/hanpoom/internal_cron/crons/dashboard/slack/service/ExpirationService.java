@@ -101,10 +101,22 @@ public class ExpirationService {
         try{
             List<String> operationExpirationProductList = expirationMapper.operationExpirationProduct();
             List<String> stockingExpirationProductList = expirationMapper.stockingExpirationProduct();
-
+//            System.out.println("보관동 상품리스트 : \n");
+//            for(String vo : stockingExpirationProductList){
+//                System.out.println(vo);
+//            }
+//            System.out.println("운영동 상품리스트 : \n");
+//            for(String vo : operationExpirationProductList){
+//                System.out.println(vo);
+//            }
             productList.addAll(operationExpirationProductList);
             productList.addAll(stockingExpirationProductList);
             productList= productList.stream().distinct().collect(Collectors.toList());
+//            System.out.println("상품리스트 : \n");
+//
+//            for(String vo : productList){
+//                System.out.println(vo);
+//            }
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
@@ -119,6 +131,10 @@ public class ExpirationService {
 
             allList.addAll(operationExpirationAllList);
             allList.addAll(stockingExpirationAllList);
+//            System.out.println("재고리스트 : \n");
+//            for(ExpirationVO vo : allList){
+//                System.out.println(vo.toString());
+//            }
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
@@ -170,28 +186,42 @@ public class ExpirationService {
 
         String message = "";
         int total_stock=0;
+        Date start_date=null;
+        Date end_date=null;
 
         String exp_date = temp.get(0).getExpiration_date();
-        Date start_date = stringToDate(exp_date);
-
+        if(exp_date != null) {
+//            System.out.println("처음: " + exp_date);
+            start_date = stringToDate(exp_date);
+        }
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("[Today] 유통기한 임박 관련 상품 내역입니다.\n"));
         sb.append(String.format("- 상품 ID : %s\n", temp.get(0).getProduct_id()));
         sb.append(String.format("- 상품명 : %s\n", temp.get(0).getProduct_name()));
         sb.append("- 위치 \n");
         for(ExpirationVO vo : temp){
-            sb.append(String.format(" \t\t%s / %s / %s\n",vo.getLocation(), vo.getExpiration_date(),vo.getAvailable_qty()));
-            System.out.println(vo.getLevel());
+            exp_date = vo.getExpiration_date();
+            String slackExpDate = exp_date;
             if(vo.getLevel() <= 1){
                 total_stock += vo.getAvailable_qty();
             }
 
-            Date end_date = stringToDate(vo.getExpiration_date());
-            int compare = start_date.compareTo(end_date);
+            if(exp_date != null) {
+                if(start_date != null){
+//                    System.out.println("처음2: " + exp_date);
+                    start_date=stringToDate(exp_date);
+                }
+//                System.out.println("처음: " + exp_date);
+                end_date = stringToDate(exp_date);
+                int compare = start_date.compareTo(end_date);
 
-            if(compare > 0){
-                start_date = stringToDate(vo.getExpiration_date());
+                if (compare < 0) {
+                    start_date = stringToDate(exp_date);
+                }
+            }else{
+                slackExpDate="유통기한 없음";
             }
+            sb.append(String.format(" \t\t%s / %s / %s\n",vo.getLocation(), slackExpDate,vo.getAvailable_qty()));
         }
         sb.append(String.format("- 임박재고: %s 개 /", total_stock));
         sb.append(String.format(" %s(최솟값) \n", dateToString(start_date)));
