@@ -207,15 +207,15 @@ public class ExpirationService {
             }
 
             if(exp_date != null) {
-                if(start_date != null){
-//                    System.out.println("처음2: " + exp_date);
-                    start_date=stringToDate(exp_date);
-                }
+//                if(start_date != null){
+////                    System.out.println("처음2: " + exp_date);
+//                    start_date=stringToDate(exp_date);
+//                }
 //                System.out.println("처음: " + exp_date);
                 end_date = stringToDate(exp_date);
-                int compare = start_date.compareTo(end_date);
+                boolean compare = end_date.before(start_date);
 
-                if (compare < 0) {
+                if (compare) {
                     start_date = stringToDate(exp_date);
                 }
             }else{
@@ -255,7 +255,4 @@ public class ExpirationService {
 
 
 }
-
-
-
 
