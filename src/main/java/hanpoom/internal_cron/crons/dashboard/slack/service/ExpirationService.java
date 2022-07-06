@@ -237,13 +237,16 @@ public class ExpirationService {
         Date start_date=null;
         Date end_date=null;
 
+        LocalDateTime now = LocalDateTime.now();
+        String Today = now.minusDays(0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
         String exp_date = temp.get(0).getExpiration_date();
         if(exp_date != null) {
 //            System.out.println("처음: " + exp_date);
             start_date = stringToDate(exp_date);
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("[Today] 유통기한 임박 관련 상품 내역입니다.\n"));
+        sb.append(String.format("[%s] 유통기한 임박 관련 상품 내역입니다.\n", Today));
         sb.append(String.format("- 상품 ID : %s\n", temp.get(0).getProduct_id()));
         sb.append(String.format("- 상품명 : %s\n", temp.get(0).getProduct_name()));
         sb.append("- 위치 \n");
@@ -338,8 +341,11 @@ public class ExpirationService {
     private String expiredSlackMessageHeader(){
 
         String message = "";
+        LocalDateTime now = LocalDateTime.now();
+        String Today = now.minusDays(0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("[Today] 유통기한 만료 상품 알림\n\n"));
+        sb.append(String.format("[%s] 유통기한 만료 상품 알림\n\n", Today));
         message = sb.toString();
         return message;
     }
