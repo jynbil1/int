@@ -65,11 +65,15 @@ public class ExpirationService {
     // 유통기한 임박 알림
     public void reportExpirationManagementImminent(){
         String message="";
+        String slackType="유통기한 임박";
         List<SlackMessageVO> failProductList = new ArrayList<SlackMessageVO>();
-        List<String> productList = productList();
-        if(productList.size() != 0) {
-            List<ExpirationVO> allList = allList(productList);
-            for (String product : productList) {
+        SlackMessageVO slackMessageVO = new SlackMessageVO();
+        slackMessageVO.setType(slackType);
+
+        List<String> productIdList = productIdList();
+        if(productIdList.size() != 0) {
+            List<ExpirationVO> allList = allList(productIdList);
+            for (String product : productIdList) {
                 System.out.println(product);
 
                 //allList > 해당 상품을 가진 재고 다가져와서 슬랙 알람 보내기
@@ -79,24 +83,56 @@ public class ExpirationService {
 
 
                 message = slackProductMessage(temp);
-                boolean success_flag = slackapicall(message, product, failProductList, false);
+                slackMessageVO.setProduct_id(product);
+                slackMessageVO.setMessage(message);
+                boolean success_flag = slackAPICall(slackMessageVO, failProductList, false);
                 if (!success_flag) {
-                    productList.remove(product);
+                    productIdList.remove(product);
                 }
 
             }
 
             if (failProductList.size() != 0) {
-                message = slackFailProductMessage(failProductList);
-                slackapicall(message, null, null, true);
+                message = slackFailProductMessage(failProductList, slackType);
+                slackMessageVO.setMessage(message);
+                slackAPICall(slackMessageVO, null, true);
             }
 
             //mapperdp products 리스트 보내서 update
-            expirationMapper.orderStatusUpdate(productList);
-            expirationMapper.adminPrivateUpdate(productList);
+            expirationMapper.orderStatusUpdate(productIdList);
+            expirationMapper.adminPrivateUpdate(productIdList);
         }
     }
-    private List<String> productList(){
+
+    //유통기한 만료 알림
+   public void reportExpiriedProduct(){
+        String message="";
+        String slackType="유통기한 종료";
+        List<SlackMessageVO> failProductList = new ArrayList<SlackMessageVO>();
+        List<ExpirationVO> expiredProductList = expiredProductList();
+
+        SlackMessageVO slackMessageVO = new SlackMessageVO();
+        slackMessageVO.setType(slackType);
+
+        //상품id 중복을 제거해준다.
+        List<String> productIdList = expiredProductList.stream().map(ExpirationVO::getProduct_id).distinct().collect(Collectors.toList());
+
+        message = expiredslackMessage(productIdList, expiredProductList);
+        slackMessageVO.setMessage(message);
+        slackMessageVO.setProduct_ids(productIdList);
+        slackAPICall(slackMessageVO, failProductList, false);
+
+        if (failProductList.size() != 0) {
+            message = slackFailProductMessage(failProductList,slackType);
+            slackMessageVO.setMessage(message);
+            slackAPICall(slackMessageVO, null, true);
+        }
+
+        expirationMapper.adminPrivateUpdate(productIdList);
+
+    }
+
+    private List<String> productIdList(){
         List<String> productList = new ArrayList<>();
         try{
             List<String> operationExpirationProductList = expirationMapper.operationExpirationProduct();
@@ -141,28 +177,40 @@ public class ExpirationService {
         return allList;
 
     }
-    private boolean slackapicall(String message,String product,List<SlackMessageVO> failProductList,boolean failCall) {
+    private boolean slackAPICall(SlackMessageVO slackMessageVO,List<SlackMessageVO> failProductList,boolean failCall) {
         boolean success_flag = false;
         SlackAPI slack = new SlackAPI();
+        String message= slackMessageVO.getMessage();
         try {
             if(failCall){
                 slack.sendMessage(message, SlackBot.ERROR.getWebHookUrl()); // 실패
             }else{
-                slack.sendMessage(message, SlackBot.Expiration_Imminent.getWebHookUrl()); // 성공
+                slack.sendMessage(message, SlackBot.TEST.getWebHookUrl()); // 성공
             }
-            System.out.println("슬랙 알람 오케이.");
+            System.out.println(slackMessageVO.getType() + " 슬랙 알람 오케이.");
             success_flag = true;
         } catch (Exception e) {
             if(failCall){
-                message = slackAPIFailMessage(e.getMessage());
+                message = slackAPIFailMessage(e.getMessage(), slackMessageVO.getType());
                 slack.sendMessage(message, SlackBot.ERROR.getWebHookUrl());
                 return false;
             }
 
-            SlackMessageVO vo = new SlackMessageVO();
-            vo.setProduct_id(product);
-            vo.setMessage(e.getMessage());
-            failProductList.add(vo);
+            if(slackMessageVO.getProduct_id() == null && slackMessageVO.getProduct_ids() != null){ //유통기한 종료 알림은 상품리스트를 모아서 한번에 슬랙알람을 보낸다.
+                for(String productId : slackMessageVO.getProduct_ids()){
+                    SlackMessageVO vo = new SlackMessageVO();
+                    vo.setProduct_id(productId);
+                    vo.setMessage(e.getMessage());
+                    failProductList.add(vo);
+                }
+            }else if(slackMessageVO.getProduct_id() != null){ //유통기한 임박 알림은 상품마다 슬랙알람을 보낸다.
+                SlackMessageVO vo = new SlackMessageVO();
+                vo.setProduct_id(slackMessageVO.getProduct_id());
+                vo.setMessage(e.getMessage());
+                failProductList.add(vo);
+            }else{ //상품 id 리스트(product_ids)랑 상품id(product_id) 모두 null이다.
+                e.printStackTrace();
+            }
         }
         return success_flag;
     }
@@ -233,9 +281,9 @@ public class ExpirationService {
         return message;
     }
 
-    private String slackFailProductMessage(List<SlackMessageVO> failProductList){
+    private String slackFailProductMessage(List<SlackMessageVO> failProductList,String slackType){
         String message="";
-        message = "<@U01GNBZ4L8Z> <@U03B5VCC68G> 슬랙 알람 전송에 실패하였습니다.\n";
+        message = "<@U01GNBZ4L8Z> <@U03B5VCC68G> " + slackType + " 알람 전송에 실패하였습니다.\n";
         for(SlackMessageVO vo : failProductList) {
             message += "상품 ID : " + vo.getProduct_id();
             message += "에러 메세지 : \n";
@@ -246,10 +294,82 @@ public class ExpirationService {
         return message;
     }
 
-    private String slackAPIFailMessage(String error){
+    private String slackAPIFailMessage(String error,String slackType){
         String message="";
-        message = "<@U01GNBZ4L8Z> <@UU6RURRV4> <@U03B5VCC68G> 슬랙 알람 전송에 실패하였습니다.\n";
+        message = "<@U01GNBZ4L8Z> <@UU6RURRV4> <@U03B5VCC68G> " + slackType + " 알람 전송에 실패하였습니다.\n";
         message += error;
+        return message;
+    }
+
+    private List<ExpirationVO> expiredProductList(){
+        List<ExpirationVO> productList = new ArrayList<>();
+        try{
+            List<ExpirationVO> operationExpirationProductList = expirationMapper.operationExpiredProduct();
+            List<ExpirationVO> stockingExpirationProductList = expirationMapper.stockingExpiredProduct();
+
+            productList.addAll(operationExpirationProductList);
+            productList.addAll(stockingExpirationProductList);
+
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        return productList;
+    }
+
+    private String expiredslackMessage(List<String> productIdList, List<ExpirationVO> expiredProductList){
+
+
+        String message = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append(expiredSlackMessageHeader());
+
+        for (String product : productIdList) {
+
+            List<ExpirationVO> temp = expiredProductList.stream()
+                    .filter(vo -> vo.getProduct_id().equals(product))
+                    .collect(Collectors.toList());
+            sb.append(expiredSlackMessageBody(temp));
+        }
+
+        sb.append(expiredSlackMessageFooter());
+        message = sb.toString();
+        return message;
+    }
+    private String expiredSlackMessageHeader(){
+
+        String message = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("[Today] 유통기한 만료 상품 알림\n\n"));
+        message = sb.toString();
+        return message;
+    }
+
+    private String expiredSlackMessageBody(List<ExpirationVO> temp){
+
+        String message = "";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("- 상품 ID : %s\n", temp.get(0).getProduct_id()));
+        sb.append(String.format("- 상품명 : %s\n", temp.get(0).getProduct_name()));
+        sb.append("- 위치 \n");
+        for(ExpirationVO vo : temp){
+
+            String slackExpDate = vo.getExpiration_date() != null? vo.getExpiration_date(): "유통기한 없음";
+
+            sb.append(String.format(" \t\t%s / %s / %s\n",vo.getLocation(), slackExpDate,vo.getAvailable_qty()));
+        }
+        sb.append("--------------------------------------------------------------------\n");
+        message = sb.toString();
+        return message;
+    }
+
+    private String expiredSlackMessageFooter(){
+
+        String message = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("상품 비공개 처리되었습니다. <@U02GK832Y13>\n");
+        sb.append("시트 링크 : https://docs.google.com/spreadsheets/d/1QUQ0K0rbcyXj_BLDf_4AjdOlqPRmufDZph-fWRaT7wg/edit#gid=319893764 <@U01BYAGR1V0>\n");
+        message = sb.toString();
         return message;
     }
 

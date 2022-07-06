@@ -38,4 +38,10 @@ public interface ExpirationMapper {
 
     // 어드민에서 비공개 상품으로 업데이트
     void adminPrivateUpdate(List<String> products);
+
+    // 운영동 만료 상품 리스트
+    public List<ExpirationVO> operationExpiredProduct();
+
+    // 보관동 만료 상품 리스트
+    public List<ExpirationVO> stockingExpiredProduct();
 }

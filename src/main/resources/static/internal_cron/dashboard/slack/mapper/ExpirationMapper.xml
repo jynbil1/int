@@ -394,5 +394,146 @@
             </foreach>
         )
     </update>
+    <select id="operationExpiredProduct" resultType="hanpoom.internal_cron.crons.dashboard.slack.vo.ExpirationVO">
+        SELECT
+            RESULT.product_id,
+            RESULT.product_name,
+            RESULT.warehouse,
+            RESULT.location,
+            RESULT.expiration_date,
+            RESULT.available_qty,
+            RESULT.expired_date
+        FROM (
+            SELECT
+                SUB_RESULT.product_id,
+                SUB_RESULT.product_name,
+                SUB_RESULT.warehouse,
+                SUB_RESULT.location,
+                SUB_RESULT.expiration_date,
+                case when category = '유아' then date_sub(expiration_date,interval 15 day)
+                     else date_sub(expiration_date,interval 10 day)
+                    end as expired_date,
+                SUB_RESULT.available_qty,
+                SUB_RESULT.grade
+            FROM (
+                     SELECT
+                         move.wh_in_productid as product_id,
+                         site_product.post_title as product_name,
+                         ifnull(wms_toddler.category,'비유아') as category,
+                         '운영동' as warehouse,
+                         move.wh_pick_location as location,
+                         move.wh_move_expdate as expiration_date,
+                         move.wh_move_qty - ifnull(insp.wh_insp_qty,0) - ifnull(loss.wh_loss_qty,0) as available_qty,
+                         wms_product.grade
+                     from wh_move move
+                     inner join md_product wms_product
+                     on move.wh_in_productid = wms_product.id
+                     left join (
+                         select
+                             id,
+                             post_title,
+                             b.meta_value as md_product_id
+                         from wphpm_posts a
+                                  inner join (
+                             select
+                                 post_id,
+                                 meta_value
+                             from wphpm_postmeta
+                             where meta_key="_md_product_id"
+                         ) b
+                                             on a.id = b.post_id
+                         WHERE (POST_TYPE = 'product'
+                             OR POST_TYPE = 'product_variation')
+                     ) site_product
+                     on move.wh_in_productid = site_product.ID
+                     left join (
+                         select
+                             wh_move_seq
+                              , sum(qty) as wh_insp_qty
+                         from kr_a_wh_insp_detail
+                         group by wh_move_seq
+                     ) insp
+                     on move.wh_move_seq = insp.wh_move_seq
+                              left join (
+                         select
+                             wh_move_seq
+                              , sum(wh_loss_qty) as wh_loss_qty
+                         from wh_loss
+                         where use_flag=1
+                         group by wh_move_seq
+                     ) loss
+                     on move.wh_move_seq = loss.wh_move_seq
+                     left join wms_toddler
+                     on move.wh_in_productid = wms_toddler.id
+             ) SUB_RESULT
+        )RESULT
+        where available_qty <![CDATA[<>]]> 0
+          and grade != 6
+          and expired_date=date_format(date_add(now(),interval 14 hour),'%Y-%m-%d');
+    </select>
 
+    <select id="stockingExpiredProduct" resultType="hanpoom.internal_cron.crons.dashboard.slack.vo.ExpirationVO">
+        SELECT
+            RESULT.product_id,
+            RESULT.product_name,
+            RESULT.warehouse,
+            RESULT.location,
+            RESULT.expiration_date,
+            RESULT.available_qty,
+            RESULT.expired_date
+        FROM (
+            SELECT
+                SUB_RESULT.product_id,
+                SUB_RESULT.product_name,
+                SUB_RESULT.warehouse,
+                SUB_RESULT.location,
+                SUB_RESULT.expiration_date,
+                case when category = '유아' then date_sub(expiration_date,interval 15 day)
+                     else date_sub(expiration_date,interval 10 day)
+                    end as expired_date,
+                SUB_RESULT.available_qty,
+                SUB_RESULT.grade
+            FROM (
+                     SELECT
+                         enter.wh_in_productid as product_id,
+                         site_product.post_title as product_name,
+                         ifnull(wms_toddler.category,'비유아') as category,
+                         '보관동' as warehouse,
+                         enter.wh_in_location as location,
+                         enter.wh_in_expdate as expiration_date,
+                         enter.wh_in_qty - ifnull(move.wh_move_qty,0) as available_qty,
+                         wms_product.grade
+                     from wh_in enter
+                     inner join md_product wms_product
+                     on enter.wh_in_productid = wms_product.id
+                     left join (
+                         select wh_in_seq, sum(wh_move_qty) as wh_move_qty
+                         from wh_move
+                         group by wh_in_seq ) move
+                     on enter.wh_in_seq = move.wh_in_seq
+                     left join wms_toddler
+                     on enter.wh_in_productid = wms_toddler.id
+                     left join (
+                         select
+                             id,
+                             post_title
+                         from wphpm_posts a
+                                  inner join (
+                             select
+                                 post_id,
+                                 meta_value
+                             from wphpm_postmeta
+                             where meta_key="_md_product_id"
+                         ) b
+                                             on a.id = b.post_id
+                         WHERE (POST_TYPE = 'product'
+                             OR POST_TYPE = 'product_variation')
+                     ) site_product
+                    on enter.wh_in_productid = site_product.ID
+            )SUB_RESULT
+        )RESULT
+        where available_qty <![CDATA[<>]]> 0
+          and grade != 6
+          and expired_date=date_format(date_add(now(),interval 14 hour),'%Y-%m-%d');
+    </select>
 </mapper>
