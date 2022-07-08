@@ -8,7 +8,7 @@ import hanpoom.internal_cron.crons.dashboard.slack.service.DashboardService;
 @Component
 public class DashboardCron {
 
-    private DashboardService dashboardService;
+    private final DashboardService dashboardService;
 
     public DashboardCron(DashboardService dashboardService) {
         this.dashboardService = dashboardService;
@@ -23,7 +23,7 @@ public class DashboardCron {
     // 매일 아침 10 시 전일 신규 가입 회원
     @Scheduled(cron = "0 0 10 * * *", zone = "Asia/Seoul")
     public void newUserDashboardCron() {
-        dashboardService.reportNewUsersDashboard();
+        dashboardService.reportNewUsersDashboardWithoutGoal();
     }
 
     // 매달 1일 자정이 되면, 지난 달 신규 가입 누적 회원
