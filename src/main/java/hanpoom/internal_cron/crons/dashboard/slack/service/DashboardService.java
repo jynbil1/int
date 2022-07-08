@@ -173,7 +173,7 @@ public class DashboardService {
         message = sb.toString();
         SlackAPI slack = new SlackAPI();
         try {
-            slack.sendMessage(message, SlackBot.TEST.getWebHookUrl());
+            slack.sendMessage(message, SlackBot.HANPOOM_TEAM.getWebHookUrl());
             System.out.println("슬랙 알림 오케이.");
         } catch (Exception e) {
             System.out.println("결국 실패했습니다.");
