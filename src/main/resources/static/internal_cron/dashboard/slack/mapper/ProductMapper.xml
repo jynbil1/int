@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hanpoom.internal_cron.crons.dashboard.slack.mapper.ProductMapper">
+    <select id="getUsingProductList" resultType="hanpoom.internal_cron.crons.dashboard.slack.vo.ProductVO">
+        SELECT
+            RESULT.POST_ID as product_id,
+                RESULT.POST_TITLE as product_name,
+                date_format(date_add(FROM_UNIXTIME(SALE_FROM),interval 14 hour),'%Y-%m-%d %H:%i:%S') as sale_start_datetime,
+                date_format(date_add(FROM_UNIXTIME(SALE_TO),interval 14 hour),'%Y-%m-%d %H:%i:%S') as sale_end_datetime,
+                COST as cost,
+                case when REGULAR_PRICE = '' then ''
+                    when REGULAR_PRICE is null then ''
+                    else round(REGULAR_PRICE * 1000,0)
+                    end as regular_price,
+                case when SALE_PRICE = '' then ''
+                    when SALE_PRICE is null then ''
+                    else round(SALE_PRICE * 1000,0)
+                    end as sale_price,
+                case when PRICE = '' then ''
+                    when PRICE is null then ''
+                    else round(PRICE * 1000,0)
+                    end as price,
+                case when wms_product.country = 0 then 'KR'
+                     else 'US' end as country
+        FROM (
+                 SELECT
+                     POST_ID,
+                     POST_TITLE ,
+                     GROUP_CONCAT(REGULAR_PRICE) AS REGULAR_PRICE,
+                     GROUP_CONCAT(SALE_PRICE) AS SALE_PRICE,
+                     GROUP_CONCAT(PRICE) AS PRICE,
+                     GROUP_CONCAT(COST) AS COST,
+                     GROUP_CONCAT(SALE_FROM) AS SALE_FROM,
+                     GROUP_CONCAT(SALE_TO) AS SALE_TO
+                 FROM (
+                          SELECT
+                              META.POST_ID,
+                              CASE WHEN META.META_KEY LIKE '_regular_price' THEN META.META_VALUE END AS REGULAR_PRICE,
+                              CASE WHEN META.META_KEY LIKE '_sale_price' THEN META.META_VALUE END AS SALE_PRICE,
+                              CASE WHEN META.META_KEY LIKE '_price' THEN META.META_VALUE END AS PRICE,
+                              CASE WHEN META.META_KEY LIKE '_wc_cog_cost' THEN META.META_VALUE END AS COST,
+                              CASE WHEN META.META_KEY LIKE '_sale_price_dates_from' THEN META.META_VALUE END AS SALE_FROM,
+                              CASE WHEN META.META_KEY LIKE '_sale_price_dates_to' THEN META.META_VALUE END AS SALE_TO,
+                              DATAS.POST_TITLE
+                          FROM(SELECT ID, POST_TITLE, POST_TYPE, POST_PARENT, POST_STATUS
+                               FROM wphpm_posts
+                               WHERE (POST_TYPE LIKE 'product'
+                                   OR POST_TYPE LIKE 'product_variation')
+                                 AND (POST_STATUS = 'publish' or POST_STATUS = 'private')
+                              ) AS DATAS
+                                  JOIN
+                              wphpm_postmeta AS META
+                              ON META.POST_ID = DATAS.ID
+                      ) products
+                 GROUP BY POST_ID
+             ) RESULT
+                 inner join md_product wms_product
+                            on RESULT.post_id =wms_product.id
+        where wms_product.use_flag=1;
+    </select>
+
+    <update id="adminPrivateUpdate">
+        update wphpm_posts
+        set post_status="private"
+        where id in (
+        <foreach collection="products" item="product" separator=",">
+            #{product}
+        </foreach>
+        )
+    </update>
+
+</mapper>

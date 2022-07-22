@@ -100,7 +100,7 @@ public class ExpirationService {
 
             //mapperdp products 리스트 보내서 update
             expirationMapper.orderStatusUpdate(productIdList);
-            expirationMapper.adminPrivateUpdate(productIdList);
+            expirationMapper.updateToPrivateInAdmin(productIdList);
         }
     }
 
@@ -117,7 +117,7 @@ public class ExpirationService {
         //상품id 중복을 제거해준다.
         List<String> productIdList = expiredProductList.stream().map(ExpirationVO::getProduct_id).distinct().collect(Collectors.toList());
 
-        message = expiredslackMessage(productIdList, expiredProductList);
+        message = expiredSlackMessage(productIdList, expiredProductList);
         slackMessageVO.setMessage(message);
         slackMessageVO.setProduct_ids(productIdList);
         slackAPICall(slackMessageVO, failProductList, false);
@@ -128,7 +128,7 @@ public class ExpirationService {
             slackAPICall(slackMessageVO, null, true);
         }
 
-        expirationMapper.adminPrivateUpdate(productIdList);
+        expirationMapper.updateToPrivateInAdmin(productIdList);
 
     }
 
@@ -137,22 +137,11 @@ public class ExpirationService {
         try{
             List<String> operationExpirationProductList = expirationMapper.operationExpirationProduct();
             List<String> stockingExpirationProductList = expirationMapper.stockingExpirationProduct();
-//            System.out.println("보관동 상품리스트 : \n");
-//            for(String vo : stockingExpirationProductList){
-//                System.out.println(vo);
-//            }
-//            System.out.println("운영동 상품리스트 : \n");
-//            for(String vo : operationExpirationProductList){
-//                System.out.println(vo);
-//            }
+
             productList.addAll(operationExpirationProductList);
             productList.addAll(stockingExpirationProductList);
             productList= productList.stream().distinct().collect(Collectors.toList());
-//            System.out.println("상품리스트 : \n");
-//
-//            for(String vo : productList){
-//                System.out.println(vo);
-//            }
+
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
@@ -167,10 +156,7 @@ public class ExpirationService {
 
             allList.addAll(operationExpirationAllList);
             allList.addAll(stockingExpirationAllList);
-//            System.out.println("재고리스트 : \n");
-//            for(ExpirationVO vo : allList){
-//                System.out.println(vo.toString());
-//            }
+
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
@@ -185,7 +171,7 @@ public class ExpirationService {
             if(failCall){
                 slack.sendMessage(message, SlackBot.ERROR.getWebHookUrl()); // 실패
             }else{
-                slack.sendMessage(message, SlackBot.TEST.getWebHookUrl()); // 성공
+                slack.sendMessage(message, SlackBot.Expiration_Imminent.getWebHookUrl()); // 성공
             }
             System.out.println(slackMessageVO.getType() + " 슬랙 알람 오케이.");
             success_flag = true;
@@ -258,11 +244,7 @@ public class ExpirationService {
             }
 
             if(exp_date != null) {
-//                if(start_date != null){
-////                    System.out.println("처음2: " + exp_date);
-//                    start_date=stringToDate(exp_date);
-//                }
-//                System.out.println("처음: " + exp_date);
+
                 end_date = stringToDate(exp_date);
                 boolean compare = end_date.before(start_date);
 
@@ -319,7 +301,7 @@ public class ExpirationService {
         return productList;
     }
 
-    private String expiredslackMessage(List<String> productIdList, List<ExpirationVO> expiredProductList){
+    private String expiredSlackMessage(List<String> productIdList, List<ExpirationVO> expiredProductList){
 
 
         String message = "";
