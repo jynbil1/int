@@ -1,14 +1,5 @@
 package hanpoom.internal_cron.crons.dashboard.slack.service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
-import org.springframework.stereotype.Service;
-
 import hanpoom.internal_cron.api.slack.SlackAPI;
 import hanpoom.internal_cron.crons.dashboard.common.mapper.CommonMapper;
 import hanpoom.internal_cron.crons.dashboard.common.vo.DateRangeVO;
@@ -16,12 +7,20 @@ import hanpoom.internal_cron.crons.dashboard.slack.enumerate.CustomerEvaluation;
 import hanpoom.internal_cron.crons.dashboard.slack.mapper.DashboardMapper;
 import hanpoom.internal_cron.utility.calendar.CalendarManager;
 import hanpoom.internal_cron.utility.slack.enumerate.SlackBot;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 @Service
 public class DashboardService {
-    private DashboardMapper dashboardMapper;
-    private CommonMapper commonMapper;
-    private CalendarManager calendar;
+    private final DashboardMapper dashboardMapper;
+    private final CommonMapper commonMapper;
+    private final CalendarManager calendar;
 
     public DashboardService(DashboardMapper dashboardMapper, CommonMapper commonMapper, CalendarManager calendar) {
         this.dashboardMapper = dashboardMapper;
@@ -34,7 +33,7 @@ public class DashboardService {
         try {
             yesterdayRevenue = "$"
                     + commonMapper.getRevenue(
-                            new DateRangeVO(calendar.getStartofYesterday(true), calendar.getEndofYesterday(true)));
+                    new DateRangeVO(calendar.getStartofYesterday(true), calendar.getEndofYesterday(true)));
         } catch (Exception e) {
             yesterdayRevenue = "집계에 실패했습니다.";
             e.printStackTrace();
@@ -49,7 +48,7 @@ public class DashboardService {
             int thisYear = LocalDateTime.now().getYear();
             currentYearRevenue = "$"
                     + commonMapper.getRevenue(new DateRangeVO(calendar.getStartOfYear(thisYear, true),
-                            calendar.getEndOfYearOpt(thisYear, true)));
+                    calendar.getEndOfYearOpt(thisYear, true)));
         } catch (Exception e) {
             currentYearRevenue = "집계에 실패했습니다.";
             e.printStackTrace();
@@ -113,7 +112,7 @@ public class DashboardService {
         } catch (Exception e) {
             System.out.println("결국 실패했습니다.");
         }
-        
+
     }
 
     public void reportNewUsersDashboard() {
@@ -126,21 +125,21 @@ public class DashboardService {
         String monthlyNewCustomers = dashboardMapper.getNewUsers(startOfTheMonth, now);
 
         String percentile = String.valueOf(
-            new BigDecimal(
-                Double.valueOf(monthlyNewCustomers.replace(",", ""))/
-                Double.valueOf(CustomerEvaluation.getGoal(nowDT.getMonthValue())) * 100
-            ).setScale(2, RoundingMode.UP)
+                new BigDecimal(
+                        Double.valueOf(monthlyNewCustomers.replace(",", "")) /
+                                Double.valueOf(CustomerEvaluation.getGoal(nowDT.getMonthValue())) * 100
+                ).setScale(2, RoundingMode.UP)
         );
-    
+
 
         String message = "";
         StringBuilder sb = new StringBuilder();
         sb.append("`우리는 미국에서 가장 만족스러운 아시안 커머스 마켓이 됩니다!` \n");
         sb.append(String.format("• [*%s 분*]이 하루동안 한품의 회원이 되셨습니다.\n", dailyNewCustomers));
         sb.append(String.format("• %s월 목표 %s / %s명 (%s %%)",
-                String.valueOf(nowDT.getMonthValue()),
+                nowDT.getMonthValue(),
                 monthlyNewCustomers,
-                String.valueOf(CustomerEvaluation.getGoal(nowDT.getMonthValue())),
+                CustomerEvaluation.getGoal(nowDT.getMonthValue()),
                 percentile));
 
         message = sb.toString();
@@ -152,6 +151,35 @@ public class DashboardService {
             System.out.println("결국 실패했습니다.");
         }
     }
+
+    public void reportNewUsersDashboardWithoutGoal() {
+        LocalDateTime nowDT = LocalDateTime.now();
+        String now = nowDT.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 10"));
+        String startOfTheMonth = nowDT.format(DateTimeFormatter.ofPattern("yyyy-MM-01 00:00:00"));
+        System.out.println("전체 고객수 파악 처리를 시작합니다.: " + now + " - " + startOfTheMonth);
+
+        String dailyNewCustomers = dashboardMapper.getDailyTrueNewCustomers();
+        String monthlyNewCustomers = dashboardMapper.getNewUsers(startOfTheMonth, now);
+
+        String message = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("`우리는 미국에서 가장 만족스러운 아시안 커머스 마켓이 됩니다!` \n");
+        sb.append(String.format("• [*%s 분*]이 하루동안 한품의 회원이 되셨습니다.\n", dailyNewCustomers));
+        sb.append(String.format("• %s월 누적 %s명",
+                nowDT.getMonthValue(),
+                monthlyNewCustomers
+        ));
+
+        message = sb.toString();
+        SlackAPI slack = new SlackAPI();
+        try {
+            slack.sendMessage(message, SlackBot.HANPOOM_TEAM.getWebHookUrl());
+            System.out.println("슬랙 알림 오케이.");
+        } catch (Exception e) {
+            System.out.println("결국 실패했습니다.");
+        }
+    }
+
     public void reportLastMonthNewUserAchievement() {
         LocalDateTime now = LocalDateTime.now();
         String thisMonth = String.valueOf(now.getMonthValue());
@@ -165,22 +193,22 @@ public class DashboardService {
         String lastMonthNewUsers = dashboardMapper.getNewUsers(startDateTime, endDateTime);
 
         String percentile = String.valueOf(
-            new BigDecimal(
-                Double.valueOf(lastMonthNewUsers.replace(",", ""))/
-                Double.valueOf(CustomerEvaluation.getGoal(now.getMonthValue())) * 100
-            ).setScale(2, RoundingMode.UP)
+                new BigDecimal(
+                        Double.valueOf(lastMonthNewUsers.replace(",", "")) /
+                                Double.valueOf(CustomerEvaluation.getGoal(now.getMonthValue())) * 100
+                ).setScale(2, RoundingMode.UP)
         );
 
         String message = "";
         StringBuilder sb = new StringBuilder();
         sb.append("`우리는 미국에서 가장 만족스러운 아시안 커머스 마켓이 됩니다!` \n");
         sb.append(String.format("• 지난 %s 월 동안 [*%s 분*]이 한품의 회원이 되셨습니다.\n",
-            String.valueOf(lastMonth.getMonthValue()), lastMonthNewUsers));
+                lastMonth.getMonthValue(), lastMonthNewUsers));
 
         sb.append(String.format("• %s월 목표 %s / %s명 (%s %%)",
-                String.valueOf(lastMonth.getMonthValue()),
+                lastMonth.getMonthValue(),
                 lastMonthNewUsers,
-                String.valueOf(CustomerEvaluation.getGoal(now.getMonthValue())),
+                CustomerEvaluation.getGoal(now.getMonthValue()),
                 percentile));
 
         message = sb.toString();
