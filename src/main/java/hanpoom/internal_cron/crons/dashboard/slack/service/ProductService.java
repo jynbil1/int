@@ -2,6 +2,8 @@ package hanpoom.internal_cron.crons.dashboard.slack.service;
 
 
 import hanpoom.internal_cron.api.slack.SlackAPI;
+import hanpoom.internal_cron.crons.dashboard.slack.enumerate.Country;
+import hanpoom.internal_cron.crons.dashboard.slack.enumerate.ProductSlackType;
 import hanpoom.internal_cron.crons.dashboard.slack.mapper.ProductMapper;
 import hanpoom.internal_cron.crons.dashboard.slack.vo.ProductVO;
 import hanpoom.internal_cron.crons.dashboard.slack.vo.SlackMessageVO;
@@ -17,7 +19,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
     private ProductMapper productMapper;
-
     public ProductService(ProductMapper productMapper) {
         this.productMapper = productMapper;
 
@@ -38,11 +39,21 @@ public class ProductService {
                         .filter(vo -> vo.getCountry().equals("US"))
                         .collect(Collectors.toList());
 
-                slackAPIAndUpdateAdminStatus(koreaProductList, "InCorrect", "KR");
+                slackAPIAndUpdateAdminStatus(koreaProductList, ProductSlackType.INCORRECT, Country.KOREA);
 
-                slackAPIAndUpdateAdminStatus(usProductList, "InCorrect", "US");
+                slackAPIAndUpdateAdminStatus(usProductList, ProductSlackType.INCORRECT, Country.US);
             }
 
+        }
+
+    }
+
+    public void reportRegularPriceNoneProduct(){
+
+        List<ProductVO> productList = productMapper.getRegularPriceNoneProductList();
+        System.out.println(productList.size());
+        if(productList.size() > 0 ) {
+            slackAPIAndUpdateAdminStatus(productList, ProductSlackType.None, Country.KOREA);
         }
 
     }
@@ -83,14 +94,18 @@ public class ProductService {
         return incorrectProductList;
     }
 
-    private boolean slackAPIAndUpdateAdminStatus(List<ProductVO> productList, String slackType, String countryType){
+    private boolean slackAPIAndUpdateAdminStatus(List<ProductVO> productList, ProductSlackType slackType, Country countryType){
         String message="";
         boolean success_flag=false;
         SlackMessageVO slackMessageVO = new SlackMessageVO();
 
-        message = incorrectPriceSlackMessage(productList, countryType);
+        if(slackType.equals(ProductSlackType.INCORRECT)){
+            message = incorrectPriceSlackMessage(productList, countryType.getCountryCode());
+        }else if(slackType.equals(ProductSlackType.None)){
+            message = nonePriceSlackMessage(productList);
+        }
 
-        slackMessageVO.setType(countryType);
+        slackMessageVO.setType(countryType.getCountryCode());
         slackMessageVO.setMessage(message);
         success_flag = slackAPICall(slackMessageVO, false);
 
@@ -114,7 +129,7 @@ public class ProductService {
             if(failCall){
                 slack.sendMessage(message, SlackBot.ERROR.getWebHookUrl()); // 실패
             }else{
-                slack.sendMessage(message, SlackBot.TEST.getWebHookUrl()); // 성공
+                slack.sendMessage(message, SlackBot.Price_Error.getWebHookUrl()); // 성공
             }
             System.out.println(" 슬랙 알람 오케이.");
             success_flag = true;
@@ -174,5 +189,54 @@ public class ProductService {
         message = sb.toString();
         return message;
     }
+
+    private String nonePriceSlackMessage(List<ProductVO> novePriceProductList){
+
+
+        String message = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append(nonePriceSlackMessageHeader());
+        sb.append(nonePriceSlackMessageBody(novePriceProductList));
+        sb.append(nonePriceSlackMessageFooter());
+        message = sb.toString();
+        return message;
+    }
+
+    private String nonePriceSlackMessageHeader(){
+
+        String message = "";
+        LocalDateTime now = LocalDateTime.now();
+        String today = now.minusDays(0).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("---------------------------------------------------------------\n"));
+        sb.append(String.format("[%s] 정가가 셋팅이 안 된 상품 알림\n\n", today));
+        message = sb.toString();
+        return message;
+    }
+
+    private String nonePriceSlackMessageBody(List<ProductVO> temp){
+
+        String message = "";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("- ID : 상품명 :\n");
+        for(ProductVO vo : temp){
+            sb.append(String.format("\t%s : %s\n", vo.getProduct_id(),vo.getProduct_name()));
+        }
+        message = sb.toString();
+        return message;
+    }
+
+    private String nonePriceSlackMessageFooter(){
+
+        String message = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("상품 비공개 처리되었습니다. <@U02H0HU2K1B><@U01TMMWKG5P>\n"); //hi , joseph
+        sb.append("--------------------------------------------------------------------\n");
+        message = sb.toString();
+        return message;
+    }
+
 
 }

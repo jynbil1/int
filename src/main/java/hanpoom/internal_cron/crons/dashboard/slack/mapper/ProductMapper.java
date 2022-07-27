@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 @Mapper
 public interface ProductMapper {
-
+    List<ProductVO> getRegularPriceNoneProductList();
     List<ProductVO> getUsingProductList();
     // 어드민에서 비공개 상품으로 업데이트
     void adminPrivateUpdate(List<String> products);

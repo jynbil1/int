@@ -69,4 +69,49 @@
         )
     </update>
 
+    <select id="getRegularPriceNoneProductList" resultType="hanpoom.internal_cron.crons.dashboard.slack.vo.ProductVO">
+        SELECT
+            RESULT.POST_ID as product_id,
+            RESULT.POST_TITLE as product_name,
+            case when REGULAR_PRICE = '' then ''
+                 when REGULAR_PRICE is null then ''
+                 when REGULAR_PRICE = 0 then ''
+                 else round(REGULAR_PRICE * 1000,0)
+                end as regular_price
+        FROM (
+                 SELECT
+                     POST_ID,
+                     POST_TITLE ,
+                     GROUP_CONCAT(REGULAR_PRICE) AS REGULAR_PRICE,
+                     GROUP_CONCAT(SALE_PRICE) AS SALE_PRICE,
+                     GROUP_CONCAT(PRICE) AS PRICE,
+                     GROUP_CONCAT(COST) AS COST,
+                     GROUP_CONCAT(SALE_FROM) AS SALE_FROM,
+                     GROUP_CONCAT(SALE_TO) AS SALE_TO
+                 FROM (
+                          SELECT
+                              META.POST_ID,
+                              CASE WHEN META.META_KEY LIKE '_regular_price' THEN META.META_VALUE END AS REGULAR_PRICE,
+                              CASE WHEN META.META_KEY LIKE '_sale_price' THEN META.META_VALUE END AS SALE_PRICE,
+                              CASE WHEN META.META_KEY LIKE '_price' THEN META.META_VALUE END AS PRICE,
+                              CASE WHEN META.META_KEY LIKE '_wc_cog_cost' THEN META.META_VALUE END AS COST,
+                              CASE WHEN META.META_KEY LIKE '_sale_price_dates_from' THEN META.META_VALUE END AS SALE_FROM,
+                              CASE WHEN META.META_KEY LIKE '_sale_price_dates_to' THEN META.META_VALUE END AS SALE_TO,
+                              DATAS.POST_TITLE
+                          FROM(SELECT ID, POST_TITLE, POST_TYPE, POST_PARENT, POST_STATUS
+                               FROM wphpm_posts
+                               WHERE (POST_TYPE LIKE 'product'
+                                   OR POST_TYPE LIKE 'product_variation')
+                                 AND (POST_STATUS = 'publish' or POST_STATUS = 'private')
+                              ) AS DATAS
+                                  JOIN
+                              wphpm_postmeta AS META
+                              ON META.POST_ID = DATAS.ID
+                      ) products
+                 GROUP BY POST_ID
+             ) RESULT
+                 inner join md_product on RESULT.post_id = md_product.id
+        where (REGULAR_PRICE = '' or REGULAR_PRICE is null) and md_product.use_flag=1 and country=0;
+    </select>
+
 </mapper>
