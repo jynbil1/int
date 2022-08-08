@@ -99,11 +99,15 @@ public class ProductService {
         boolean success_flag=false;
         SlackMessageVO slackMessageVO = new SlackMessageVO();
 
-        if(slackType.equals(ProductSlackType.INCORRECT)){
-            message = incorrectPriceSlackMessage(productList, countryType.getCountryCode());
-        }else if(slackType.equals(ProductSlackType.None)){
-            message = nonePriceSlackMessage(productList);
+        // 리스트가 빈 값이 아닐 경우에만 슬랙 알림!
+        if(!productList.isEmpty()){
+            if(slackType.equals(ProductSlackType.INCORRECT)){
+                message = incorrectPriceSlackMessage(productList, countryType.getCountryCode());
+            }else if(slackType.equals(ProductSlackType.None)){
+                message = nonePriceSlackMessage(productList);
+            }
         }
+
 
         slackMessageVO.setType(countryType.getCountryCode());
         slackMessageVO.setMessage(message);
