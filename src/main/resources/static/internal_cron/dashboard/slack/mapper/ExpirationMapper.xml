@@ -385,7 +385,7 @@
             )
     </update>
 
-    <update id="adminPrivateUpdate">
+    <update id="updateToPrivateInAdmin">
         update wphpm_posts
         set post_status="private"
         where id in (
