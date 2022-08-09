@@ -21,7 +21,7 @@ public class ProductCron {
     }
 
     // 매일 오후 12시 00분 정가 없는 상품 알림
-    @Scheduled(cron = "0 00 12 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 12 * * *", zone = "Asia/Seoul")
     public void priceRegularNoneProductCron() {
         productService.reportRegularPriceNoneProduct();
     }
