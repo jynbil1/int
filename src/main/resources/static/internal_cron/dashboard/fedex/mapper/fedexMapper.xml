@@ -38,8 +38,8 @@
             group by
                 a.order_no
             having 
-                length(tracking_no) <![CDATA[ > ]]> 10 and
-                shipment_class in ('us-cold', 'us-regular')) as details
+                length(tracking_no) between 10 and 15  and
+                shipment_class like 'us%') as details
         on
             orders.order_no = details.order_no
         left join

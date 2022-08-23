@@ -5,8 +5,8 @@
         SELECT
             RESULT.POST_ID as product_id,
                 RESULT.POST_TITLE as product_name,
-                date_format(date_add(FROM_UNIXTIME(SALE_FROM),interval 14 hour),'%Y-%m-%d %H:%i:%S') as sale_start_datetime,
-                date_format(date_add(FROM_UNIXTIME(SALE_TO),interval 14 hour),'%Y-%m-%d %H:%i:%S') as sale_end_datetime,
+                IF(SALE_FROM = '', null , date_format(date_add(FROM_UNIXTIME(SALE_FROM),interval 14 hour),'%Y-%m-%d %H:%i:%S')) as sale_start_datetime,
+                IF(SALE_TO = '',null,date_format(date_add(FROM_UNIXTIME(SALE_TO),interval 14 hour),'%Y-%m-%d %H:%i:%S')) as sale_end_datetime,
                 COST as cost,
                 case when REGULAR_PRICE = '' then ''
                     when REGULAR_PRICE is null then ''
