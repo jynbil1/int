@@ -106,20 +106,17 @@ public class ProductService {
             }else if(slackType.equals(ProductSlackType.None)){
                 message = nonePriceSlackMessage(productList);
             }
-        }
 
+            slackMessageVO.setType(countryType.getCountryCode());
+            slackMessageVO.setMessage(message);
+            success_flag = slackAPICall(slackMessageVO, false);
 
-        slackMessageVO.setType(countryType.getCountryCode());
-        slackMessageVO.setMessage(message);
-        success_flag = slackAPICall(slackMessageVO, false);
-
-        if (!success_flag) {
-            slackAPICall(slackMessageVO, true);
-        }else{
-            List<String> productIdList =  productList.stream().map(ProductVO::getProduct_id).collect(Collectors.toList());
-
-            productMapper.adminPrivateUpdate(productIdList);
-
+            if (!success_flag) {
+                slackAPICall(slackMessageVO, true);
+            }else{
+                List<String> productIdList =  productList.stream().map(ProductVO::getProduct_id).collect(Collectors.toList());
+                productMapper.adminPrivateUpdate(productIdList);
+            }
         }
 
         return success_flag;
@@ -188,7 +185,7 @@ public class ProductService {
         if(country.equals("KR"))
             sb.append("상품 비공개 처리되었습니다. <@U02H0HU2K1B><@U01TMMWKG5P>\n"); //hi , joseph
         else if(country.equals("US"))
-            sb.append("상품 비공개 처리되었습니다. <@U01A8F1CFSP>\n"); //tony
+            sb.append("상품 비공개 처리되었습니다. <@U01ALLX3K6E>\n"); //bliss
         sb.append("--------------------------------------------------------------------\n");
         message = sb.toString();
         return message;

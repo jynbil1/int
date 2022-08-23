@@ -171,10 +171,14 @@ public class FedexTrackManager extends FedexTrackManagement {
 
     @Override
     public boolean isDelivered(TrackResult shipment) {
-        for (DateAndTime event : shipment.getDateAndTimes()) {
-            if (event.getType().equals(FedexShipmentStatus.DELIVERED.getValue())) {
-                return true;
+        try {
+            for (DateAndTime event : shipment.getDateAndTimes()) {
+                if (event.getType().equals(FedexShipmentStatus.DELIVERED.getValue())) {
+                    return true;
+                }
             }
+        } catch (NullPointerException npe) {
+            System.out.println(npe.getMessage());
         }
         return false;
     }
@@ -202,30 +206,35 @@ public class FedexTrackManager extends FedexTrackManagement {
 
     @Override
     public boolean isDelayed(TrackResult shipment) {
-        if (isDelivered(shipment)) {
-            return false;
-        } else if (shipment
-                .getScanEvents()
-                .stream()
-                .map(obj -> obj.getEventType().equals("DY"))
-                .findAny()
-                .get()) {
-            return true;
-        } else if (shipment.getDateAndTimes().size() < 2) {
-            return false;
-        } else {
-
-            FedexShipDuration shipDuration = FedexShipDuration.findByServiceType(shipment.getServiceDetail().getType());
-
-            List<DateAndTime> dateAndTimes = shipment
-                    .getDateAndTimes()
+        try {
+            if (isDelivered(shipment)) {
+                return false;
+            } else if (shipment
+                    .getScanEvents()
                     .stream()
-                    .sorted(Comparator.comparing(DateAndTime::getDateTime))
-                    .collect(Collectors.toList());
+                    .map(obj -> obj.getEventType().equals("DY"))
+                    .findAny()
+                    .get()) {
+                return true;
+            } else if (shipment.getDateAndTimes().size() < 2) {
+                return false;
+            } else {
 
-            float dayDiff = CalendarManager.getDayDifference(dateAndTimes.get(0).getDateTime(),
-                    dateAndTimes.get(dateAndTimes.size() - 1).getDateTime());
-            return dayDiff >= shipDuration.getValue();
+                FedexShipDuration shipDuration = FedexShipDuration.findByServiceType(shipment.getServiceDetail().getType());
+
+                List<DateAndTime> dateAndTimes = shipment
+                        .getDateAndTimes()
+                        .stream()
+                        .sorted(Comparator.comparing(DateAndTime::getDateTime))
+                        .collect(Collectors.toList());
+
+                float dayDiff = CalendarManager.getDayDifference(dateAndTimes.get(0).getDateTime(),
+                        dateAndTimes.get(dateAndTimes.size() - 1).getDateTime());
+                return dayDiff >= shipDuration.getValue();
+            }
+        } catch (NullPointerException npe) {
+            System.out.println(shipment.toString());
+            return true;
         }
     }
 
