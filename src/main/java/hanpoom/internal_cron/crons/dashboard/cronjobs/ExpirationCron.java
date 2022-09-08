@@ -20,8 +20,8 @@ public class ExpirationCron {
         expirationService.reportExpirationManagementLoss();
     }
 
-    // 매일 오전 9시 유통기한 임박 알림(8시 50분으로 설정)
-    @Scheduled(cron = "0 50 8 * * *", zone = "Asia/Seoul")
+    // 매일 오전 8시 30분 유통기한 임박 알림 (young 요청으로 시간 변경)
+    @Scheduled(cron = "0 30 8 * * *", zone = "Asia/Seoul")
     public void expirationManagementImminentCron(){
         expirationService.reportExpirationManagementImminent();
     }
