@@ -205,7 +205,7 @@
                 #{product}
             </foreach>
         )
-        and available_qty <![CDATA[<>]]> 0;
+        and available_qty != 0;
     </select>
 
     <select id="stockingExpiration" parameterType="java.lang.String" resultType="hanpoom.internal_cron.crons.dashboard.slack.vo.ExpirationVO">
@@ -260,7 +260,7 @@
                 #{product}
             </foreach>
         )
-        and available_qty <![CDATA[<>]]> 0;
+        and available_qty != 0;
     </select>
 
     <select id="operationExpirationProduct" resultType="java.lang.String">
@@ -320,7 +320,10 @@
                           left join wms_toddler
                                     on move.wh_in_productid = wms_toddler.id
              ) SUB_RESULT
-        where available_qty <![CDATA[<>]]> 0 and ex_level = 1 and is_special = 0 and order_rem_status != 9;
+        where available_qty != 0
+            and ex_level = 1
+            and order_rem_status != 9
+            and product_name not like '%임박%';
     </select>
 
     <select id="stockingExpirationProduct" resultType="java.lang.String">
@@ -364,7 +367,10 @@
                  ) site_product
                                     on enter.wh_in_productid = site_product.ID
              )SUB_RESULT
-        where available_qty <![CDATA[<>]]> 0 and ex_level = 1 and is_special = 0 and order_rem_status != 9;
+        where available_qty != 0
+            and ex_level = 1
+            and order_rem_status != 9
+            and product_name not like '%임박%';
     </select>
     
     <update id="orderStatusUpdate">
@@ -467,7 +473,7 @@
                      on move.wh_in_productid = wms_toddler.id
              ) SUB_RESULT
         )RESULT
-        where available_qty <![CDATA[<>]]> 0
+        where available_qty != 0
           and grade != 6
           and expired_date=date_format(date_add(now(),interval 14 hour),'%Y-%m-%d');
     </select>
@@ -532,7 +538,7 @@
                     on enter.wh_in_productid = site_product.ID
             )SUB_RESULT
         )RESULT
-        where available_qty <![CDATA[<>]]> 0
+        where available_qty != 0
           and grade != 6
           and expired_date=date_format(date_add(now(),interval 14 hour),'%Y-%m-%d');
     </select>
