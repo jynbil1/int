@@ -10,12 +10,12 @@
             round(sum(result.unit_price *  wh_loss_qty)/1000) as total
         from (select
                   MD_ORDER.seq,
-                  MD.id,
+                  postmeta.id,
                   LOSS.wh_loss_qty,
                   wh_loss_date,
                   CASE
                       WHEN MD_ORDER.seq is null
-                          THEN MD.unit_price
+                          THEN postmeta.wc_cog_cost
                       ELSE (MD_ORDER.qty / MD_ORDER.wh_arrival_qty * (MD_ORDER.supply_price + MD_ORDER.vat))
                       END as unit_price
               from (select
@@ -33,11 +33,12 @@
                        as LOSS
                        inner join
                    (select
-                        unit_price,
-                        id
-                    from md_product)
-                       as MD
-                   on LOSS.wh_loss_productid = MD.id
+                        post_id as id,
+                        (meta_value * 1000) as wc_cog_cost
+                    from wphpm_postmeta
+                    where meta_key='_wc_cog_cost')
+                       as postmeta
+                   on LOSS.wh_loss_productid = postmeta.id
                        inner join
                    (select
                         wh_move_seq,
@@ -76,12 +77,12 @@
             round(sum(result.unit_price *  wh_loss_qty)/1000) as total
         from (select
                   MD_ORDER.seq,
-                  MD.id,
+                  postmeta.id,
                   LOSS.wh_loss_qty,
                   wh_loss_date,
                   CASE
                       WHEN MD_ORDER.seq is null
-                          THEN MD.unit_price
+                          THEN postmeta.wc_cog_cost
                       ELSE (MD_ORDER.qty / MD_ORDER.wh_arrival_qty * (MD_ORDER.supply_price + MD_ORDER.vat))
                       END as unit_price
               from (select
@@ -99,11 +100,12 @@
                        as LOSS
                        inner join
                    (select
-                        unit_price,
-                        id
-                    from md_product)
-                       as MD
-                   on LOSS.wh_loss_productid = MD.id
+                        post_id as id,
+                        (meta_value * 1000) as wc_cog_cost
+                    from wphpm_postmeta
+                    where meta_key='_wc_cog_cost')
+                       as postmeta
+                   on LOSS.wh_loss_productid = postmeta.id
                        inner join
                    (select
                         wh_move_seq,
