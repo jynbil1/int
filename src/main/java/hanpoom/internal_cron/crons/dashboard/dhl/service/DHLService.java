@@ -31,7 +31,7 @@ public class DHLService {
     // private static final String SHIPMENT_REPORT_HOOK_URL =
     // "https://hooks.slack.com/services/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";
 
-    private final static String SPREADSHEET_ID = "1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw";
+    private final static String SPREADSHEET_ID = "1KKPfSheKTUshQeyUFsbThgcb1bEohpb6VCLEMbxdTzI";
     private final static String SHEET = "배송상황";
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";

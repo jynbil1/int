@@ -22,7 +22,7 @@ public class DHLReport {
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-    private final static String SPREADSHEET_ID = "1G3Y2CWeYveB2KNVRduKTSgFZuOIh7Cb8JQZOO0gBDqw";
+    private final static String SPREADSHEET_ID = "1KKPfSheKTUshQeyUFsbThgcb1bEohpb6VCLEMbxdTzI";
     private final static String SHEET = "배송상황";
 
     @Autowired
